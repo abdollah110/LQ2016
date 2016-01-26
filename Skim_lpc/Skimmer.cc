@@ -23,8 +23,7 @@ void Skimmer::Loop(TString outputName, int split)
     //TH1F* hEvents = (TH1F*)gDirectory->Get("hEvents");
     //TH1F* hPU     = (TH1F*)gDirectory->Get("hPU");
     //TH1F* hPUTrue = (TH1F*)gDirectory->Get("hPUTrue");
-    
-    
+     
     TFile* file = TFile::Open(outputName, "RECREATE");
     TTree* MyNewTree = fChain->CloneTree(0);
     
@@ -59,11 +58,11 @@ void Skimmer::Loop(TString outputName, int split)
     Long64_t nentries = fChain->GetEntriesFast();
     Long64_t nbytes = 0, nb = 0;
     
-    int NumSplit= 20;
-    Long64_t nOverTen= nentries/NumSplit;
+    int numJobs=20;	
+    Long64_t nOverTen= nentries/numJobs;
     Long64_t jentry = split*nOverTen;
     Long64_t finalEntry = (split+1)*nOverTen;
-    if (split==NumSplit-1) finalEntry=nentries;
+    if (split==numJobs-1) finalEntry=nentries;
     
     for (jentry=split*nOverTen; jentry<finalEntry;jentry++) {
         
@@ -74,11 +73,12 @@ void Skimmer::Loop(TString outputName, int split)
         
         if(jentry % 10000 == 0) cout << "Processed " << jentry << " events out of " <<nentries<< " from " << split*nOverTen << " to "<< finalEntry<<endl;
         hcount->Fill(1);
-        hcount->Fill(2,genWeight);
+                hcount->Fill(2,genWeight);
         
         
         bool isMuTau=0;
         bool isEleTau=0;
+	bool isEleMu=0;
         bool isMu=0;
         bool isEle=0;
         bool isTau=0;
@@ -90,7 +90,7 @@ void Skimmer::Loop(TString outputName, int split)
             
             
             
-            if (elePt->at(iele) > 19 && IsoEle < 0.5)
+            if (elePt->at(iele) > 19 && IsoEle < 0.35)
             {isEle=1;
                 hcount->Fill(3);}
         }
@@ -101,7 +101,7 @@ void Skimmer::Loop(TString outputName, int split)
             if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
                 IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
             
-            if (muPt->at(imu) > 19 &&  muIsLooseID->at(imu) > 0  && IsoMu < 0.50 )
+            if (muPt->at(imu) > 19 &&  muIsLooseID->at(imu) > 0  && IsoMu < 0.35 )
             {isMu=1;
                 hcount->Fill(4);
             }
@@ -119,28 +119,31 @@ void Skimmer::Loop(TString outputName, int split)
         
         if (isMu && isTau) {isMuTau=1; hcount->Fill(6);}
         if (isEle && isTau) {isEleTau=1;hcount->Fill(7);}
+        if (isEle && isMu) {isEleMu=1;hcount->Fill(8);}
         
-        if(!(isMuTau) && !(isEleTau)) continue;
-        hcount->Fill(8);
+        if(!(isMuTau) && !(isEleTau) && !(isEleMu)) continue;
+        hcount->Fill(9);
         
         MyNewTree->Fill();
         
     }
     MyNewTree->AutoSave();
     //    MyNewTree->Write();
-    // hPU->Write();
-    // hPUTrue->Write();
+   // hPU->Write();
+   // hPUTrue->Write();
     hEvents->Write();
     hcount->Write();
     file->Close();
 }
 
 int main(int argc, char* argv[]){
-    //    TString path=argv[1];
+    //TString path=argv[1];
     string FinaName=argv[1];
     TString number= argv[2];
     int split = atoi(argv[2]);
-    
+    //    a=atoi(argv[1]);
+    //    b=atoi(argv[2]);atoi or strtod.
+
     stringstream ss(FinaName);
     
     string token;
@@ -148,23 +151,20 @@ int main(int argc, char* argv[]){
     while (getline(ss,token, '/'))
     {
         cout<< token <<endl;
-        M=token;
+         M=token;
     }
     
     cout<<"last one is "<< M<<"\n";
-    
-    
+
+
     TString outputName = "";
-    
     outputName +="skimed_"+number+"_"+M;
-    std::cout<< "outputName= "<<outputName<<"\n";
     
-    
-    Skimmer t("root://cmsxrootd.fnal.gov//"+ FinaName);
-    //        Skimmer t( FinaName);
+    Skimmer t("root://cmsxrootd.fnal.gov//"+FinaName);
     t.Loop(outputName,split);
     return 0;
 }
+
 
 
 
