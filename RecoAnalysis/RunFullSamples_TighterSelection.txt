@@ -1,0 +1,20 @@
+./Make.sh TreeReader.cc
+
+
+./TreeReader.exe  OutFilesTight/LQ_200.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq200.root
+./TreeReader.exe  OutFilesTight/LQ_250.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq250.root
+./TreeReader.exe  OutFilesTight/LQ_300.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq300.root
+./TreeReader.exe  OutFilesTight/LQ_350.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq350.root
+./TreeReader.exe  OutFilesTight/LQ_400.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq400.root
+./TreeReader.exe  OutFilesTight/LQ_450.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq450.root
+./TreeReader.exe  OutFilesTight/LQ_500.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq500.root
+./TreeReader.exe  OutFilesTight/LQ_550.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq550.root
+./TreeReader.exe  OutFilesTight/LQ_600.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq600.root
+./TreeReader.exe  OutFilesTight/LQ_650.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq650.root
+./TreeReader.exe  OutFilesTight/LQ_700.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq700.root
+./TreeReader.exe  OutFilesTight/LQ_750.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq750.root
+./TreeReader.exe  OutFilesTight/LQ_800.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq800.root
+./TreeReader.exe  OutFilesTight/LQ_850.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq850.root
+./TreeReader.exe  OutFilesTight/LQ_900.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq900.root
+./TreeReader.exe  OutFilesTight/LQ_950.root    /Users/abdollah1/GIT_abdollah110/ggNtuple/ggAnalysis/RecoAnalysis/Skim_lpc/SkimmedSignal/skimed_lq950.root
+

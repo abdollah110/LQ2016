@@ -1,0 +1,41 @@
+./Make.sh TreeReader.cc
+mv OutFiles/*.root  OLD/
+mv *.root *.pdf  OLD/
+
+
+./TreeReader.exe  OutFiles/DYJetsToLL.root ../ROOT/ROOTHadd/DYJetsToLL.root
+./TreeReader.exe  OutFiles/TTJets.root ../ROOT/ROOTHadd/TTJets.root
+./TreeReader.exe  OutFiles/WJetsToLNu.root ../ROOT/ROOTHadd/WJetsToLNu.root
+./TreeReader.exe  OutFiles/SingleEle.root ../ROOT/ROOTHadd/SingleEle.root
+./TreeReader.exe  OutFiles/SingleMu.root ../ROOT/ROOTHadd/SingleMu.root
+
+hadd OutFiles/Data.root    OutFiles/*Single*root
+
+./TreeReader.exe  OutFiles/LQ_1000.root    ../ROOT/SkimmedSignal/skimed_lq1000.root
+./TreeReader.exe  OutFiles/LQ_1050.root    ../ROOT/SkimmedSignal/skimed_lq1050.root
+./TreeReader.exe  OutFiles/LQ_1100.root    ../ROOT/SkimmedSignal/skimed_lq1100.root
+./TreeReader.exe  OutFiles/LQ_1150.root    ../ROOT/SkimmedSignal/skimed_lq1150.root
+./TreeReader.exe  OutFiles/LQ_1200.root    ../ROOT/SkimmedSignal/skimed_lq1200.root
+./TreeReader.exe  OutFiles/LQ_1250.root    ../ROOT/SkimmedSignal/skimed_lq1250.root
+./TreeReader.exe  OutFiles/LQ_1300.root    ../ROOT/SkimmedSignal/skimed_lq1300.root
+./TreeReader.exe  OutFiles/LQ_1350.root    ../ROOT/SkimmedSignal/skimed_lq1350.root
+./TreeReader.exe  OutFiles/LQ_1400.root    ../ROOT/SkimmedSignal/skimed_lq1400.root
+./TreeReader.exe  OutFiles/LQ_1450.root    ../ROOT/SkimmedSignal/skimed_lq1450.root
+./TreeReader.exe  OutFiles/LQ_1500.root    ../ROOT/SkimmedSignal/skimed_lq1500.root
+./TreeReader.exe  OutFiles/LQ_200.root    ../ROOT/SkimmedSignal/skimed_lq200.root
+./TreeReader.exe  OutFiles/LQ_250.root    ../ROOT/SkimmedSignal/skimed_lq250.root
+./TreeReader.exe  OutFiles/LQ_300.root    ../ROOT/SkimmedSignal/skimed_lq300.root
+./TreeReader.exe  OutFiles/LQ_350.root    ../ROOT/SkimmedSignal/skimed_lq350.root
+./TreeReader.exe  OutFiles/LQ_400.root    ../ROOT/SkimmedSignal/skimed_lq400.root
+./TreeReader.exe  OutFiles/LQ_450.root    ../ROOT/SkimmedSignal/skimed_lq450.root
+./TreeReader.exe  OutFiles/LQ_500.root    ../ROOT/SkimmedSignal/skimed_lq500.root
+./TreeReader.exe  OutFiles/LQ_550.root    ../ROOT/SkimmedSignal/skimed_lq550.root
+./TreeReader.exe  OutFiles/LQ_600.root    ../ROOT/SkimmedSignal/skimed_lq600.root
+./TreeReader.exe  OutFiles/LQ_650.root    ../ROOT/SkimmedSignal/skimed_lq650.root
+./TreeReader.exe  OutFiles/LQ_700.root    ../ROOT/SkimmedSignal/skimed_lq700.root
+./TreeReader.exe  OutFiles/LQ_750.root    ../ROOT/SkimmedSignal/skimed_lq750.root
+./TreeReader.exe  OutFiles/LQ_800.root    ../ROOT/SkimmedSignal/skimed_lq800.root
+./TreeReader.exe  OutFiles/LQ_850.root    ../ROOT/SkimmedSignal/skimed_lq850.root
+./TreeReader.exe  OutFiles/LQ_900.root    ../ROOT/SkimmedSignal/skimed_lq900.root
+./TreeReader.exe  OutFiles/LQ_950.root    ../ROOT/SkimmedSignal/skimed_lq950.root
+

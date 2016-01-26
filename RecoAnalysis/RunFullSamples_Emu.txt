@@ -1,0 +1,15 @@
+./Make.sh EMu_TreeReader.cc
+rm OutFilesEMu/*.root 
+mv *.root *.pdf  OLD/
+
+
+./EMu_TreeReader.exe  OutFilesEMu/DYJetsToLL.root ../ROOT/HaddedV_emu/DYJetsToLL.root
+./EMu_TreeReader.exe  OutFilesEMu/TTJets.root ../ROOT/HaddedV_emu/TTJets.root
+./EMu_TreeReader.exe  OutFilesEMu/WJetsToLNu.root ../ROOT/HaddedV_emu/WJetsToLNu.root
+./EMu_TreeReader.exe  OutFilesEMu/SingleEle.root ../ROOT/HaddedV_emu/SingleEle.root
+./EMu_TreeReader.exe  OutFilesEMu/SingleMu.root ../ROOT/HaddedV_emu/SingleMu.root
+
+cp OutFilesEMu/SingleMu.root OutFilesEMu/Data.root
+
+
+
