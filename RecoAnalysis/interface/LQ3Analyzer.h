@@ -424,6 +424,7 @@ vector<vector<float> > *AK8softdropSubjetE;
 vector<vector<int> > *AK8softdropSubjetCharge;
 vector<vector<int> > *AK8softdropSubjetFlavour;
 vector<vector<float> > *AK8softdropSubjetCSV;
+float genHT;
 
 
 /*

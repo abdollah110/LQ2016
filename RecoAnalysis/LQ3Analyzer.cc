@@ -23,7 +23,8 @@ int main(int argc, char** argv) {
     
     //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
     //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
-    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
+//    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
+        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());
     
@@ -38,7 +39,7 @@ int main(int argc, char** argv) {
         TFile *f_Double = TFile::Open(input[k].c_str());
         cout << "\n  Now is running on ------->   " << std::string(f_Double->GetName()) << "\n";
         
-    std:string InputROOT= std::string(f_Double->GetName());
+        std::string InputROOT= std::string(f_Double->GetName());
         TFile * myFile = TFile::Open(f_Double->GetName());
         TH1F * HistoTot = (TH1F*) myFile->Get("hcount");
         
@@ -49,6 +50,9 @@ int main(int argc, char** argv) {
         cout.precision(6);
         
         
+        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/ROOT_mc_Hadd/";
+        vector<float> DY_Events = DY_HTBin(ROOTLoc);
+        vector<float> W_Events = W_HTBin(ROOTLoc);
         
         /////////////////////////   General Info
         Run_Tree->SetBranchAddress("isData", &isData);
@@ -131,6 +135,7 @@ int main(int argc, char** argv) {
         /////////////////////////   MET Info
         Run_Tree->SetBranchAddress("pfMET",&pfMET);
         Run_Tree->SetBranchAddress("pfMETPhi",&pfMETPhi);
+        Run_Tree->SetBranchAddress("genHT",&genHT);
         
         
         
@@ -140,7 +145,8 @@ int main(int argc, char** argv) {
         float eleMass= 0.000511;
         
         float LumiWeight = 1;
-        if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT);
+        
+        if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
         cout<<"LumiWeight is "<<LumiWeight<<"\n";
         
         
@@ -338,12 +344,12 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  Tau Lep Charge Categorization
                     //###############################################################################################
-                    const int size_Q = 3;
-                    bool charge_No = 1;
+                    const int size_Q = 2;
+//                    bool charge_No = 1;
                     bool charge_OS = muCharge->at(imu) * tauCharge->at(itau) < 0;
                     bool charge_SS = muCharge->at(imu) * tauCharge->at(itau) > 0;
-                    bool charge_category[size_Q] = {charge_No,charge_OS, charge_SS};
-                    std::string q_Cat[size_Q] = {"","_OS", "_SS"};
+                    bool charge_category[size_Q] = {charge_OS, charge_SS};
+                    std::string q_Cat[size_Q] = {"_OS", "_SS"};
                     
                     //###############################################################################################
                     //  Tau Isolation Categorization
@@ -377,9 +383,9 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  ST Categorization
                     //###############################################################################################
-                    const int size_ST = 3;
-                    bool ST_category[size_ST] = {1,DiJet_Selection, JetBJet_Selection};
-                    std::string ST_Cat[size_ST] = {"_inclusive","_DiJet", "_JetBJet"};
+                    const int size_ST = 2;
+                    bool ST_category[size_ST] = {1, JetBJet_Selection};
+                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet"};
                     //###############################################################################################
                     
                     
@@ -415,9 +421,8 @@ int main(int argc, char** argv) {
                                                                 if (JetVector.size() > 1) plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                if (JetVector.size() > 1) plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,300,0,3000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 30 && M_TauJet > 100) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
                                                                 
                                                                 
                                                             }
@@ -627,12 +632,12 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  Tau Lep Charge Categorization
                     //###############################################################################################
-                    const int size_Q = 3;
-                    bool charge_No = 1;
+                    const int size_Q = 2;
+//                    bool charge_No = 1;
                     bool charge_OS = eleCharge->at(iele) * tauCharge->at(itau) < 0;
                     bool charge_SS = eleCharge->at(iele) * tauCharge->at(itau) > 0;
-                    bool charge_category[size_Q] = {charge_No,charge_OS, charge_SS};
-                    std::string q_Cat[size_Q] = {"","_OS", "_SS"};
+                    bool charge_category[size_Q] = {charge_OS, charge_SS};
+                    std::string q_Cat[size_Q] = {"_OS", "_SS"};
                     
                     //###############################################################################################
                     //  Tau Isolation Categorization
@@ -668,9 +673,9 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  ST Categorization
                     //###############################################################################################
-                    const int size_ST = 3;
-                    bool ST_category[size_ST] = {1,DiJet_Selection, JetBJet_Selection};
-                    std::string ST_Cat[size_ST] = {"_inclusive","_DiJet", "_JetBJet"};
+                    const int size_ST = 2;
+                    bool ST_category[size_ST] = {1,JetBJet_Selection};
+                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet"};
                     //###############################################################################################
                     
                     
@@ -704,9 +709,8 @@ int main(int argc, char** argv) {
                                                                 if (JetVector.size() > 1) plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                if (JetVector.size() > 1) plotFill("EleTau_ST_DiJet"+FullStringName,ST_DiJet,300,0,3000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("EleTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 30 && M_TauJet > 100) plotFill("EleTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
                                                                 
                                                                 
                                                             }
