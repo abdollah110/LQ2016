@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
     
     //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
     //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
-    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
-    
+    //    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
+    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());
     
@@ -37,19 +37,11 @@ int main(int argc, char** argv) {
         
         //std::string input = *(argv + 2);
         TFile *f_Double = TFile::Open(input[k].c_str());
-        
-        
         cout << "\n  Now is running on ------->   " << std::string(f_Double->GetName()) << "\n";
-    std:string InputROOT= std::string(f_Double->GetName());
         
-        
-        
+        std::string InputROOT= std::string(f_Double->GetName());
         TFile * myFile = TFile::Open(f_Double->GetName());
         TH1F * HistoTot = (TH1F*) myFile->Get("hcount");
-        //        TH1F * HistohPU = (TH1F*) myFile->Get("hPU");
-        //        TH1F * HistohPUTrue = (TH1F*) myFile->Get("hPUTrue");
-        //                    HistohPUTrue->Scale(1.0/HistohPUTrue->Integral());
-        
         
         //        TTree *Run_Tree = (TTree*) f_Double->Get("ggNtuplizer/EventTree");
         TTree *Run_Tree = (TTree*) f_Double->Get("EventTree");
@@ -58,6 +50,9 @@ int main(int argc, char** argv) {
         cout.precision(6);
         
         
+        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/V1/";
+        vector<float> DY_Events = DY_HTBin(ROOTLoc);
+        vector<float> W_Events = W_HTBin(ROOTLoc);
         
         /////////////////////////   General Info
         Run_Tree->SetBranchAddress("isData", &isData);
@@ -67,6 +62,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("genWeight",&genWeight);
         Run_Tree->SetBranchAddress("HLTEleMuX", &HLTEleMuX);
         Run_Tree->SetBranchAddress("puTrue", &puTrue);
+        Run_Tree->SetBranchAddress("nVtx",&nVtx);
         
         /////////////////////////   MC Info
         Run_Tree->SetBranchAddress("mcPID", &mcPID);
@@ -134,10 +130,14 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("jetPhi",&jetPhi);
         Run_Tree->SetBranchAddress("jetEn",&jetEn);
         Run_Tree->SetBranchAddress("jetpfCombinedInclusiveSecondaryVertexV2BJetTags",&jetpfCombinedInclusiveSecondaryVertexV2BJetTags);
-        
+        Run_Tree->SetBranchAddress("jetPFLooseId",&jetPFLooseId);
+        Run_Tree->SetBranchAddress("jetPUidFullDiscriminant",&jetPUidFullDiscriminant);
         /////////////////////////   MET Info
         Run_Tree->SetBranchAddress("pfMET",&pfMET);
         Run_Tree->SetBranchAddress("pfMETPhi",&pfMETPhi);
+        Run_Tree->SetBranchAddress("genHT",&genHT);
+        
+        
         
         
         
@@ -145,7 +145,8 @@ int main(int argc, char** argv) {
         float eleMass= 0.000511;
         
         float LumiWeight = 1;
-        if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT);
+        
+        if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
         cout<<"LumiWeight is "<<LumiWeight<<"\n";
         
         
@@ -164,6 +165,7 @@ int main(int argc, char** argv) {
             if (!isData){
                 
                 GetGenWeight=genWeight;
+                //                cout<<"   and GenHT = "<<genHT<<"\n";
                 
                 
                 int puNUmmc=int(puTrue->at(0)*10);
@@ -177,6 +179,12 @@ int main(int argc, char** argv) {
             plotFill("WeightLumi",LumiWeight,10000,0,100);
             plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
             plotFill("WeightPU",PUWeight,50,0,5);
+            plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
+            plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
+            for (int qq=0; qq < 50;qq++){
+                if ((HLTEleMuX >> qq & 1) == 1)
+                    plotFill("HLT",qq,50,0,50,TotalWeight);
+            }
             
             //###############################################################################################
             //  Doing MuTau Analysis
@@ -263,7 +271,7 @@ int main(int argc, char** argv) {
             //###############################################################################################
             
             
-            //Loop over MuTau events
+            //Loop over MuEle events
             for  (int imu=0 ; imu < nMu; imu++){
               for  (int iele=0 ; iele < nEle; iele++){
                     
@@ -272,7 +280,7 @@ int main(int argc, char** argv) {
                     if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
                         IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                     
-                    bool MuPtCut = muPt->at(imu) > 28 && fabs(muEta->at(imu)) < 2.1 ;
+                    bool MuPtCut = muPt->at(imu) > 25 && fabs(muEta->at(imu)) < 2.1 ;
                     bool MuIdIso=(muIsMediumID->at(imu) > 0 && IsoMu < 0.20 && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                   
                     
@@ -299,7 +307,7 @@ int main(int argc, char** argv) {
 
                   
                   
-                  bool elePtCut = elePt->at(iele) > 10 && fabs(eleEta->at(iele)) < 2.1 ;
+                  bool elePtCut = elePt->at(iele) > 20 && fabs(eleEta->at(iele)) < 2.1 ;
                   bool eleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele) && IsoEle < 0.20);
 
                   
@@ -316,9 +324,9 @@ int main(int argc, char** argv) {
                     
                     for (int ijet= 0 ; ijet < nJet ; ijet++){
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                        if (jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 3.0  && Jet4Momentum.DeltaR(ele4Momentum) > 0.5  && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                        if (jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.5  && Jet4Momentum.DeltaR(ele4Momentum) > 0.5  && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                             EveJetPt.push_back(jetPt->at(ijet));
-                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) > 0.679){
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.89 ){
                                 EveBJetPt.push_back(jetPt->at(ijet));
                             }
                         }

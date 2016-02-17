@@ -152,10 +152,17 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     //    cout<< "outputName is "<<outputName << "  and histoname is " <<Histo->GetName()<<  " Histo->GetBinContent(1)="<<Histo->GetBinContent(1)<< " XSection(wjet)=" <<XSection("WJets")<<"\n";
     
     
+    stringstream ss(outputName);
+    
+    string token;
+    string M;
+    while (getline(ss,token, '/'))  M=token;
+    
     std::string FirstPart = "";
     std::string LastPart = ".root";
-    std::string newOut = outputName.substr(FirstPart.size());
+    std::string newOut = M.substr(FirstPart.size());
     newOut = newOut.substr(0, newOut.size() - LastPart.size());
+    cout<<"--->  Check Name is "<<newOut<<"\n";
     
     
     float LOtoNLO_DY = 1.230888662;

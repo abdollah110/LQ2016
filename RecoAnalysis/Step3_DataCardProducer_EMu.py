@@ -31,7 +31,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFilesEMu/'
+SubRootDir = 'OutFiles/'
 
 
 verbos_ = False
@@ -41,15 +41,15 @@ OS_SS_Ratio=1.06
 TauScale = [ ""]
 #POSTFIX=["","Up","Down"]
 
-signal = ['bba1GenFil_']
-signalName = ['bba1']
-mass = [25,30,  35, 40, 45, 50, 55,  60, 65, 70, 75, 80]
+signal = ['LQ_']
+signalName = ['LQ_']
+mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
 
 lenghtSig = len(signal) * len(mass) +1
 
 #category = ["_inclusive", "_nobtag", "_btag", "_btagLoose"]
-#category = ["_inclusive",  "_DiJet", "_JetBJet"]
 category = ["_inclusive"]
+#category = ["_JetBJet"]
 
 channelDirectory = ["MuEle"]
 
@@ -64,9 +64,13 @@ channelDirectory = ["MuEle"]
 
 ############################################################################################################
 def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
-
+    
+    if not os.path.exists(SubRootDir):
+        os.makedirs(SubRootDir)
     myfile = TFile(SubRootDir + Name +CoMEnergy+ '.root')
     Histo =  myfile.Get(channel+HistoName + cat+ PostFix)
+    if not os.path.exists("Extra"):
+        os.makedirs("Extra")
     NewFile=TFile("Extra/XXX.root","RECREATE")
     NewFile.WriteObject(Histo,"XXX")
     myfile.Close()
@@ -77,50 +81,44 @@ def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
 ##   Start Making the Datacard Histograms
 ####################################################
 def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
-
-
+    
+    
     TauScaleOut = [ ""]
-
-
+    
+    
     myOut = TFile("TotalRootForLimit_"+channel + NormMC+".root" , 'RECREATE') # Name Of the output file
-
+    
     icat=-1
     for NameCat in category:
         icat =icat +1
         print "starting NameCat and channel and HistoName ", NameCat, channel, NormMC
-
+        
         tDirectory= myOut.mkdir(channelDirectory[chl] + str(NameCat))
         tDirectory.cd()
         for tscale in range(len(TauScale)):
-
-#           ################################################
-#           #   Filling Signal
-#           ################################################
-#            for sig in range(len(signal)):
-#                for m in range(len(mass)):#    for m in range(110, 145, 5):
-#
-#                    print "Now is processing", signal[sig],mass[m]
-#                    tDirectory.cd()
-#                    Histogram = Observable+"_mTLess30_OS"
-#                    XLoc= icat + len(category)*chl + 1
-#                    YLoc= sig * len(mass) + m + 1
-#                    normal = NormTable[tscale].GetBinContent(XLoc,YLoc)    #Get the Noralization
-#                    Name= str(signal[sig])+str(mass[m])
-#                    NameOut= str(signalName[sig]) +str(mass[m])+str(TauScaleOut[tscale])
-#
-#                    SampleFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy,False)
-#                    SampleHisto=SampleFile.Get("XXX")
-#                    if SampleHisto:
-#                        SampleHisto.Scale(normal/SampleHisto.Integral())
-#                    else:
-#                        SampleFile= _FileReturn(Name, channel,"_inclusive", Histogram, TauScale[tscale],CoMEnergy,False)
-#                        SampleHisto=SampleFile.Get("XXX")
-#                        SampleHisto.Scale(.0000001)
-#                        
-#                    RebinedHist= SampleHisto.Rebin(len(Binning)-1,"",Binning)
-#                    tDirectory.WriteObject(RebinedHist,NameOut)
-#                    
-
+            
+            #           ################################################
+            #           #   Filling Signal
+            #           ################################################
+            for sig in range(len(signal)):
+                for m in range(len(mass)):#    for m in range(110, 145, 5):
+                    
+                    print "Now is processing", signal[sig],mass[m]
+                    tDirectory.cd()
+                    
+                    Name= str(signal[sig])+str(mass[m])
+                    NameOut= str(signalName[sig]) +str(mass[m])+str(TauScaleOut[tscale])
+                    
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+                    ShapeHisto=ShapeFile.Get("XXX")
+                    
+                    ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
+                    RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
 
             ################################################
             #  Filling TOP

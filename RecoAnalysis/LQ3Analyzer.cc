@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
         cout.precision(6);
         
         
-        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/ROOT_mc_Hadd/";
+        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/V1/";
         vector<float> DY_Events = DY_HTBin(ROOTLoc);
         vector<float> W_Events = W_HTBin(ROOTLoc);
         
@@ -165,6 +165,7 @@ int main(int argc, char** argv) {
             if (!isData){
                 
                 GetGenWeight=genWeight;
+//                cout<<"   and GenHT = "<<genHT<<"\n";
                 
                 
                 int puNUmmc=int(puTrue->at(0)*10);
@@ -196,7 +197,7 @@ int main(int argc, char** argv) {
             bool IsthereDiMuon= false;
             for  (int imu=0 ; imu < nMu; imu++){
                 for  (int jmu=0 ; jmu < nMu; jmu++){
-                    
+//                    cout<<"step1\n";
                     
                     bool MuPtCut1 = muPt->at(imu) > 15 && fabs(muEta->at(imu)) < 2.4 ;
                     float IsoMu1=muPFChIso->at(imu)/muPt->at(imu);
@@ -222,12 +223,12 @@ int main(int argc, char** argv) {
             }
             //###############################################################################################
             
-            
+            cout<<nMu<<"  "<<nTau<<"\n";
             
             //Loop over MuTau events
             for  (int imu=0 ; imu < nMu; imu++){
                 for  (int itau=0 ; itau < nTau; itau++){
-                    
+                    cout<<"step2\n";
                     
                     float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
                     if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
@@ -249,7 +250,7 @@ int main(int argc, char** argv) {
                     //###########      Extra Mu Veto   ###########################################################
                     bool extraMuonExist= false;
                     for  (int jmu=0 ; jmu < nMu; jmu++){
-                        
+                        cout<<"step3\n";
                         ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
                         
                         if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
@@ -267,7 +268,7 @@ int main(int argc, char** argv) {
                     
                     bool extraElectronExist= false;
                     for  (int jele=0 ; jele < nEle; jele++){
-                        
+                        cout<<"step4\n";
                         Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
                         
                         if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
@@ -291,8 +292,9 @@ int main(int argc, char** argv) {
                     
                     //###########      General   ###########################################################
                     
-                    
+                    cout<<"step5\n";
                     bool  GeneralMuTauSelection=  !extraMuonExist && !extraElectronExist &&  !IsthereDiMuon && MuPtCut && TauPtCut && MuIdIso && TauIdIso && Mu4Momentum.DeltaR(Tau4Momentum) > 0.5;
+                   cout<<extraMuonExist<<extraElectronExist<<IsthereDiMuon<<MuPtCut<<TauPtCut<<MuIdIso<<TauIdIso<<"\v";
                     
                     
                     //###########      Jet definition   ###########################################################
@@ -307,7 +309,7 @@ int main(int argc, char** argv) {
                         if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                             JetVector.push_back(Jet4Momentum);
                             //                            https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
-                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) > 0.605 ){
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.89  ){
                                 BJetBVector.push_back(Jet4Momentum);
                             }
                         }
