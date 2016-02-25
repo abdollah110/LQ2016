@@ -103,7 +103,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             for sig in range(len(signal)):
                 for m in range(len(mass)):#    for m in range(110, 145, 5):
 
-                    print "Now is processing", signal[sig],mass[m]
+                    print "--------------------------------------------------->     Processing LQ Signal ", signal[sig],mass[m]
                     tDirectory.cd()
 
                     Name= str(signal[sig])+str(mass[m])
@@ -121,9 +121,47 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
                     tDirectory.WriteObject(RebinedHist,NameOut)
 
             ################################################
+            #  Filling SingleTop
+            ################################################
+            print "--------------------------------------------------->     Processing SingleTop"
+            tDirectory.cd()
+        
+            Name= "SingleTop"
+            NameOut= "SingleTop"+str(TauScaleOut[tscale])
+            
+            NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
+            NormHisto=NormFile.Get("XXX")
+            
+            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeHisto=ShapeFile.Get("XXX")
+            
+            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
+            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            tDirectory.WriteObject(RebinedHist,NameOut)
+            ################################################
+            #  Filling VV
+            ################################################
+            print "--------------------------------------------------->     Processing VV"
+            tDirectory.cd()
+        
+            Name= "VV"
+            NameOut= "VV"+str(TauScaleOut[tscale])
+            
+            NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
+            NormHisto=NormFile.Get("XXX")
+            
+            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeHisto=ShapeFile.Get("XXX")
+            
+            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
+            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            tDirectory.WriteObject(RebinedHist,NameOut)
+            
+
+            ################################################
             #  Filling TOP
             ################################################
-            print "Doing TOP, BG estimation"
+            print "--------------------------------------------------->     Processing TOP"
             tDirectory.cd()
 
             Name= "TTJets"
@@ -142,7 +180,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling ZTT
             ################################################
-            print "Doing ZL, BG estimation"
+            print "--------------------------------------------------->     Processing ZL"
             tDirectory.cd()
 
             Name= "DYJetsToLL"
@@ -162,7 +200,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling W
             ################################################
-            print "Doing W, BG estimation"
+            print "--------------------------------------------------->     Processing W"
             tDirectory.cd()
 
             Name="WJetsToLNu"
@@ -181,9 +219,16 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling QCD
             ################################################
-            print "Doing QCD, BG estimation"
+            print "--------------------------------------------------->     Processing QCD"
             tDirectory.cd()
-
+            
+            Name= "SingleTop"
+            SingleTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+            SingleTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+            
+            Name= "VV"
+            VVSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+            VVSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
 
             Name= "TTJets"
             TTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
@@ -202,23 +247,30 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             DataSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
 
 
+
+            SingleTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
+            VVSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
             TTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
             ZTTSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
             WSampleQCDShapeHist=WSampleQCDShape.Get("XXX")
             DataSampleQCDShapeHist=DataSampleQCDShape.Get("XXX")
 
+            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
 
 
+            SingleTSampleQCDNormHist=SingleTSampleQCDNorm.Get("XXX")
+            VVSampleQCDNormHist=VVSampleQCDNorm.Get("XXX")
             TTSampleQCDNormHist=TTSampleQCDNorm.Get("XXX")
             ZTTSampleQCDNormHist=ZTTSampleQCDNorm.Get("XXX")
             WSampleQCDNormHist=WSampleQCDNorm.Get("XXX")
             DataSampleQCDNormHist=DataSampleQCDNorm.Get("XXX")
             
 
-            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TTSampleQCDNormHist.Integral()+ZTTSampleQCDNormHist.Integral()+WSampleQCDNormHist.Integral())) * OS_SS_Ratio
+            QCDEstimation= (DataSampleQCDNormHist.Integral()- (SingleTSampleQCDNormHist.Integral()+ VVSampleQCDNormHist.Integral() + TTSampleQCDNormHist.Integral()+ZTTSampleQCDNormHist.Integral()+WSampleQCDNormHist.Integral())) * OS_SS_Ratio
 
             NameOut= "QCD"+str(TauScaleOut[tscale])
             DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
@@ -228,7 +280,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling Data
             ################################################
-            print "Doing Data estimation"
+            print "--------------------------------------------------->     Processing Data"
             tDirectory.cd()
 
             Name='Data'

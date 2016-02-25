@@ -48,8 +48,8 @@ mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,
 lenghtSig = len(signal) * len(mass) +1
 
 #category = ["_inclusive", "_nobtag", "_btag", "_btagLoose"]
-category = ["_inclusive"]
-#category = ["_JetBJet"]
+#category = ["_inclusive"]
+category = ["_JetBJet"]
 
 channelDirectory = ["MuEle"]
 

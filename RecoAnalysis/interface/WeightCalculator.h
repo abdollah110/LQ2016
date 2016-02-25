@@ -50,10 +50,12 @@ float XSection(std::string OutName) {
     
     
     else if (OutName.compare("TTJets_DiLept") == 0) return (89.05);
-    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46);
-    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46);
+    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46*2);
+    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46*2);
     
-    
+    else if (OutName.compare("TTJets_DiLept_Ext") == 0) return (89.05);
+    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46*2);
+    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46*2);
     
     
     //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
@@ -96,14 +98,13 @@ float XSection(std::string OutName) {
 
 vector <float> W_HTBin(std::string FileLoc){
     
-    const int WSize=4;
-    std::string W_ROOTFiles[WSize]={"WJetsToLNu_HT-100To200.root","WJetsToLNu_HT-200To400.root","WJetsToLNu_HT-400To600.root", "WJetsToLNu_HT-600ToInf.root"};
+    const int WSize=5;
+    std::string W_ROOTFiles[WSize]={"WJetsToLNu.root", "WJetsToLNu_HT-100To200.root","WJetsToLNu_HT-200To400.root","WJetsToLNu_HT-400To600.root", "WJetsToLNu_HT-600ToInf.root"};
     
     vector<float> W_events;
     W_events.clear();
     
     for (int i=0; i <WSize;i++){
-        
         
         TFile * File_W = new TFile((FileLoc+W_ROOTFiles[i]).c_str());
         TH1F * Histo_W = (TH1F*) File_W->Get("hcount");
@@ -117,14 +118,13 @@ vector <float> W_HTBin(std::string FileLoc){
 
 vector <float> DY_HTBin(std::string FileLoc){
     
-    const int DYSize=4;
-    std::string DY_ROOTFiles[DYSize]={"DYJetsToLL_M-50_HT-100to200.root","DYJetsToLL_M-50_HT-200to400.root","DYJetsToLL_M-50_HT-400to600.root", "DYJetsToLL_M-50_HT-600toInf.root"};
+    const int DYSize=5;
+    std::string DY_ROOTFiles[DYSize]={"DYJetsToLL_M-50.root", "DYJetsToLL_M-50_HT-100to200.root","DYJetsToLL_M-50_HT-200to400.root","DYJetsToLL_M-50_HT-400to600.root", "DYJetsToLL_M-50_HT-600toInf.root"};
     
     vector<float> DY_events;
     DY_events.clear();
     
     for (int i=0; i < DYSize;i++){
-        
         
         TFile * File_DY = new TFile((FileLoc+DY_ROOTFiles[i]).c_str());
         TH1F * Histo_DY= (TH1F*) File_DY->Get("hcount");
@@ -167,7 +167,8 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     
     float LOtoNLO_DY = 1.230888662;
     float LOtoNLO_W = 1.213783784;
-    float luminosity=1915;
+//    float luminosity=2154;
+    float luminosity=    2262.946;
     
     size_t isSingleMu = outputName.find("SingleMu");
     size_t isSingleEle = outputName.find("SingleEle");

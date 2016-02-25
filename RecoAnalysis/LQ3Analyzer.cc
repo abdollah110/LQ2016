@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
     //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
     //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
 //    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
-        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
+//        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
+                TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_Nov17.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());
     
@@ -147,7 +148,7 @@ int main(int argc, char** argv) {
         float LumiWeight = 1;
         
         if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
-        cout<<"LumiWeight is "<<LumiWeight<<"\n";
+//        cout<<"LumiWeight is "<<LumiWeight<<"\n";
         
         
         
@@ -223,12 +224,12 @@ int main(int argc, char** argv) {
             }
             //###############################################################################################
             
-            cout<<nMu<<"  "<<nTau<<"\n";
+//            cout<<nMu<<"  "<<nTau<<"\n";
             
             //Loop over MuTau events
             for  (int imu=0 ; imu < nMu; imu++){
                 for  (int itau=0 ; itau < nTau; itau++){
-                    cout<<"step2\n";
+//                    cout<<"step2\n";
                     
                     float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
                     if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
@@ -250,7 +251,7 @@ int main(int argc, char** argv) {
                     //###########      Extra Mu Veto   ###########################################################
                     bool extraMuonExist= false;
                     for  (int jmu=0 ; jmu < nMu; jmu++){
-                        cout<<"step3\n";
+//                        cout<<"step3\n";
                         ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
                         
                         if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
@@ -268,7 +269,7 @@ int main(int argc, char** argv) {
                     
                     bool extraElectronExist= false;
                     for  (int jele=0 ; jele < nEle; jele++){
-                        cout<<"step4\n";
+//                        cout<<"step4\n";
                         Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
                         
                         if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
@@ -292,9 +293,9 @@ int main(int argc, char** argv) {
                     
                     //###########      General   ###########################################################
                     
-                    cout<<"step5\n";
+//                    cout<<"step5\n";
                     bool  GeneralMuTauSelection=  !extraMuonExist && !extraElectronExist &&  !IsthereDiMuon && MuPtCut && TauPtCut && MuIdIso && TauIdIso && Mu4Momentum.DeltaR(Tau4Momentum) > 0.5;
-                   cout<<extraMuonExist<<extraElectronExist<<IsthereDiMuon<<MuPtCut<<TauPtCut<<MuIdIso<<TauIdIso<<"\v";
+//                   cout<<extraMuonExist<<extraElectronExist<<IsthereDiMuon<<MuPtCut<<TauPtCut<<MuIdIso<<TauIdIso<<"\v";
                     
                     
                     //###########      Jet definition   ###########################################################
