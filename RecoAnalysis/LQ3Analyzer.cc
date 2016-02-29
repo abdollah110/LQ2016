@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
         float LumiWeight = 1;
         
         if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
-//        cout<<"LumiWeight is "<<LumiWeight<<"\n";
+        cout<<"LumiWeight is "<<LumiWeight<<"\n";
         
         
         
@@ -425,7 +425,7 @@ int main(int argc, char** argv) {
                                                                 if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 30 && M_TauJet > 100) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
                                                                 
                                                                 
                                                             }
@@ -713,7 +713,7 @@ int main(int argc, char** argv) {
                                                                 if (JetVector.size() > 1) plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 30 && M_TauJet > 100) plotFill("EleTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+                                                                if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("EleTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
                                                                 
                                                                 
                                                             }

@@ -47,9 +47,9 @@ mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,
 
 lenghtSig = len(signal) * len(mass) +1
 
-#category = ["_inclusive", "_nobtag", "_btag", "_btagLoose"]
-category = ["_inclusive",  "_JetBJet"]
-#category = ["_JetBJet"]
+#category = ["_inclusive"]
+#category = ["_inclusive",  "_JetBJet"]
+category = ["_JetBJet"]
 
 channelDirectory = ["muTau", "eleTau"]
 
@@ -141,22 +141,22 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling VV
             ################################################
-            print "--------------------------------------------------->     Processing VV"
-            tDirectory.cd()
-        
-            Name= "VV"
-            NameOut= "VV"+str(TauScaleOut[tscale])
-            
-            NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            NormHisto=NormFile.Get("XXX")
-            
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-            
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
-            tDirectory.WriteObject(RebinedHist,NameOut)
-            
+#            print "--------------------------------------------------->     Processing VV"
+#            tDirectory.cd()
+#        
+#            Name= "VV"
+#            NameOut= "VV"+str(TauScaleOut[tscale])
+#            
+#            NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
+#            NormHisto=NormFile.Get("XXX")
+#            
+#            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+#            ShapeHisto=ShapeFile.Get("XXX")
+#            
+#            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
+#            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+#            tDirectory.WriteObject(RebinedHist,NameOut)
+
 
             ################################################
             #  Filling TOP
@@ -269,8 +269,20 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             WSampleQCDNormHist=WSampleQCDNorm.Get("XXX")
             DataSampleQCDNormHist=DataSampleQCDNorm.Get("XXX")
             
+            SingleT_qcd=0;
+            if (SingleTSampleQCDNormHist): SingleT_qcd=SingleTSampleQCDNormHist.Integral()
+            VV_qcd=0;
+            if (VVSampleQCDNormHist): VV_qcd=VVSampleQCDNormHist.Integral()
+            TT_qcd=0;
+            if (TTSampleQCDNormHist): TT_qcd=TTSampleQCDNormHist.Integral()
+            ZTT_qcd=0;
+            if (ZTTSampleQCDNormHist): ZTT_qcd=ZTTSampleQCDNormHist.Integral()
+            W_qcd=0;
+            if (WSampleQCDNormHist): W_qcd=WSampleQCDNormHist.Integral()
+            
+            
 
-            QCDEstimation= (DataSampleQCDNormHist.Integral()- (SingleTSampleQCDNormHist.Integral()+ VVSampleQCDNormHist.Integral() + TTSampleQCDNormHist.Integral()+ZTTSampleQCDNormHist.Integral()+WSampleQCDNormHist.Integral())) * OS_SS_Ratio
+            QCDEstimation= (DataSampleQCDNormHist.Integral()- (SingleT_qcd+ VV_qcd + TT_qcd+ZTT_qcd+W_qcd)) * OS_SS_Ratio
 
             NameOut= "QCD"+str(TauScaleOut[tscale])
             DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
@@ -308,7 +320,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             
 if __name__ == "__main__":
 #    
-    ##########################################
+#    ##########################################
     Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300])
     NormMC="_VisMass_OS"
     ShapeMC="_VisMass_OS"

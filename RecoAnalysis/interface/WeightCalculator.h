@@ -50,12 +50,12 @@ float XSection(std::string OutName) {
     
     
     else if (OutName.compare("TTJets_DiLept") == 0) return (89.05);
-    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46*2);
-    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46*2);
+    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46);
+    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46);
     
     else if (OutName.compare("TTJets_DiLept_Ext") == 0) return (89.05);
-    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46*2);
-    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46*2);
+    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46);
+    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46);
     
     
     //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
@@ -224,8 +224,9 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
         }
         
         else
-            return luminosity * XSection(newOut)*1.0 / Histo->Integral();
-        
+            return luminosity * XSection(newOut)*1.0 / Histo->GetBinContent(2);
+//            return luminosity * XSection(newOut)*1.0 / Histo->Integral();  BUG found  25 Feb
+    
         
     }
     

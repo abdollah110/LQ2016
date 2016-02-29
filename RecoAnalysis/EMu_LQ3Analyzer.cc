@@ -355,12 +355,12 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  Tau Lep Charge Categorization
                     //###############################################################################################
-                    const int size_Q = 3;
-                    bool charge_No = 1;
+                    const int size_Q = 2;
+//                    bool charge_No = 1;
                     bool charge_OS = muCharge->at(imu) * eleCharge->at(iele) < 0;
                     bool charge_SS = muCharge->at(imu) * eleCharge->at(iele) > 0;
-                    bool charge_category[size_Q] = {charge_No,charge_OS, charge_SS};
-                    std::string q_Cat[size_Q] = {"","_OS", "_SS"};
+                    bool charge_category[size_Q] = {charge_OS, charge_SS};
+                    std::string q_Cat[size_Q] = {"_OS", "_SS"};
                     
                     //###############################################################################################
                     //  Tau Isolation Categorization
@@ -382,18 +382,18 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  Trigger Categorization
                     //###############################################################################################
-                    const int size_trgCat = 2;
+                    const int size_trgCat = 1;
                     bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
                     //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
                     bool NoTrigger = 1;
-                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
-                    std::string trg_Cat[size_trgCat] = {"", "_NoTrigger"};
+                    bool Trigger_category[size_trgCat] = {PassTrigger};
+                    std::string trg_Cat[size_trgCat] = {""};
                     //###############################################################################################
                     //  ST Categorization
                     //###############################################################################################
-                    const int size_ST = 3;
-                    bool ST_category[size_ST] = {1,DiJet_Selection, JetBJet_Selection};
-                    std::string ST_Cat[size_ST] = {"_inclusive","_DiJet", "_JetBJet"};
+                    const int size_ST = 2;
+                    bool ST_category[size_ST] = {1,JetBJet_Selection};
+                    std::string ST_Cat[size_ST] = {"_inclusive", "_JetBJet"};
                     //###############################################################################################
                     
                     
