@@ -148,9 +148,16 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
 
 void draw_prefit_Leppt() {
     
+    draw_prefit_Sample("TotalRootForLimit_MuTau_tmass_NoMT_OS.root", "muTau_inclusive/",  "M_{T}  [GeV]", "PLOT_muTau_inclusive_tmass_NoMT");
+    draw_prefit_Sample("TotalRootForLimit_EleTau_tmass_NoMT_OS.root", "eleTau_inclusive/", "M_{T} [GeV]", "PLOT_eleTau_inclusive_tmass_NoMT");
+    
     draw_prefit_Sample("TotalRootForLimit_MuTau_VisMass_OS.root", "muTau_inclusive/",  "VisibleMass #mu#tau[GeV]", "PLOT_muTau_inclusive_VisbleMass");
     draw_prefit_Sample("TotalRootForLimit_EleTau_VisMass_OS.root", "eleTau_inclusive/",  "VisibleMass e#tau[GeV]", "PLOT_eleTau_inclusive_VisbleMass");
-    
+
+    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_inclusive/",  "ST #mu#tau[GeV]", "PLOT_muTau_inclusive_ST");
+    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_inclusive/", "ST e#tau[GeV]", "PLOT_eleTau_inclusive_ST");
+
+
     draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJet_ST");
     draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJet_ST");
     
@@ -161,8 +168,15 @@ void draw_prefit_Leppt() {
     draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_inclusive/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_BJetNum");
     draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_inclusive/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_BJetNum");
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_tmass_NoMT_OS.root", "muTau_inclusive/",  "M_{T}  [GeV]", "PLOT_muTau_inclusive_tmass_NoMT");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_tmass_NoMT_OS.root", "eleTau_inclusive/", "M_{T} [GeV]", "PLOT_eleTau_inclusive_tmass_NoMT");
+    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_JetBJet/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_JetNum");
+    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_JetBJet/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_JetNum");
+    
+    
+    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_JetBJet/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_BJetNum");
+    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_JetBJet/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_BJetNum");
+    
+
+
     
 };
 

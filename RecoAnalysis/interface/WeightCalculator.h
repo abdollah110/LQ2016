@@ -162,7 +162,7 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     std::string LastPart = ".root";
     std::string newOut = M.substr(FirstPart.size());
     newOut = newOut.substr(0, newOut.size() - LastPart.size());
-    cout<<"--->  Check Name is "<<newOut<<"\n";
+//    cout<<"--->  Check Name is "<<newOut<<"\n";
     
     
     float LOtoNLO_DY = 1.230888662;
@@ -182,27 +182,38 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     
     if (isSingleMu != string::npos || isSingleEle!= string::npos)   return 1;
     
-    
     else if (isWjet != string::npos) {
-        if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu"));
-        else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu_HT-100To200"));
-        else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu_HT-200To400"));
-        else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_W / (W_events[3] / XSection("WJetsToLNu_HT-400To600") + W_events[0] / XSection("WJetsToLNu_HT-400To600"));
-        else if (genHT > 600) return luminosity*LOtoNLO_W / (W_events[4] / XSection("WJetsToLNu_HT-600ToInf") + W_events[0] / XSection("WJetsToLNu_HT-600ToInf"));
-        else   {cout<<"**********   wooow  ********* There is a problem here\n";return 0;}
+        return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu"));
+        
+
+        
+//    } else if (isDYJet != string::npos) {
+//        
+//        return luminosity*LOtoNLO_DY / (DY_events[0] / XSection("DYJetsToLL"));
+//        
+//    }
+//    
+//    
+//    else if (isWjet != string::npos) {
+//        if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu"));
+//        else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu"));
+//        else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu"));
+//        else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_W / (W_events[3] / XSection("WJetsToLNu_HT-400To600") + W_events[0] / XSection("WJetsToLNu"));
+//        else if (genHT > 600) return luminosity*LOtoNLO_W / (W_events[4] / XSection("WJetsToLNu_HT-600ToInf") + W_events[0] / XSection("WJetsToLNu"));
+//        else   {cout<<"**********   wooow  ********* There is a problem here\n";return 0;}
         
         
     } else if (isDYJet != string::npos) {
         
         if (genHT <= 100) return luminosity*LOtoNLO_DY / (DY_events[0] / XSection("DYJetsToLL"));
-        else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_DY / (DY_events[1] / XSection("DYJetsToLL_M-50_HT-100to200") + DY_events[0] / XSection("DYJetsToLL_M-50_HT-100to200"));
-        else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_DY / (DY_events[2] / XSection("DYJetsToLL_M-50_HT-200to400") + DY_events[0] / XSection("DYJetsToLL_M-50_HT-200to400"));
-        else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_DY / (DY_events[3] / XSection("DYJetsToLL_M-50_HT-400to600") + DY_events[0] / XSection("DYJetsToLL_M-50_HT-400to600"));
-        else if (genHT > 600) return luminosity*LOtoNLO_DY / (DY_events[4] / XSection("DYJetsToLL_M-50_HT-600toInf") + DY_events[0] / XSection("DYJetsToLL_M-50_HT-600toInf"));
+        else if (genHT > 100 && genHT <= 200) return  luminosity*LOtoNLO_DY / (DY_events[1] / XSection("DYJetsToLL_M-50_HT-100to200") + DY_events[0] / XSection("DYJetsToLL"));
+        else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_DY / (DY_events[2] / XSection("DYJetsToLL_M-50_HT-200to400") + DY_events[0] / XSection("DYJetsToLL"));
+        else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_DY / (DY_events[3] / XSection("DYJetsToLL_M-50_HT-400to600") + DY_events[0] / XSection("DYJetsToLL"));
+        else if (genHT > 600) return luminosity*LOtoNLO_DY / (DY_events[4] / XSection("DYJetsToLL_M-50_HT-600toInf") + DY_events[0] / XSection("DYJetsToLL"));
         else   {cout<<"**********   wooow  ********* There is a problem here\n";return 0;}
     }
     
-        
+    
         
         
         else if (isSignalLQ != string::npos) {

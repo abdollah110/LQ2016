@@ -147,8 +147,6 @@ int main(int argc, char** argv) {
         
         float LumiWeight = 1;
         
-        if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
-        cout<<"LumiWeight is "<<LumiWeight<<"\n";
         
         
         
@@ -158,6 +156,12 @@ int main(int argc, char** argv) {
             Run_Tree->GetEntry(i);
             if (i % 10000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
             fflush(stdout);
+            
+            
+            
+            if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
+//            cout<<"LumiWeight is "<<LumiWeight<< "   genHT= "<<genHT<<"\n";
+
             
             
             float GetGenWeight=1;
@@ -191,7 +195,15 @@ int main(int argc, char** argv) {
             //  Doing MuTau Analysis
             //###############################################################################################
             
+            size_t isSingleMu = InputROOT.find("SingleMu");
+            size_t isSingleEle = InputROOT.find("SingleEle");
             
+            bool DoMuTauAnalysis=1;
+            
+    
+            
+            
+            if (DoMuTauAnalysis &&   isSingleEle== string::npos) {
             
             
             //Loop over Di-Mu events
@@ -310,7 +322,7 @@ int main(int argc, char** argv) {
                         if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                             JetVector.push_back(Jet4Momentum);
                             //                            https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
-                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.89  ){
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605  ){
                                 BJetBVector.push_back(Jet4Momentum);
                             }
                         }
@@ -418,8 +430,8 @@ int main(int argc, char** argv) {
 //                                                                plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
                                                                 plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
                                                                 plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
-                                                                plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
-                                                                plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
+//                                                                plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
+//                                                                plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
 
                                                                 if (JetVector.size() > 1) plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
@@ -441,10 +453,13 @@ int main(int argc, char** argv) {
                     }
                 }
             }
-            
+        }
+        
             //###############################################################################################
             //  Doing EleTau Analysis
             //###############################################################################################
+            bool DoEleTauAnalysis=1;
+            if (DoEleTauAnalysis  &&   isSingleMu== string::npos) {
             
             //                    //
             //                    //Loop over Di-Electron events
@@ -707,8 +722,8 @@ int main(int argc, char** argv) {
 //                                                                plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
                                                                 plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
                                                                 plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
-                                                                plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
-                                                                plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
+//                                                                plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
+//                                                                plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
@@ -728,7 +743,8 @@ int main(int argc, char** argv) {
                             }
                         }
                     }
-                    
+                }
+                
                     
                 } //End of Tree
             }//End of file

@@ -48,10 +48,11 @@ mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,
 lenghtSig = len(signal) * len(mass) +1
 
 #category = ["_inclusive"]
-#category = ["_inclusive",  "_JetBJet"]
-category = ["_JetBJet"]
+category = ["_inclusive",  "_JetBJet"]
+#category = ["_JetBJet"]
 
 channelDirectory = ["muTau", "eleTau"]
+#channelDirectory = ["muTau"]
 
 ####################################################
 ##   Functions
@@ -180,7 +181,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ################################################
             #  Filling ZTT
             ################################################
-            print "--------------------------------------------------->     Processing ZL"
+            print "--------------------------------------------------->     Processing ZTT"
             tDirectory.cd()
 
             Name= "DYJetsToLL"
@@ -282,7 +283,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             
             
 
-            QCDEstimation= (DataSampleQCDNormHist.Integral()- (SingleT_qcd+ VV_qcd + TT_qcd+ZTT_qcd+W_qcd)) * OS_SS_Ratio
+            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd)) * OS_SS_Ratio
 
             NameOut= "QCD"+str(TauScaleOut[tscale])
             DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
@@ -358,7 +359,7 @@ if __name__ == "__main__":
     ShapeQCD="_ST_JetBJet_NoMT_SS_RelaxIso"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
     MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-    
+
     ##########################################
     Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200])
     NormMC="_tmass_NoMT_OS"
@@ -377,9 +378,9 @@ if __name__ == "__main__":
     ShapeW="_nVtx_NoMT_OS"
     NormQCD="_nVtx_NoMT_SS"
     ShapeQCD="_nVtx_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-    
+#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
     ##########################################
     Binning = array.array("d",[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30])
     NormMC="_nVtx_NoPU_NoMT_OS"
@@ -387,8 +388,8 @@ if __name__ == "__main__":
     ShapeW="_nVtx_NoPU_NoMT_OS"
     NormQCD="_nVtx_NoPU_NoMT_SS"
     ShapeQCD="_nVtx_NoPU_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
     ##########################################
     Binning = array.array("d",[0,50,100,150,200,250,300,350,400,450,500,550,600,700,800,900,1000])
@@ -407,8 +408,8 @@ if __name__ == "__main__":
     ShapeW="_ST_JetBJetFinal_NoMT_OS"
     NormQCD="_ST_JetBJetFinal_NoMT_SS"
     ShapeQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 
 
