@@ -24,7 +24,8 @@ float XSection(std::string OutName) {
     
     
     //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
-     if (OutName.compare("WJetsToLNu") == 0) return 50690;
+//     if (OutName.compare("WJetsToLNu") == 0) return 50690;
+    if (OutName.compare("WJetsToLNu") == 0) return 61526.7;
     else if (OutName.compare("WJetsToLNu_HT-100To200") == 0) return 1345;
     else if (OutName.compare("WJetsToLNu_HT-200To400") == 0) return 359.7;
     else if (OutName.compare("WJetsToLNu_HT-400To600") == 0) return 48.91;
@@ -38,9 +39,9 @@ float XSection(std::string OutName) {
     else if (OutName.compare("DYJetsToLL_M-50_HT-600toInf") == 0) return 2.198;
     
     //Di-boson
-    else if (OutName.compare("WW") == 0) return 113.826;
-    else if (OutName.compare("WZ") == 0) return 45.01;
-    else if (OutName.compare("ZZ") == 0) return 16.91;
+    else if (OutName.compare("WW") == 0) return 115.0;
+    else if (OutName.compare("WZ") == 0) return 47.13;
+    else if (OutName.compare("ZZ") == 0) return 16.523;
     
     //SingleTop
     else if (OutName.compare("ST_t-channel_antitop_4f_leptonDecays") == 0) return 80.95 * 0.108*3;
@@ -57,6 +58,8 @@ float XSection(std::string OutName) {
     else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46);
     else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46);
     
+    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76);
+
     
     //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
     else if (OutName.compare("skimed_lq200.root") == 0) return 60.6;

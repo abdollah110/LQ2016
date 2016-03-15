@@ -249,15 +249,15 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 
 
 
-            SingleTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
-            VVSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
+            SingleTSampleQCDShapeHist=SingleTSampleQCDShape.Get("XXX")
+            VVSampleQCDShapeHist=VVSampleQCDShape.Get("XXX")
             TTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
             ZTTSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
             WSampleQCDShapeHist=WSampleQCDShape.Get("XXX")
             DataSampleQCDShapeHist=DataSampleQCDShape.Get("XXX")
 
-            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
+            if (SingleTSampleQCDShapeHist) : DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
+            if (VVSampleQCDShapeHist): DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
@@ -323,11 +323,11 @@ if __name__ == "__main__":
 #    
 #    ##########################################
     Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300])
-    NormMC="_VisMass_OS"
-    ShapeMC="_VisMass_OS"
-    ShapeW="_VisMass_OS"
-    NormQCD="_VisMass_SS"
-    ShapeQCD="_VisMass_SS_RelaxIso"
+    NormMC="_VisMass_NoMT_OS"
+    ShapeMC="_VisMass_NoMT_OS"
+    ShapeW="_VisMass_NoMT_OS"
+    NormQCD="_VisMass_NoMT_SS"
+    ShapeQCD="_VisMass_NoMT_SS_RelaxIso"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
     MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
@@ -408,9 +408,28 @@ if __name__ == "__main__":
     ShapeW="_ST_JetBJetFinal_NoMT_OS"
     NormQCD="_ST_JetBJetFinal_NoMT_SS"
     ShapeQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
+##########################################
+    Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000])
+    NormMC="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeMC="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeW="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    NormQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
+##########################################
+Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000])
+    NormMC="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeMC="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeW="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    NormQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    ShapeQCD="_ST_JetBJetFinal_NoMT_SS_RelaxIso"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 
 

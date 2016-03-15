@@ -154,12 +154,13 @@ void draw_prefit_Leppt() {
     draw_prefit_Sample("TotalRootForLimit_MuTau_VisMass_OS.root", "muTau_inclusive/",  "VisibleMass #mu#tau[GeV]", "PLOT_muTau_inclusive_VisbleMass");
     draw_prefit_Sample("TotalRootForLimit_EleTau_VisMass_OS.root", "eleTau_inclusive/",  "VisibleMass e#tau[GeV]", "PLOT_eleTau_inclusive_VisbleMass");
 
-    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_inclusive/",  "ST #mu#tau[GeV]", "PLOT_muTau_inclusive_ST");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_inclusive/", "ST e#tau[GeV]", "PLOT_eleTau_inclusive_ST");
-
 
     draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJet_ST");
     draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJet_ST");
+
+    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJetFinal_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJetFinal_ST");
+    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJetFinal_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJetFinal_ST");
+
     
     draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_inclusive/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_JetNum");
     draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_inclusive/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_JetNum");

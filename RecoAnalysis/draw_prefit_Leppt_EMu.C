@@ -32,21 +32,22 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     float SIGNAL_SCALE = 10;
     bool scaled = true;
     bool log = true;
-//    canv->SetLogy();
+    //    canv->SetLogy();
     TFile* input = new TFile(inputF.c_str());
     const char* dataset;
     
-
+    
     THStack hs("hs", "");
     
-    TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
-    InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
-    cout << "QCD= " << QCD->Integral() << "\n";
-    hs.Add(QCD);
+    //    TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
+    //    InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
+    //    cout << "QCD= " << QCD->Integral() << "\n";
+    //    hs.Add(QCD);
     
     TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
     InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
     cout << "W= " << W->Integral() << "\n";
+    hs.Add(W);
     
     //    TH1F* ZJ = (TH1F*) input->Get((channel + "ZJ").c_str());
     //    //    InitHist(ZJ, "", "", TColor::GetColor(100, 182, 232), 1001);
@@ -59,16 +60,22 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     //    cout << "ZL= " << ZL->Integral() << "\n";
     //
     //
-    //    TH1F* VV = (TH1F*) input->Get((channel + "VV").c_str());
-    //    //    InitHist(VV, "", "", TColor::GetColor(100, 182, 232), 1001);
-    //    W->Add(VV);
+    TH1F* VV = (TH1F*) input->Get((channel + "VV").c_str());
+    if (VV){
+    InitHist(VV, "", "", TColor::GetColor(200, 282, 232), 1001);
+    hs.Add(VV);
+    }
     
-    hs.Add(W);
+    TH1F* SingleTop = (TH1F*) input->Get((channel + "SingleTop").c_str());
+    InitHist(SingleTop, "", "", TColor::GetColor(150, 132, 232), 1001);
+    hs.Add(SingleTop);
+    
     ////    TH1F* ZLL = (TH1F*) input->Get((channel +"ZLL");
     //    InitHist(ttbar, "", "", TColor::GetColor(155, 152, 204), 1001);
     
     TH1F* TT = (TH1F*) input->Get((channel + "TT").c_str());
     InitHist(TT, "", "", TColor::GetColor(208, 376, 124), 1001);
+//    TT->Scale(0.85);
     hs.Add(TT);
     cout << "TT= " << TT->Integral() << "\n";
     
@@ -85,7 +92,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     hs.Add(ZTT);
     cout << "ZTT= " << ZTT->Integral() << "\n";
     
-
+    
     
     //    TH1F* signal = (TH1F*) input->Get((channel + "bba150").c_str());
     //    signal->Scale(10);
@@ -101,13 +108,13 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
     TH1F* data = (TH1F*) input->Get((channel + "data_obs").c_str());
     cout << "data= " << data->Integral() << "\n";
-        InitData(data);
+    InitData(data);
     TH1F* zero = (TH1F*) data->Clone("zero");
     zero->Scale(0);
     zero->SetTitle("");
     zero->GetXaxis()->SetTitle(xTitle.c_str());
     cout<<"max(hs.GetMaximum(),data->GetMaximum())"<<hs.GetMaximum()<<"   "<<data->GetMaximum()<<"\n";
-    zero->SetMaximum(1.5*max(hs.GetMaximum(),data->GetMaximum()));
+    zero->SetMaximum(2*max(hs.GetMaximum(),data->GetMaximum()));
     zero->Draw();
     
     hs.Draw("histsame");
@@ -123,7 +130,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
     
     const char* dataset;
-    dataset = "CMS Preliminary,     1.56 fb^{-1} at 13 TeV";
+    dataset = "CMS Preliminary,     2.2 fb^{-1} at 13 TeV";
     CMSPrelim(dataset, "", 0.17, 0.835);
     
     
@@ -137,30 +144,49 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     leg->AddEntry(data, "observed", "LP");
     leg->AddEntry(ZTT, "Z#rightarrow#tau#tau", "F");
     leg->AddEntry(TT, "t#bar{t}", "F");
-    leg->AddEntry(W, "electroweak", "F");
-    leg->AddEntry(QCD, "QCD", "F");
+    leg->AddEntry(W, "W", "F");
+    leg->AddEntry(VV, "VV", "F");
+    leg->AddEntry(SingleTop, "SingleTop", "F");
+    //    leg->AddEntry(QCD, "QCD", "F");
     leg->Draw();
     
-
+    
     canv->Print(TString::Format((nameHisto + ".pdf").c_str()));
-
+    
 }
 
 void draw_prefit_Leppt_EMu() {
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_VisMass_NoMT_OS.root", "MuEle_JetBJet/",  "VisibleMass e#mu[GeV]", "PLOT_MuEle_JetBJet_VisbleMass_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_NumJet_NoMT_OS.root", "MuEle_JetBJet/",  "Jet Multiplicity e#mu[GeV]", "PLOT_MuEle_JetBJet_JetNum_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_STLess300_NoMT_OS.root", "MuEle_JetBJet/",  "BJet Multiplicity (ST < 300 GeV) e#mu[GeV]", "PLOT_MuEle_JetBJet_BJetNum_STLess300_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_NoMT_OS.root", "MuEle_JetBJet/",  "BJet Multiplicity e#mu[GeV]", "PLOT_MuEle_JetBJet_BJetNum_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_tmass_NoMT_OS.root", "MuEle_JetBJet/",  "M_{T}  [GeV]", "PLOT_MuEle_JetBJet_tmass_NoMT_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_ST_JetBJet_NoMT_OS.root", "MuEle_JetBJet/",  "ST  [GeV]", "PLOT_MuEle_JetBJet_ST_JetBJet_NoMT_Scaled");
+//    
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_VisMass_NoMT_OS.root", "MuEle_inclusive/",  "VisibleMass e#mu[GeV]", "PLOT_MuEle_inclusive_VisbleMass_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_NumJet_NoMT_OS.root", "MuEle_inclusive/",  "Jet Multiplicity e#mu[GeV]", "PLOT_MuEle_inclusive_JetNum_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_NoMT_OS.root", "MuEle_inclusive/",  "BJet Multiplicity e#mu[GeV]", "PLOT_MuEle_inclusive_BJetNum_Scaled");
+//    draw_prefit_Sample("TotalRootForLimit_MuEle_tmass_NoMT_OS.root", "MuEle_inclusive/",  "M_{T}  [GeV]", "PLOT_MuEle_inclusive_tmass_NoMT_Scaled");
+//    
+    
+    draw_prefit_Sample("TotalRootForLimit_MuEle_VisMass_NoMT_OS.root", "MuEle_JetBJet/",  "VisibleMass e#mu[GeV]", "PLOT_MuEle_JetBJet_VisbleMass");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_NumJet_NoMT_OS.root", "MuEle_JetBJet/",  "Jet Multiplicity e#mu[GeV]", "PLOT_MuEle_JetBJet_JetNum");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_STLess300_NoMT_OS.root", "MuEle_JetBJet/",  "BJet Multiplicity (ST < 300 GeV) e#mu[GeV]", "PLOT_MuEle_JetBJet_BJetNum_STLess300");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_NoMT_OS.root", "MuEle_JetBJet/",  "BJet Multiplicity e#mu[GeV]", "PLOT_MuEle_JetBJet_BJetNum");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_tmass_NoMT_OS.root", "MuEle_JetBJet/",  "M_{T}  [GeV]", "PLOT_MuEle_JetBJet_tmass_NoMT");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_ST_JetBJet_NoMT_OS.root", "MuEle_JetBJet/",  "ST  [GeV]", "PLOT_MuEle_JetBJet_ST_JetBJet_NoMT");
+    
     
     draw_prefit_Sample("TotalRootForLimit_MuEle_VisMass_NoMT_OS.root", "MuEle_inclusive/",  "VisibleMass e#mu[GeV]", "PLOT_MuEle_inclusive_VisbleMass");
-   
-    
-    
     draw_prefit_Sample("TotalRootForLimit_MuEle_NumJet_NoMT_OS.root", "MuEle_inclusive/",  "Jet Multiplicity e#mu[GeV]", "PLOT_MuEle_inclusive_JetNum");
-   
+    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_NoMT_OS.root", "MuEle_inclusive/",  "BJet Multiplicity e#mu[GeV]", "PLOT_MuEle_inclusive_BJetNum");
+    draw_prefit_Sample("TotalRootForLimit_MuEle_tmass_NoMT_OS.root", "MuEle_inclusive/",  "M_{T}  [GeV]", "PLOT_MuEle_inclusive_tmass_NoMT");
+    
+    
 
     
-    draw_prefit_Sample("TotalRootForLimit_MuEle_NumBJet_NoMT_OS.root", "MuEle_inclusive/",  "BJet Multiplicity e#mu[GeV]", "PLOT_MuEle_inclusive_BJetNum");
-   
-    
-    draw_prefit_Sample("TotalRootForLimit_MuEle_tmass_NoMT_OS.root", "MuEle_inclusive/",  "M_{T}  [GeV]", "PLOT_MuEle_inclusive_tmass_NoMT");
-   
     
 };
 
