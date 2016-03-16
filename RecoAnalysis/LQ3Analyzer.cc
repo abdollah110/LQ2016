@@ -313,8 +313,10 @@ int main(int argc, char** argv) {
                     //###########      Jet definition   ###########################################################
                     vector<TLorentzVector> JetVector;
                     vector<TLorentzVector> BJetBVector;
+                                        vector<TLorentzVector> NonBJetBVector;
                     JetVector.clear();
                     BJetBVector.clear();
+                    NonBJetBVector.clear();
                     
                     for (int ijet= 0 ; ijet < nJet ; ijet++){
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
@@ -324,6 +326,9 @@ int main(int argc, char** argv) {
                             //                            https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
                             if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605  ){
                                 BJetBVector.push_back(Jet4Momentum);
+                            }
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) <  0.605  ){
+                                NonBJetBVector.push_back(Jet4Momentum);
                             }
                         }
                         
@@ -354,7 +359,11 @@ int main(int argc, char** argv) {
                     if (DiJet_Selection)
                     ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
                     
-   
+
+                    float ST_DiNonBJet=0;
+                    bool DiNonBJet_Selection=NonBJetBVector.size() > 1;
+                    if (DiNonBJet_Selection)
+                    ST_DiNonBJet=NonBJetBVector[0].Pt()+NonBJetBVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
                     
                     //###############################################################################################
                     //  Tau Lep Charge Categorization
@@ -369,20 +378,25 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  Isolation Categorization
                     //###############################################################################################
-                    const int size_isoCat = 2;
+                    const int size_isoCat = 6;
                     bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.12;
                     bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.12;
-                    bool Iso_category[size_isoCat] = {Isolation, AntiIsolation};
-                    std::string iso_Cat[size_isoCat] = {"", "_AntiIso"};
+                    bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.12;
+                    bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.12;
+                    bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                    bool LepIso = IsoMu < 0.12;
+                    bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso};
+                    std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso"};
                     //###############################################################################################
                     //  MT Categorization
                     //###############################################################################################
                     float tmass= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , pfMET, pfMETPhi);
-                    const int size_mTCat = 2;
-                    bool PassMT = tmass < 40;
+                    const int size_mTCat = 3;
                     bool NoMT = 1;
-                    bool MT_category[size_mTCat] = {PassMT, NoMT};
-                    std::string MT_Cat[size_mTCat] = {"", "_NoMT"};
+                    bool LoWMT = tmass < 40;
+                    bool HighMT = tmass > 60;
+                    bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                    std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                     //###############################################################################################
                     //  Trigger Categorization
                     //###############################################################################################
@@ -398,12 +412,9 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  ST Categorization
                     //###############################################################################################
-//                    const int size_ST = 2;
-//                    bool ST_category[size_ST] = {1, JetBJet_Selection};
-//                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet"};
-                    const int size_ST = 1;
-                    bool ST_category[size_ST] = {JetBJet_Selection};
-                    std::string ST_Cat[size_ST] = {"_JetBJet"};
+                    const int size_ST = 4;
+                    bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
 
                     //###############################################################################################
                     
@@ -428,12 +439,12 @@ int main(int argc, char** argv) {
                                                                 
                                                                 plotFill("MuTau_tmass"+FullStringName,tmass,300,0,300,TotalWeight);
                                                                 plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),300,0,300,TotalWeight);
-//                                                                plotFill("MuTau_MuPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
+                                                                plotFill("MuTau_MuPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
 //                                                                plotFill("MuTau_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
 //                                                                plotFill("MuTau_MuEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
 //                                                                plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
-                                                                plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
-                                                                plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
+//                                                                plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
+//                                                                plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
 //                                                                plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
 //                                                                plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
 
@@ -594,15 +605,21 @@ int main(int argc, char** argv) {
                     
                     vector<TLorentzVector> JetVector;
                     vector<TLorentzVector> BJetBVector;
+                    vector<TLorentzVector>   NonBJetBVector;
                     JetVector.clear();
                     BJetBVector.clear();
+                    NonBJetBVector.clear();
                     
                     for (int ijet= 0 ; ijet < nJet ; ijet++){
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
                         if (jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(ele4Momentum) > 0.5 ){
                             JetVector.push_back(Jet4Momentum);
+                            
                             if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) > 0.605 ){
                                 BJetBVector.push_back(Jet4Momentum);
+                            }
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) < 0.605 ){
+                                NonBJetBVector.push_back(Jet4Momentum);
                             }
                         }
                         
@@ -642,7 +659,11 @@ int main(int argc, char** argv) {
                     if (DiJet_Selection)
                     ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
                     
-                    
+                    float ST_DiNonBJet=0;
+                    bool DiNonBJet_Selection=NonBJetBVector.size() > 1;
+                    if (DiNonBJet_Selection)
+                        ST_DiNonBJet=NonBJetBVector[0].Pt()+NonBJetBVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
+
                     
                     //###############################################################################################
                     //  Tau Lep Charge Categorization
@@ -657,20 +678,26 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     // Isolation Categorization
                     //###############################################################################################
-                    const int size_isoCat = 2;
+                    const int size_isoCat = 6;
                     bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.12;
-                    bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.12 ;
-                    bool Iso_category[size_isoCat] = {Isolation, AntiIsolation};
-                    std::string iso_Cat[size_isoCat] = {"", "_AntiIso"};
+                    bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.12;
+                    bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.12;
+                    bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.12;
+                    bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                    bool LepIso = IsoEle < 0.12;
+                    bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso};
+                    std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso"};
+
                     //###############################################################################################
                     //  MT Categorization
                     //###############################################################################################
                     float tmass= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) ,  pfMET, pfMETPhi);
-                    const int size_mTCat = 2;
-                    bool PassMT = tmass < 40;
+                    const int size_mTCat = 3;
                     bool NoMT = 1;
-                    bool MT_category[size_mTCat] = {PassMT, NoMT};
-                    std::string MT_Cat[size_mTCat] = {"", "_NoMT"};
+                    bool LoWMT = tmass < 40;
+                    bool HighMT = tmass > 60;
+                    bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                    std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                     //###############################################################################################
                     //  Trigger Categorization
                     //###############################################################################################
@@ -688,12 +715,10 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  ST Categorization
                     //###############################################################################################
-//                    const int size_ST = 2;
-//                    bool ST_category[size_ST] = {1,JetBJet_Selection};
-//                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet"};
-                    const int size_ST = 1;
-                    bool ST_category[size_ST] = {JetBJet_Selection};
-                    std::string ST_Cat[size_ST] = {"_JetBJet"};
+                    const int size_ST = 4;
+                    bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+                    std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
+
                     //###############################################################################################
                     
                     
@@ -715,12 +740,12 @@ int main(int argc, char** argv) {
                                                                 
                                                                 plotFill("EleTau_tmass"+FullStringName,tmass,300,0,300,TotalWeight);
                                                                 plotFill("EleTau_VisMass"+FullStringName,Z4Momentum.M(),300,0,300,TotalWeight);
-//                                                                plotFill("EleTau_ElePt"+FullStringName,elePt->at(iele),300,0,300,TotalWeight);
+                                                                plotFill("EleTau_ElePt"+FullStringName,elePt->at(iele),300,0,300,TotalWeight);
 //                                                                plotFill("EleTau_ElePt_NoW8"+FullStringName,elePt->at(iele),300,0,300);
 //                                                                plotFill("EleTau_EleEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,TotalWeight);
 //                                                                plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
-                                                                plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
-                                                                plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
+//                                                                plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
+//                                                                plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
 //                                                                plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
 //                                                                plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
                                                                 if (JetVector.size() > 1) plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
