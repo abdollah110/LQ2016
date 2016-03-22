@@ -138,7 +138,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     info->AddText(CatName.c_str());
     info->Draw();
     
-    canv->Print(TString::Format((nameHisto + ".pdf").c_str()));
+    canv->Print(TString::Format((nameHisto + "_ApplyingExtraLepVeto.pdf").c_str()));
     
 }
 

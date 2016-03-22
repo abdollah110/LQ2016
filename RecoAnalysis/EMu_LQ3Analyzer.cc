@@ -326,46 +326,46 @@ int main(int argc, char** argv) {
                   
                   //###########      Extra Mu Veto   ###########################################################
                   bool extraMuonExist= false;
-//                  for  (int jmu=0 ; jmu < nMu; jmu++){
-//                      //                        cout<<"step3\n";
-//                      ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
-//                      
-//                      if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
-//                      if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
-//                      
-//                      float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
-//                      if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
-//                      IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
-//                      
-//                      if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
-//                      
-//                      extraMuonExist=true;
-//                  }
+                  for  (int jmu=0 ; jmu < nMu; jmu++){
+                      //                        cout<<"step3\n";
+                      ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
+                      
+                      if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
+                      if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
+                      
+                      float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
+                      if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
+                      IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
+                      
+                      if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
+                      
+                      extraMuonExist=true;
+                  }
                   //###########      Extra Ele Veto   ###########################################################
                   
                   bool extraElectronExist= false;
-//                  for  (int jele=0 ; jele < nEle; jele++){
-//                      //                        cout<<"step4\n";
-//                      Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
-//                      
-//                      if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
-//                      if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
-//                      
-//                      float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
-//                      if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
-//                      IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
-//                      
-//                      bool eleMVAIdExtra= false;
-//                      if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
-//                      else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
-//                      else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
-//                      else eleMVAIdExtra= false;
-//                      
-//                      
-//                      if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
-//                      extraElectronExist= true;
-//                      
-//                  }
+                  for  (int jele=0 ; jele < nEle; jele++){
+                      //                        cout<<"step4\n";
+                      Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
+                      
+                      if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
+                      if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
+                      
+                      float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
+                      if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
+                      IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
+                      
+                      bool eleMVAIdExtra= false;
+                      if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
+                      else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
+                      else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
+                      else eleMVAIdExtra= false;
+                      
+                      
+                      if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
+                      extraElectronExist= true;
+                      
+                  }
                   
                 //################################################################################################
                   

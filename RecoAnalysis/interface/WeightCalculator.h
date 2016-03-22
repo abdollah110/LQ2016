@@ -226,11 +226,11 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
             string M;
             while (getline(ss,token, '/'))
             {
-                cout<< token <<endl;
+//                cout<< token <<endl;
                 M=token;
             }
             
-            cout<<"last one is "<< M<<"\n";
+//            cout<<"last one is "<< M<<"\n";
             
             
             

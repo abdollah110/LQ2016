@@ -21,10 +21,12 @@
 
 
 
-void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTitle, std::string nameHisto) {
+void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTitle, std::string nameHisto, std::string CatName ) {
     
     //    gStyle->SetOptStat(0);
     
+    
+    cout<< "   name Histo is "<<nameHisto <<"\n";
     
     SetStyle();
     //    InitSubPad
@@ -47,43 +49,31 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
     InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
     cout << "W= " << W->Integral() << "\n";
-    
-    //    TH1F* ZJ = (TH1F*) input->Get((channel + "ZJ").c_str());
-    //    //    InitHist(ZJ, "", "", TColor::GetColor(100, 182, 232), 1001);
-    //    cout << "ZJ= " << ZJ->Integral() << "\n";
-    //    W->Add(ZJ);
-    //
-    //    TH1F* ZL = (TH1F*) input->Get((channel + "ZL").c_str());
-    //    //    InitHist(ZL, "", "", TColor::GetColor(100, 182, 232), 1001);
-    //    W->Add(ZL);
-    //    cout << "ZL= " << ZL->Integral() << "\n";
-    //
-    //
-    //    TH1F* VV = (TH1F*) input->Get((channel + "VV").c_str());
-    //    //    InitHist(VV, "", "", TColor::GetColor(100, 182, 232), 1001);
-    //    W->Add(VV);
-    
     hs.Add(W);
-    ////    TH1F* ZLL = (TH1F*) input->Get((channel +"ZLL");
-    //    InitHist(ttbar, "", "", TColor::GetColor(155, 152, 204), 1001);
+    
+    TH1F* VV = (TH1F*) input->Get((channel + "VV").c_str());
+    if (VV){
+        InitHist(VV, "", "", TColor::GetColor(200, 282, 232), 1001);
+        cout << "VV= " << VV->Integral() << "\n";
+        hs.Add(VV);
+    }
+    
+    TH1F* SingleTop = (TH1F*) input->Get((channel + "SingleTop").c_str());
+    InitHist(SingleTop, "", "", TColor::GetColor(150, 132, 232), 1001);
+    cout << "SingleTop= " << SingleTop->Integral() << "\n";
+    hs.Add(SingleTop);
+    
     
     TH1F* TT = (TH1F*) input->Get((channel + "TT").c_str());
     InitHist(TT, "", "", TColor::GetColor(208, 376, 124), 1001);
+    //    TT->Scale(0.85);
     hs.Add(TT);
     cout << "TT= " << TT->Integral() << "\n";
     
     TH1F* ZTT = (TH1F*) input->Get((channel + "ZTT").c_str());
     InitHist(ZTT, "", "", TColor::GetColor(108, 226, 354), 1001);
     cout << "ZTT= " << ZTT->Integral() << "\n";
-    
-    //    TH1F* ZTTLow = (TH1F*) input->Get((channel + "ZTT_lowMass").c_str());
-    //    InitHist(ZTTLow, "", "", TColor::GetColor(248, 206, 104), 1001);
-    //    cout << "ZTT_lowMass= "<<ZTTLow->Integral()<<"\n";
-    //
-    //    ZTT->Add(ZTTLow);
-    
     hs.Add(ZTT);
-    cout << "ZTT= " << ZTT->Integral() << "\n";
     
 
     
@@ -142,39 +132,89 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     leg->Draw();
     
 
+    TPaveText* info  = new TPaveText(0.20, 0.78, 0.35, 0.89, "NDC");
+    info->SetBorderSize(   0 );
+    info->SetFillStyle(    0 );
+    info->SetTextAlign(   12 );
+    info->SetTextSize ( 0.03 );
+    info->SetTextColor(    1 );
+    info->SetTextFont (   62 );
+    info->AddText(CatName.c_str());
+    info->Draw();
+    
     canv->Print(TString::Format((nameHisto + ".pdf").c_str()));
 
 }
 
 void draw_prefit_Leppt() {
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_tmass_NoMT_OS.root", "muTau_inclusive/",  "M_{T}  [GeV]", "PLOT_muTau_inclusive_tmass_NoMT");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_tmass_NoMT_OS.root", "eleTau_inclusive/", "M_{T} [GeV]", "PLOT_eleTau_inclusive_tmass_NoMT");
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_VisMass_OS.root", "muTau_inclusive/",  "VisibleMass #mu#tau[GeV]", "PLOT_muTau_inclusive_VisbleMass");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_VisMass_OS.root", "eleTau_inclusive/",  "VisibleMass e#tau[GeV]", "PLOT_eleTau_inclusive_VisbleMass");
-
-
-    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJet_ST");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJet_ST");
-
-    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJetFinal_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJetFinal_ST");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJetFinal_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJetFinal_ST");
+    
+    
+    const int numPlots=6;
+    const int numCat=1;
+    const int numch =1;
+    
+    
+    
 
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_inclusive/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_JetNum");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_inclusive/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_JetNum");
-
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_inclusive/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_BJetNum");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_inclusive/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_BJetNum");
+    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_LowMT_OS","_tmass_LowMT_SS","_tmass_LowMT_SS_TauIsoLepAntiIso","_tmass_LowMT_SS_Total","_tmass_LowMT_SS_LepIso"};
+    string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]"};
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_JetBJet/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_JetNum");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_JetBJet/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_JetNum");
+//    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
+        string category[numCat] = {"_inclusive"};
+//    string channelDirectory[numch] = {"muTau", "eleTau"};
+        string channelDirectory[numch] = {"MuTau"};
     
     
-    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_JetBJet/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_BJetNum");
-    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_JetBJet/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_BJetNum");
+    for (int iname=0;iname < numPlots;iname++){
+        for (int iCat=0;iCat < numCat;iCat++){
+            for (int ich=0;ich < numch;ich++){
+                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
+                string RootName="WEstimation_TotalRootForLimit_"+channelDirectory[ich]+Names[iname]+".root";
+                string ChanCat=channelDirectory[ich]+category[iCat]+"/";
+                string LegName=channelDirectory[ich]+category[iCat];
+                string OutName="Plot_"+channelDirectory[ich]++category[iCat]+Names[iname];
+                
+                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
+                
+            }
+        }
+        
+    }
+    
+    
+    
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_tmass_NoMT_OS.root", "muTau_inclusive/",  "M_{T}  [GeV]", "PLOT_muTau_inclusive_tmass_NoMT");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_tmass_NoMT_OS.root", "eleTau_inclusive/", "M_{T} [GeV]", "PLOT_eleTau_inclusive_tmass_NoMT");
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_VisMass_OS.root", "muTau_inclusive/",  "VisibleMass #mu#tau[GeV]", "PLOT_muTau_inclusive_VisbleMass");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_VisMass_OS.root", "eleTau_inclusive/",  "VisibleMass e#tau[GeV]", "PLOT_eleTau_inclusive_VisbleMass");
+//
+//
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJet_ST");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJet_ST");
+//
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJetFinal_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJetFinal_ST");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJetFinal_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJetFinal_ST");
+//
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_inclusive/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_JetNum");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_inclusive/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_JetNum");
+//
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_inclusive/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_BJetNum");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_inclusive/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_BJetNum");
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_JetBJet/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_JetNum");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_JetBJet/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_JetNum");
+//    
+//    
+//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_JetBJet/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_BJetNum");
+//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_JetBJet/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_BJetNum");
     
 
 
