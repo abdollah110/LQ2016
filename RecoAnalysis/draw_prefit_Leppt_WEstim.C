@@ -34,22 +34,14 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     float SIGNAL_SCALE = 10;
     bool scaled = true;
     bool log = true;
-//    canv->SetLogy();
+    //    canv->SetLogy();
     TFile* input = new TFile(inputF.c_str());
     const char* dataset;
     
-
+    
     THStack hs("hs", "");
     
-    TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
-    InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
-    cout << "QCD= " << QCD->Integral() << "\n";
-    hs.Add(QCD);
     
-    TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
-    InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
-    cout << "W= " << W->Integral() << "\n";
-    hs.Add(W);
     
     TH1F* VV = (TH1F*) input->Get((channel + "VV").c_str());
     if (VV){
@@ -75,7 +67,16 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     cout << "ZTT= " << ZTT->Integral() << "\n";
     hs.Add(ZTT);
     
-
+    TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
+    InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
+    cout << "QCD= " << QCD->Integral() << "\n";
+//    hs.Add(QCD);
+    
+    TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
+    InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
+    cout << "W= " << W->Integral() << "\n";
+    hs.Add(W);
+    
     
     //    TH1F* signal = (TH1F*) input->Get((channel + "bba150").c_str());
     //    signal->Scale(10);
@@ -91,7 +92,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
     TH1F* data = (TH1F*) input->Get((channel + "data_obs").c_str());
     cout << "data= " << data->Integral() << "\n";
-        InitData(data);
+    InitData(data);
     TH1F* zero = (TH1F*) data->Clone("zero");
     zero->Scale(0);
     zero->SetTitle("");
@@ -113,25 +114,25 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
     
     const char* dataset;
-    dataset = "CMS Preliminary,     1.56 fb^{-1} at 13 TeV";
+    dataset = "CMS Preliminary,      2.2 fb^{-1} at 13 TeV";
     CMSPrelim(dataset, "", 0.17, 0.835);
     
     
     
     TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
     SetLegendStyle(leg);
-    //    leg->AddEntry(signal, TString::Format("a1(50 GeV)#rightarrow#tau#tau [XS= 10 bp]", SIGNAL_SCALE), "L");
-    
-    
-    
     leg->AddEntry(data, "observed", "LP");
+    leg->AddEntry(W, "W", "F");
+//    leg->AddEntry(QCD, "QCD", "F");
     leg->AddEntry(ZTT, "Z#rightarrow#tau#tau", "F");
     leg->AddEntry(TT, "t#bar{t}", "F");
-    leg->AddEntry(W, "electroweak", "F");
-    leg->AddEntry(QCD, "QCD", "F");
+    leg->AddEntry(SingleTop, "SingleTop", "F");
+    leg->AddEntry(VV, "VV", "F");
+    
+    
     leg->Draw();
     
-
+    
     TPaveText* info  = new TPaveText(0.20, 0.78, 0.35, 0.89, "NDC");
     info->SetBorderSize(   0 );
     info->SetFillStyle(    0 );
@@ -143,10 +144,50 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     info->Draw();
     
     canv->Print(TString::Format((nameHisto + ".pdf").c_str()));
-
+    
 }
 
-void draw_prefit_Leppt() {
+void draw_prefit_Leppt_WEstim() {
+    
+    
+    
+    
+//    const int numPlots=1;
+//    const int numCat=2;
+//    
+//    const int numch =1;
+//    
+//    
+//    
+//    
+//    
+//    
+//    string Names [numPlots]= {"fileWEstim.root"};
+//    string Xaxis[numPlots]={ "ST  [GeV]"};
+//    
+//    
+//    string category[numCat] = {"beforeScale","afterScale"};
+//    string     legendN[numCat]= {"Before Scale Correction", "After Scale Correction"}
+//    string channelDirectory[numch] = {"MuTau"};
+//    
+//    
+//    for (int iname=0;iname < numPlots;iname++){
+//        for (int iCat=0;iCat < numCat;iCat++){
+//            for (int ich=0;ich < numch;ich++){
+//                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
+//                string RootName="fileWEstim.root";
+//                string ChanCat=category[iCat]+"/";
+//                string LegName=legendN[iCat];
+//                string OutName="Plot_"+category[iCat]+Names[iname];
+//                
+//                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
+//                
+//            }
+//        }
+//        
+//    }
+    
+    
     
     
     
@@ -158,16 +199,16 @@ void draw_prefit_Leppt() {
     
     
     
-
     
     
-    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_HighMT_OS_Total","_tmass_HighMT_SS_TauIsoLepAntiIso","_tmass_HighMT_OS_TauIsoLepAntiIso","_tmass_HighMT_OS_LepIso","_tmass_HighMT_SS"};
+    
+    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_LowMT_SS_Total","_tmass_HighMT_SS_TauIsoLepAntiIso","_tmass_LowMT_SS_LepIso","_tmass_HighMT_OS_TauIsoLepAntiIso","_tmass_HighMT_SS"};
     string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]"};
     
-//    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
-        string category[numCat] = {"_inclusive","_DiNonBJet"};
-//    string channelDirectory[numch] = {"muTau", "eleTau"};
-        string channelDirectory[numch] = {"MuTau"};
+    //    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
+    string category[numCat] = {"_inclusive","_DiNonBJet"};
+    //    string channelDirectory[numch] = {"muTau", "eleTau"};
+    string channelDirectory[numch] = {"MuTau"};
     
     
     for (int iname=0;iname < numPlots;iname++){
@@ -187,38 +228,8 @@ void draw_prefit_Leppt() {
     }
     
     
-    
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_tmass_NoMT_OS.root", "muTau_inclusive/",  "M_{T}  [GeV]", "PLOT_muTau_inclusive_tmass_NoMT");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_tmass_NoMT_OS.root", "eleTau_inclusive/", "M_{T} [GeV]", "PLOT_eleTau_inclusive_tmass_NoMT");
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_VisMass_OS.root", "muTau_inclusive/",  "VisibleMass #mu#tau[GeV]", "PLOT_muTau_inclusive_VisbleMass");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_VisMass_OS.root", "eleTau_inclusive/",  "VisibleMass e#tau[GeV]", "PLOT_eleTau_inclusive_VisbleMass");
-//
-//
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJet_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJet_ST");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJet_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJet_ST");
-//
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_ST_JetBJetFinal_NoMT_OS.root", "muTau_JetBJet/",  "ST #mu#tau[GeV]", "PLOT_muTau_JetBJetFinal_ST");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_ST_JetBJetFinal_NoMT_OS.root", "eleTau_JetBJet/", "ST e#tau[GeV]", "PLOT_eleTau_JetBJetFinal_ST");
-//
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_inclusive/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_JetNum");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_inclusive/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_JetNum");
-//
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_inclusive/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_inclusive_BJetNum");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_inclusive/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_inclusive_BJetNum");
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumJet_NoMT_OS.root", "muTau_JetBJet/",  "Jet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_JetNum");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumJet_NoMT_OS.root", "eleTau_JetBJet/", "Jet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_JetNum");
-//    
-//    
-//    draw_prefit_Sample("TotalRootForLimit_MuTau_NumBJet_NoMT_OS.root", "muTau_JetBJet/",  "BJet Multiplicity #mu#tau[GeV]", "PLOT_muTau_JetBJet_BJetNum");
-//    draw_prefit_Sample("TotalRootForLimit_EleTau_NumBJet_NoMT_OS.root", "eleTau_JetBJet/", "BJet Multiplicity e#tau[GeV]", "PLOT_eleTau_JetBJet_BJetNum");
-    
 
-
+    
     
 };
 

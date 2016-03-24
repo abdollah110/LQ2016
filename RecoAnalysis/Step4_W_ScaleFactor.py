@@ -31,7 +31,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles/'
+SubRootDir = 'OutFiles_WEstim/'
 #SubRootDir = 'OutFiles_TMass60_noBjet20Gev/'
 
 verbos_ = False
@@ -51,8 +51,8 @@ lenghtSig = len(signal) * len(mass) +1
 category = ["_inclusive","_JetBJet","_DiNonBJet"]
 #category = ["_JetBJet"]
 
-channelDirectory = ["MuTau", "EleTau"]
-#channelDirectory = ["muTau"]
+#channelDirectory = ["MuTau", "EleTau"]
+channelDirectory = ["MuTau"]
 
 ####################################################
 ##   Functions
@@ -326,70 +326,99 @@ if __name__ == "__main__":
 #    
 
     ##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
     NormMC="_tmass_HighMT_OS"
     ShapeMC="_tmass_HighMT_OS"
     ShapeW="_tmass_HighMT_OS"
-    NormQCD="_tmass_HighMT_SS"
+    NormQCD="_tmass_HighMT_OS"
+    ShapeQCD="_tmass_HighMT_OS"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
+##########################################
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_HighMT_OS_Total"
+    ShapeMC="_tmass_HighMT_OS_Total"
+    ShapeW="_tmass_HighMT_OS_Total"
+    NormQCD="_tmass_HighMT_OS_Total"
+    ShapeQCD="_tmass_HighMT_OS_Total"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
+##########################################
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_LowMT_SS_LepIso"
+    ShapeMC="_tmass_LowMT_SS_LepIso"
+    ShapeW="_tmass_LowMT_SS_LepIso"
+    NormQCD="_tmass_LowMT_SS_LepIso"
+    ShapeQCD="_tmass_LowMT_SS_LepIso"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+
+##########################################
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_LowMT_SS_Total"
+    ShapeMC="_tmass_LowMT_SS_Total"
+    ShapeW="_tmass_LowMT_SS_Total"
+    NormQCD="_tmass_LowMT_SS_Total"
+    ShapeQCD="_tmass_LowMT_SS_Total"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
+##########################################
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_HighMT_SS_TauIsoLepAntiIso"
+    ShapeMC="_tmass_HighMT_SS_TauIsoLepAntiIso"
+    ShapeW="_tmass_HighMT_SS_TauIsoLepAntiIso"
+    NormQCD="_tmass_HighMT_SS_TauIsoLepAntiIso"
     ShapeQCD="_tmass_HighMT_SS_TauIsoLepAntiIso"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-
-##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-    NormMC="_tmass_LowMT_OS"
-    ShapeMC="_tmass_LowMT_OS"
-    ShapeW="_tmass_LowMT_OS"
-    NormQCD="_tmass_LowMT_SS"
-    ShapeQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-
-##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-    NormMC="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    ShapeMC="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    ShapeW="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    NormQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    ShapeQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 
 ##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-    NormMC="_tmass_LowMT_SS"
-    ShapeMC="_tmass_LowMT_SS"
-    ShapeW="_tmass_LowMT_SS"
-    NormQCD="_tmass_LowMT_SS"
-    ShapeQCD="_tmass_LowMT_SS"
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_LowMT_OS_TauIsoLepAntiIso"
+    ShapeMC="_tmass_LowMT_OS_TauIsoLepAntiIso"
+    ShapeW="_tmass_LowMT_OS_TauIsoLepAntiIso"
+    NormQCD="_tmass_LowMT_OS_TauIsoLepAntiIso"
+    ShapeQCD="_tmass_LowMT_OS_TauIsoLepAntiIso"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
+##########################################
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    ShapeMC="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    ShapeW="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    NormQCD="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    ShapeQCD="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 
 
 ##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-    NormMC="_LepPt_LowMT_SS_Total"
-    ShapeMC="_LepPt_LowMT_SS_Total"
-    ShapeW="_LepPt_LowMT_SS_Total"
-    NormQCD="_LepPt_LowMT_SS_Total"
-    ShapeQCD="_LepPt_LowMT_SS_Total"
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_HighMT_OS_LepIso"
+    ShapeMC="_tmass_HighMT_OS_LepIso"
+    ShapeW="_tmass_HighMT_OS_LepIso"
+    NormQCD="_tmass_HighMT_OS_LepIso"
+    ShapeQCD="_tmass_HighMT_OS_LepIso"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 
 ##########################################
-    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-    NormMC="_LepPt_LowMT_SS_LepIso"
-    ShapeMC="_LepPt_LowMT_SS_LepIso"
-    ShapeW="_LepPt_LowMT_SS_LepIso"
-    NormQCD="_LepPt_LowMT_SS_LepIso"
-    ShapeQCD="_LepPt_LowMT_SS_LepIso"
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,200,250])
+    NormMC="_tmass_HighMT_SS"
+    ShapeMC="_tmass_HighMT_SS"
+    ShapeW="_tmass_HighMT_SS"
+    NormQCD="_tmass_HighMT_SS"
+    ShapeQCD="_tmass_HighMT_SS"
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+
+
 
 
 

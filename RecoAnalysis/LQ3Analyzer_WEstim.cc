@@ -190,6 +190,7 @@ int main(int argc, char** argv) {
                 if ((HLTEleMuX >> qq & 1) == 1)
                     plotFill("HLT",qq,50,0,50,TotalWeight);
             }
+            if (PUWeight > 10) cout<< "LumiWeight * GetGenWeight * PUWeight = puNUmmc" <<LumiWeight <<" "<< GetGenWeight <<" "<< PUWeight<<" "<<int(puTrue->at(0))<<"\n";
             
             //###############################################################################################
             //  Doing MuTau Analysis
@@ -247,8 +248,9 @@ int main(int argc, char** argv) {
                         if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
                             IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                         
-                        bool MuPtCut = muPt->at(imu) > 30 && fabs(muEta->at(imu)) < 2.1 ;
-                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
+                        bool MuPtCut = muPt->at(imu) > 50 && fabs(muEta->at(imu)) < 2.1 ;
+//                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
+                        bool MuIdIso=1;
                         bool TauPtCut = tauPt->at(itau) > 30  && fabs(tauEta->at(itau)) < 2.3 ;
                         bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
                         
@@ -381,18 +383,20 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  Isolation Categorization
                         //###############################################################################################
-                        const int size_isoCat = 7;
+                        const int size_isoCat = 9;
                         bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
                         bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
                         bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
                         bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
                         bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
                         bool LepIso = IsoMu < 0.10;
+                        bool LepAntiIso = IsoMu >= 0.10;
                         bool Total = 1;
                         
                         
-                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
+                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,TauAntiIso,LepIso,LepAntiIso,Total};
+                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
 
                         //###############################################################################################
                         //  MT Categorization
@@ -408,7 +412,7 @@ int main(int argc, char** argv) {
                         //  Trigger Categorization
                         //###############################################################################################
                         const int size_trgCat = 1;
-                        bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
+                        bool PassTrigger = (HLTEleMuX >> 26 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
                         //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
                         bool NoTrigger = 1;
                         //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
@@ -447,6 +451,7 @@ int main(int argc, char** argv) {
                                                                     plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
                                                                     plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
                                                                     plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
+                                                                    plotFill("MuTau_IsoMu"+FullStringName,IsoMu,1000,0,20,TotalWeight);
                                                                     //                                                                plotFill("MuTau_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
                                                                     //                                                                plotFill("MuTau_MuEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
                                                                     //                                                                plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
@@ -481,7 +486,7 @@ int main(int argc, char** argv) {
             //###############################################################################################
             //  Doing EleTau Analysis
             //###############################################################################################
-            bool DoEleTauAnalysis=1;
+            bool DoEleTauAnalysis=0;
             if (DoEleTauAnalysis  &&   isSingleMu== string::npos) {
                 
                 //                    //
@@ -688,12 +693,12 @@ int main(int argc, char** argv) {
                         // Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 7;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.12;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.12;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.12;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.12;
+                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.10;
+                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.10;
+                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.10;
+                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.10;
                         bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool LepIso = IsoEle < 0.12;
+                        bool LepIso = IsoEle < 0.10;
                         bool Total = 1;
 
 

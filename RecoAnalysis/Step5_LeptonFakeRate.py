@@ -33,7 +33,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles/'
+SubRootDir = 'OutFiles_WEstim/'
 #SubRootDir = 'OutFiles_TMass60_noBjet20Gev/'
 
 verbos_ = False
@@ -53,8 +53,8 @@ lenghtSig = len(signal) * len(mass) +1
 category = ["_inclusive","_JetBJet","_DiNonBJet"]
 #category = ["_JetBJet"]
 
-channelDirectory = ["MuTau", "EleTau"]
-#channelDirectory = ["muTau"]
+#channelDirectory = ["MuTau", "EleTau"]
+channelDirectory = ["MuTau"]
 
 ####################################################
 ##   Functions
@@ -84,7 +84,7 @@ def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
 ####################################################
 ##   Start Making the Datacard Histograms
 ####################################################
-def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
+def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,NameCat):
 
 
 
@@ -98,7 +98,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 #
 #        tDirectory= myOut.mkdir(channelDirectory[chl] + str(NameCat))
 #        tDirectory.cd()
-            NameCat="_inclusive"
+#            NameCat="_inclusive"
             tscale=0
 
             Name= "SingleTop"
@@ -161,15 +161,23 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             
             
 
-            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd))
+            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd))
+            
 
 #            NameOut= "QCD"+str(TauScaleOut[tscale])
             DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
-            RebinedHist= DataSampleQCDShapeHist.Rebin(len(Binning)-1,"",Binning)
+            if doBinning:    RebinedHist= DataSampleQCDShapeHist.Rebin(len(Binning)-1,"",Binning)
+            else : RebinedHist= DataSampleQCDShapeHist
 #            tDirectory.WriteObject(RebinedHist,NameOut)
 
             NewShapeForQCD=TFile("Extra/XXX.root","RECREATE")
             NewShapeForQCD.WriteObject(RebinedHist,"XXX")
+            NewShapeForQCD.WriteObject(DataSampleQCDNormHist,"data")
+            NewShapeForQCD.WriteObject(WSampleQCDNormHist,"W")
+            NewShapeForQCD.WriteObject(ZTTSampleQCDNormHist,"ZTT")
+            NewShapeForQCD.WriteObject(TTSampleQCDNormHist,"TT")
+            NewShapeForQCD.WriteObject(VVSampleQCDNormHist,"VV")
+            NewShapeForQCD.WriteObject(SingleTSampleQCDNormHist,"SingleT")
             return NewShapeForQCD
             
 
@@ -184,15 +192,18 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 ##   Fit Function
 #############################################################################################################
 
-def fitFunc_Linear2Par(x,par):
-    return par[0] + (par[1] * x[0])
-def Func_Linear2Par(x,par0,par1):
-    return par0 +  (par1 * x)
-
-def fitFunc_Exp3Par( x,  par0,  par1,  par2) :
-    return par0 + par1 * math.exp(par2 * x)
+#def fitFunc_Linear2Par(x,par):
+#    return par[0] + (par[1] * x[0])
+#def Func_Linear2Par(x,par0,par1):
+#    return par0 +  (par1 * x)
+#
+#def fitFunc_Exp3Par( x,  par0,  par1,  par2) :
+#    return par0 + par1 * math.exp(par2 * x)
 def Func_Exp3Par( x,  par) :
-    return par[0] + par[1]*math.exp(par[2] * x[0])
+    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x[0]))
+
+def Func_Exp3Par_retunr( x,  par0,par1,par2) :
+    return par0 / (par0+ par1*math.exp(par2 * x))
 
 #def Erf( x,  par0,par1) :
 #    return par[0] + math.Erf(par[1] * x[0])
@@ -209,12 +220,10 @@ def Make_Tau_FakeRate():
     
     ##########################################
     Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
-    NormMC="_LepPt_LowMT_SS_LepIso"
-    ShapeMC="_LepPt_LowMT_SS_LepIso"
-    ShapeW="_LepPt_LowMT_SS_LepIso"
     NormQCD="_LepPt_LowMT_SS_LepIso"
-    ShapeQCD="_LepPt_LowMT_SS_LepIso"
-    ShapeNum=MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    NormQCD="_LepPt_LowMT_SS_TauAntiIsoLepIso"
+#    NormQCD="_LepPt_LowMT_SS"
+    ShapeNum=MakeTheHistogram("MuTau",NormQCD,NormQCD,"",0,Binning,1,"_inclusive")
     HistoNum=ShapeNum.Get("XXX")
 #    HistoNum= HistoNum.Rebin(len(Binning_PT)-1,"",Binning_PT)
 #    HistoNum.Scale(1000/HistoNum.Integral())
@@ -223,13 +232,13 @@ def Make_Tau_FakeRate():
     
     
     Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
-    NormMC="_LepPt_LowMT_SS_Total"
-    ShapeMC="_LepPt_LowMT_SS_Total"
-    ShapeW="_LepPt_LowMT_SS_Total"
+#    NormMC="_LepPt_LowMT_SS_Total"
+#    ShapeMC="_LepPt_LowMT_SS_Total"
+#    ShapeW="_LepPt_LowMT_SS_Total"
     NormQCD="_LepPt_LowMT_SS_Total"
-    ShapeQCD="_LepPt_LowMT_SS_Total"
-    
-    ShapeDeNum=MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+#    NormQCD="_LepPt_LowMT_SS_TauIso"
+
+    ShapeDeNum=MakeTheHistogram("MuTau",NormQCD,NormQCD,"",0,Binning,1,"_inclusive")
     HistoDeNum=ShapeDeNum.Get("XXX")
 #    HistoDeNum= HistoDeNum.Rebin(len(Binning_PT)-1,"",Binning_PT)
 #    HistoDeNum.Scale(1000/HistoDeNum.Integral())
@@ -240,20 +249,25 @@ def Make_Tau_FakeRate():
     HistoNum.SetMinimum(0.5)
     #    HistoNum.GetXaxis().SetRangeUser(0,60)
     HistoNum.GetXaxis().SetRangeUser(0,300)
-    HistoNum.GetXaxis().SetTitle("#tau p_{T} [GeV]")
-    HistoNum.GetYaxis().SetRangeUser(0,2)
+    canv.SetGridx()
+    canv.SetGridy()
+    HistoNum.SetTitle("")
+    HistoNum.GetXaxis().SetTitle("#mu p_{T} [GeV]")
+    HistoNum.GetYaxis().SetTitle("Muon Fake Rate  (Tight Iso + Id / Id)")
+    HistoNum.GetYaxis().SetTitleOffset(1.3)
+    HistoNum.GetYaxis().SetRangeUser(0,1)
     HistoNum.SetStats(0)
     HistoNum.SetMarkerStyle(20)
     
     
     
     nPar = 3 # number of parameters in the fit
-    theFit=TF1("theFit", "expo(7)", 30, 300)
-    theFit.SetParameter(0, .4)
-#    theFit.SetParLimits(0, .3, .5)
-    theFit.SetParameter(1, 5)
-    theFit.SetParLimits(1, 1, 2)
-    theFit.SetParameter(2, 4.2)
+    theFit=TF1("theFit", Func_Exp3Par, 50, 300,nPar)
+    theFit.SetParameter(0, .2)
+    theFit.SetParLimits(0, 0.1, 0.4)
+    theFit.SetParameter(1, 4)
+#    theFit.SetParLimits(1, -20, -45)
+    theFit.SetParameter(2, -.30)
     HistoNum.Fit("theFit", "R0")
     #    HistoNum.Fit(theFit, "R0","")
     HistoNum.Draw("E1")
@@ -269,118 +283,104 @@ def Make_Tau_FakeRate():
     fitInfo.SetTextSize ( 0.03 );
     fitInfo.SetTextColor(    1 );
     fitInfo.SetTextFont (   62 );
-    fitInfo.AddText("" + str(round(FitParam[0],2))+" + "+str(round(FitParam[1],3))+"*Exp(" +str(round(FitParam[2],3))+"* X)")
+    fitInfo.AddText("" + str(round(FitParam[0],2))+" / "+str(round(FitParam[0],2))+"+ Exp(" +str(round(FitParam[1],3))+"* X)")
     #    fitInfo.AddText("Par0=" + str(round(FitParam[0],3)) + " #pm " + str(round(FitParamEre[0],3)) + " ,  Par1=" + str(round(FitParam[1],7)) + " #pm " + str(round(FitParamEre[1],7)))
     #    fitInfo.SetTextColor(    2 );
     #    fitInfo.AddText("Chis quare=  " + str(round(theFit.GetChisquare(),2)))
-    fitInfo.Draw()
-    canv.SaveAs("fitResults_MassDependent_OS_Over_SS_factor"+catName+channelName+".pdf")
-    
-    
-    
-#    theFit=TF1("theFit", fitFunc_Linear2Par, 20, 100, 2)
-#    theFit.SetParameter(0, 0.6)
-#    theFit.SetParameter(1, 0.18)
-#    HistoNum.Fit(theFit, "R0","")
-#    HistoNum.Draw("E1")
-#    theFit.SetLineWidth(3)
-#    theFit.SetLineColor(2)
-#    FitParam=theFit.GetParameters()
-#    FitParamEre=theFit.GetParErrors()
-#    theFit.Draw("SAME")
-#    fitInfo  =TPaveText(.20,0.7,.60,0.9, "NDC");
-#    fitInfo.SetBorderSize(   0 );
-#    fitInfo.SetFillStyle(    0 );
-#    fitInfo.SetTextAlign(   12 );
-#    fitInfo.SetTextSize ( 0.03 );
-#    fitInfo.SetTextColor(    1 );
-#    fitInfo.SetTextFont (   62 );
-#    fitInfo.AddText("Linear Fit=  " + str(round(FitParam[0],3))+" + "+str(round(FitParam[1],9))+"x")
-#    fitInfo.AddText("Par0=" + str(round(FitParam[0],3)) + " #pm " + str(round(FitParamEre[0],3)) + " ,  Par1=" + str(round(FitParam[1],7)) + " #pm " + str(round(FitParamEre[1],7)))
-#    fitInfo.SetTextColor(    2 );
-#    fitInfo.AddText("Chis quare=  " + str(round(theFit.GetChisquare(),2)))
 #    fitInfo.Draw()
-#    canv.SaveAs("fitResults_TauFR"+catName+channelName+".pdf")
-
-#    return  FitParam[0],FitParam[1]
-
-
+    canv.SaveAs("fitResults_LeptonFakeRate"+catName+channelName+".pdf")
+    
+    return FitParam[0],FitParam[1],FitParam[2]
 
 
+    ##########################################    ##########################################    ##########################################
+    ##########################################    ##########################################    ##########################################
+    ##########################################    ##########################################    ##########################################
 
-#
-#
-#            
 if __name__ == "__main__":
-    Make_Tau_FakeRate()
+    FR_FitMaram=Make_Tau_FakeRate()
 
-##
-#
-#    ##########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_tmass_HighMT_OS"
-#    ShapeMC="_tmass_HighMT_OS"
-#    ShapeW="_tmass_HighMT_OS"
-#    NormQCD="_tmass_HighMT_SS"
-#    ShapeQCD="_tmass_HighMT_SS_TauIsoLepAntiIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-#
-###########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_tmass_LowMT_OS"
-#    ShapeMC="_tmass_LowMT_OS"
-#    ShapeW="_tmass_LowMT_OS"
-#    NormQCD="_tmass_LowMT_SS"
-#    ShapeQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-#
-###########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    ShapeMC="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    ShapeW="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    NormQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    ShapeQCD="_tmass_LowMT_SS_TauIsoLepAntiIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-#
-#
-###########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_tmass_LowMT_SS"
-#    ShapeMC="_tmass_LowMT_SS"
-#    ShapeW="_tmass_LowMT_SS"
-#    NormQCD="_tmass_LowMT_SS"
-#    ShapeQCD="_tmass_LowMT_SS"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-#
-#
-#
-#
-###########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_LepPt_LowMT_SS_Total"
-#    ShapeMC="_LepPt_LowMT_SS_Total"
-#    ShapeW="_LepPt_LowMT_SS_Total"
-#    NormQCD="_LepPt_LowMT_SS_Total"
-#    ShapeQCD="_LepPt_LowMT_SS_Total"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
-#
-#
-#
-###########################################
-#    Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,110,120,140,160,200,250,300,400,500])
-#    NormMC="_LepPt_LowMT_SS_LepIso"
-#    ShapeMC="_LepPt_LowMT_SS_LepIso"
-#    ShapeW="_LepPt_LowMT_SS_LepIso"
-#    NormQCD="_LepPt_LowMT_SS_LepIso"
-#    ShapeQCD="_LepPt_LowMT_SS_LepIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+    ##########################################
+    Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000])
+    NormQCD="_LepPt_HighMT_OS_TauIsoLepAntiIso"
+    ShapeQCD="_LepPt_HighMT_OS_TauIsoLepAntiIso"
+    FileQCDCR=MakeTheHistogram("MuTau",NormQCD,ShapeQCD,"",0,Binning,0,"_DiNonBJet")
+#    FileQCDCR=MakeTheHistogram("MuTau",NormQCD,ShapeQCD,"",0,Binning,0,"_inclusive")
+    HistoQCDCR=FileQCDCR.Get("XXX")
+#    HistoQCDCR.Rebin(2)
+    newcan = TCanvas("canv", "histograms", 600, 600)
+    HistoQCDCR.Draw()
+    qcdEstim=0
+    for bin in xrange(0,300):
+        value=HistoQCDCR.GetBinContent(bin)
+        if value < 0 : value=0
+        FR= Func_Exp3Par_retunr(bin+1.5,FR_FitMaram[0],FR_FitMaram[1],FR_FitMaram[2] )
+        qcdEstim += value * FR/(1-FR)
+    print  "------> Final estimate is", sum
+    newcan.SaveAs("Onedplts.pdf")
+    newcan.SaveAs("Onedplts.root")
+    
+    NormQCD="_ST_JetBJet_HighMT_OS"
+    ShapeQCD="_ST_JetBJet_HighMT_OS_TauIsoLepAntiIso"
+    FinalWPlots=MakeTheHistogram("MuTau",NormQCD,ShapeQCD,"",0,Binning,0,"_DiNonBJet")
+#    FinalWPlots=MakeTheHistogram("MuTau",NormQCD,ShapeQCD,"",0,Binning,0,"_inclusive")
+
+    TT=FinalWPlots.Get("TT")
+    TT_rb=TT.Rebin(len(Binning)-1,"",Binning)
+
+    ZTT=FinalWPlots.Get("ZTT")
+    ZTT_rb=ZTT.Rebin(len(Binning)-1,"",Binning)
+
+    SingleT=FinalWPlots.Get("SingleT")
+    SingleT_rb=SingleT.Rebin(len(Binning)-1,"",Binning)
+
+    VV=FinalWPlots.Get("VV")
+    VV_rb=VV.Rebin(len(Binning)-1,"",Binning)
+
+    W=FinalWPlots.Get("W")
+    W_rb=W.Rebin(len(Binning)-1,"",Binning)
+
+    Data=FinalWPlots.Get("data")
+    Data_rb=Data.Rebin(len(Binning)-1,"",Binning)
+
+    
+    QCD=FinalWPlots.Get("XXX")
+    QCD_rb=QCD.Rebin(len(Binning)-1,"",Binning)
+    QCD_rb.Scale(qcdEstim/QCD_rb.Integral())
+
+    dataMCScale=(Data.Integral()- ( qcdEstim+TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())) / W.Integral()
+    print "Scale Factor is =",     dataMCScale
+    print "Num is  =", Data.Integral()- ( qcdEstim + TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())
+    print "Denum is =",  W.Integral()
+
+    myOut = TFile("fileWEstim.root" , 'RECREATE') # Name Of the output file
+    
+    
+        
+    tDirectory= myOut.mkdir("beforeScale")
+    tDirectory.cd()
+    tDirectory.WriteObject(VV_rb,"VV")
+    tDirectory.WriteObject(W_rb,"W")
+    tDirectory.WriteObject(TT_rb,"TT")
+    tDirectory.WriteObject(SingleT_rb,"SingleTop")
+    tDirectory.WriteObject(ZTT_rb,"ZTT")
+    tDirectory.WriteObject(QCD_rb,"QCD")
+    tDirectory.WriteObject(Data_rb,"data_obs")
+
+    tDirectory= myOut.mkdir("afterScale")
+    tDirectory.cd()
+    tDirectory.WriteObject(VV_rb,"VV")
+    W_rb.Scale(  dataMCScale)
+    tDirectory.WriteObject(W_rb,"W")
+    tDirectory.WriteObject(TT_rb,"TT")
+    tDirectory.WriteObject(SingleT_rb,"SingleTop")
+    tDirectory.WriteObject(ZTT_rb,"ZTT")
+    tDirectory.WriteObject(QCD_rb,"QCD")
+    tDirectory.WriteObject(Data_rb,"data_obs")
+
+    myOut.Close()
+    
+
 
 
 

@@ -44,7 +44,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
     InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
     cout << "QCD= " << QCD->Integral() << "\n";
-    hs.Add(QCD);
+//    hs.Add(QCD);
     
     TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
     InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
