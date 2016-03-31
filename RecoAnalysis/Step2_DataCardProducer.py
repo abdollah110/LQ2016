@@ -31,8 +31,8 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-#SubRootDir = 'OutFiles/'
-SubRootDir = 'OLD/'
+SubRootDir = 'OutFiles/'
+#SubRootDir = 'OLD/'
 
 
 verbos_ = False
@@ -361,6 +361,16 @@ if __name__ == "__main__":
     MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
     MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
+##########################################
+    Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000])
+    NormMC="_ST_JetBJet_SS"
+    ShapeMC="_ST_JetBJet_SS"
+    ShapeW="_ST_JetBJet_SS"
+    NormQCD="_ST_JetBJet_SS"
+    ShapeQCD="_ST_JetBJet_SS_AntiIso"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+    
     ##########################################
     Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200])
     NormMC="_tmass_OS"
@@ -414,13 +424,13 @@ if __name__ == "__main__":
 
 ##########################################
     Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000])
-    NormMC="_ST_JetBJetFinal_SS_AntiIso"
-    ShapeMC="_ST_JetBJetFinal_SS_AntiIso"
-    ShapeW="_ST_JetBJetFinal_SS_AntiIso"
-    NormQCD="_ST_JetBJetFinal_SS_AntiIso"
-    ShapeQCD="_ST_JetBJetFinal_SS_AntiIso"
-#    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-#    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
+    NormMC="_ST_JetBJetFinal_SS_TauAntiIsoLepIso"
+    ShapeMC="_ST_JetBJetFinal_SS_TauAntiIsoLepIso"
+    ShapeW="_ST_JetBJetFinal_SS_TauAntiIsoLepIso"
+    NormQCD="_ST_JetBJetFinal_SS_TauAntiIsoLepIso"
+    ShapeQCD="_ST_JetBJetFinal_SS_Total"
+    MakeTheHistogram("MuTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    MakeTheHistogram("EleTau",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",1,Binning)
 
 ##########################################
     Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000])

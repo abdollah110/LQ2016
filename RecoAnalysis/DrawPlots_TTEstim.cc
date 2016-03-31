@@ -15,8 +15,8 @@
 #include <TPaveText.h>
 #include <THStack.h>
 #include <algorithm>    // std::max
-#include "interface/HttStyles.h"
-#include "interface/HttStyles.cc"
+#include "../interface/HttStyles.h"
+#include "../interface/HttStyles.cc"
 
 
 
