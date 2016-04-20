@@ -1,5 +1,5 @@
-#include "interface/LQ3Analyzer.h"
-#include "interface/WeightCalculator.h"
+#include "../interface/LQ3Analyzer.h"
+#include "../interface/WeightCalculator.h"
 #include <string>
 #include <ostream>
 
@@ -25,11 +25,11 @@ int main(int argc, char** argv) {
     //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
     //    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
     //        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
-    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_Nov17.root");
+    TFile * PUData= TFile::Open("../interface/pileup-hists/Data_Pileup_2015D_Nov17.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());
     
-    TFile * PUMC= TFile::Open("pileup-hists/MC_Spring15_PU25_Startup.root");
+    TFile * PUMC= TFile::Open("../interface/pileup-hists/MC_Spring15_PU25_Startup.root");
     TH1F * HistoPUMC= (TH1F *) PUMC->Get("pileup");
     HistoPUMC->Scale(1.0/HistoPUMC->Integral());
     
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
         cout.precision(6);
         
         
-        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/V2/";
+        std::string ROOTLoc= "/Users/abdollah1/GIT_abdollah110/LQ2016/ROOT/V3_FR_TauIso10/";
         vector<float> DY_Events = DY_HTBin(ROOTLoc);
         vector<float> W_Events = W_HTBin(ROOTLoc);
         
@@ -249,17 +249,63 @@ int main(int argc, char** argv) {
                             IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                         
                         bool MuPtCut = muPt->at(imu) > 50 && fabs(muEta->at(imu)) < 2.1 ;
-//                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
+                        //                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                         bool MuIdIso=1;
-                        bool TauPtCut = tauPt->at(itau) > 30  && fabs(tauEta->at(itau)) < 2.3 ;
-                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
+                        bool TauPtCut = tauPt->at(itau) > 45  && fabs(tauEta->at(itau)) < 2.3 ;
+                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05
+                        ;
                         
                         
                         
-                        TLorentzVector Mu4Momentum, Tau4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, Extraele4Momentum;
+                        TLorentzVector Mu4Momentum, Tau4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, Extraele4Momentum,KJet4Momentum;
                         Mu4Momentum.SetPtEtaPhiM(muPt->at(imu),muEta->at(imu),muPhi->at(imu),MuMass);
                         Tau4Momentum.SetPtEtaPhiM(tauPt->at(itau),tauEta->at(itau),tauPhi->at(itau),tauMass->at(itau));
                         Z4Momentum=Mu4Momentum+Tau4Momentum;
+                        
+                        
+                        //###########      Finding the close jet near tau   ###########################################################
+                        float CLoseJetTauPt=tauPt->at(itau);
+                        float CLoseJetTauEta=tauEta->at(itau);
+                        float CLoseJetMuPt=muPt->at(imu);
+                        float CLoseJetMuEta=muEta->at(imu);
+                        
+                        if (TauPtCut&& TauPtCut && MuPtCut && MuIdIso ){
+                            double Refer_R_jettau = 5;
+                            double Refer_R_jetmu = 5;
+                            
+                            for (int kjet= 0 ; kjet < nJet ; kjet++){
+                                KJet4Momentum.SetPtEtaPhiE(jetPt->at(kjet),jetEta->at(kjet),jetPhi->at(kjet),jetEn->at(kjet));
+                            
+                                if (KJet4Momentum.DeltaR(Tau4Momentum) < Refer_R_jettau) {
+                                    Refer_R_jettau = KJet4Momentum.DeltaR(Tau4Momentum);
+                                    if (Refer_R_jettau < 0.5 && jetPt->at(kjet)  >= tauPt->at(itau)) {
+                                        CLoseJetTauPt = jetPt->at(kjet);
+                                        CLoseJetTauEta = jetEta->at(kjet);
+                                        
+                                    }
+                                    
+
+                                }
+
+                                if (KJet4Momentum.DeltaR(Mu4Momentum) < Refer_R_jetmu) {
+                                    Refer_R_jetmu = KJet4Momentum.DeltaR(Mu4Momentum);
+                                    if (Refer_R_jetmu < 0.5 && jetPt->at(kjet)  >= muPt->at(imu)) {
+                                        CLoseJetMuPt = jetPt->at(kjet);
+                                        CLoseJetMuEta = jetEta->at(kjet);
+                                        
+                                    }
+                                    
+                                }
+                                
+                                
+                            }
+                        }
+                        
+                        
+
+                        
+                        
+                        
                         
                         
                         //###########      Extra Mu Veto   ###########################################################
@@ -368,7 +414,7 @@ int main(int argc, char** argv) {
                         
                         
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
-
+                        
                         
                         //###############################################################################################
                         //  Tau Lep Charge Categorization
@@ -396,8 +442,9 @@ int main(int argc, char** argv) {
                         
                         
                         bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,TauAntiIso,LepIso,LepAntiIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
-
+                        std::string iso_Cat[size_isoCat] = {
+                            "", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
+                        
                         //###############################################################################################
                         //  MT Categorization
                         //###############################################################################################
@@ -450,11 +497,16 @@ int main(int argc, char** argv) {
                                                                     
                                                                     plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
                                                                     plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
                                                                     plotFill("MuTau_IsoMu"+FullStringName,IsoMu,1000,0,20,TotalWeight);
-                                                                    //                                                                plotFill("MuTau_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
-                                                                    //                                                                plotFill("MuTau_MuEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
-                                                                    //                                                                plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
+                                                                    plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
+                                                                    plotFill("MuTau_LepEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
+                                                                    plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),400,0,400,TotalWeight);
+                                                                    plotFill("MuTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,TotalWeight);
+                                                                    plotFill("MuTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,400,0,400,TotalWeight);
+                                                                    plotFill("MuTau_CloseJetTauEta"+FullStringName,CLoseJetTauEta,100,-2.5,2.5,TotalWeight);
+                                                                    plotFill("MuTau_CloseJetMuPt"+FullStringName,CLoseJetMuPt,400,0,400,TotalWeight);
+                                                                    plotFill("MuTau_CloseJetMuEta"+FullStringName,CLoseJetMuEta,100,-2.5,2.5,TotalWeight);
+
                                                                     //                                                                plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
                                                                     //                                                                plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
                                                                     //                                                                plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
@@ -700,8 +752,8 @@ int main(int argc, char** argv) {
                         bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoEle < 0.10;
                         bool Total = 1;
-
-
+                        
+                        
                         bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
                         std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
                         

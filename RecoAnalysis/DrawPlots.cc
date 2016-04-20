@@ -77,13 +77,13 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
 
     
-    //    TH1F* signal = (TH1F*) input->Get((channel + "bba150").c_str());
-    //    signal->Scale(10);
-    //    InitSignal(signal);
-    //    cout << "signal= "<<signal->Integral()<<"\n";
-    //    //    signal->SetFillColor(kGreen);
-    //    //    signal->SetLineColor(kGreen);
-    //    hs.Add(signal);
+        TH1F* signal = (TH1F*) input->Get((channel + "LQ_700").c_str());
+        signal->Scale(10);
+        InitSignal(signal);
+        cout << "signal= "<<signal->Integral()<<"\n";
+        //    signal->SetFillColor(kGreen);
+        //    signal->SetLineColor(kGreen);
+//        hs.Add(signal);
     
     
     canv->cd();
@@ -97,10 +97,11 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     zero->SetTitle("");
     zero->GetXaxis()->SetTitle(xTitle.c_str());
     cout<<"max(hs.GetMaximum(),data->GetMaximum())"<<hs.GetMaximum()<<"   "<<data->GetMaximum()<<"\n";
-    zero->SetMaximum(1.5*max(hs.GetMaximum(),data->GetMaximum()));
+    zero->SetMaximum(2*max(hs.GetMaximum(),data->GetMaximum()));
     zero->Draw();
     
     hs.Draw("histsame");
+    signal->Draw("histsame");
     //    data->SetBinContent(1,0);
     //    data->SetBinContent(2,0);
     //    data->SetBinContent(3,0);
@@ -113,7 +114,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
     
     const char* dataset;
-    dataset = "CMS Preliminary,     1.56 fb^{-1} at 13 TeV";
+    dataset = "CMS Preliminary,     2.2 fb^{-1} at 13 TeV";
     CMSPrelim(dataset, "", 0.17, 0.835);
     
     
@@ -129,6 +130,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     leg->AddEntry(TT, "t#bar{t}", "F");
     leg->AddEntry(W, "electroweak", "F");
     leg->AddEntry(QCD, "QCD", "F");
+    leg->AddEntry(signal, "LQ_700 GeV  (x 10)", "F");
     leg->Draw();
     
 
@@ -151,30 +153,27 @@ void DrawPlots() {
     
     
     
-    const int numPlots=6;
-    const int numCat=2;
+    const int numPlots=8;
+    const int numCat=1;
     
-    const int numch =1;
-    
-    
-    
-
+    const int numch =2;
     
     
-    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_HighMT_OS_Total","_tmass_HighMT_SS_TauIsoLepAntiIso","_tmass_HighMT_OS_TauIsoLepAntiIso","_tmass_HighMT_OS_LepIso","_tmass_HighMT_SS"};
-    string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]"};
+ 
+    string Names [numPlots]= {"_tmass_OS","_VisMass_OS","_ST_JetBJet_OS","_ST_JetBJetFinal_OS","_M_taujet_OS","_ST_MET_OS","_MET_OS","_ST_MET_OS_TauIsoLepAntiIso"};
+    string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","VisMass(lep,#tau)  [GeV]","ST  [GeV]"," ST (#tauPT > 50, M_{#tauj} > 250  [GeV]","M_{#tauj}  [GeV]","ST_{l#taujjMET}  [GeV]","MET  [GeV]","ST_{l#taujjMET}  [GeV] lepAntiIso"};
     
 //    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
-        string category[numCat] = {"_inclusive","_DiNonBJet"};
-//    string channelDirectory[numch] = {"muTau", "eleTau"};
-        string channelDirectory[numch] = {"MuTau"};
+        string category[numCat] = {"_JetBJet"};
+    string channelDirectory[numch] = {"MuTau", "EleTau"};
+//        string channelDirectory[numch] = {"MuTau"};
     
     
     for (int iname=0;iname < numPlots;iname++){
         for (int iCat=0;iCat < numCat;iCat++){
             for (int ich=0;ich < numch;ich++){
                 cout<< "\n\n\n ------------------------------------------  Start New plot\n";
-                string RootName="WEstimation_TotalRootForLimit_"+channelDirectory[ich]+Names[iname]+".root";
+                string RootName="TotalRootForLimit_"+channelDirectory[ich]+Names[iname]+".root";
                 string ChanCat=channelDirectory[ich]+category[iCat]+"/";
                 string LegName=channelDirectory[ich]+category[iCat];
                 string OutName="Plot_"+channelDirectory[ich]++category[iCat]+Names[iname];

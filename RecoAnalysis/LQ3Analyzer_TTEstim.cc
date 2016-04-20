@@ -1,5 +1,6 @@
 #include "../interface/LQ3Analyzer.h"
 #include "../interface/WeightCalculator.h"
+#include "../interface/Corrector.h"
 #include <string>
 #include <ostream>
 
@@ -33,6 +34,29 @@ int main(int argc, char** argv) {
     TFile * PUMC= TFile::Open("pileup-hists/MC_Spring15_PU25_Startup.root");
     TH1F * HistoPUMC= (TH1F *) PUMC->Get("pileup");
     HistoPUMC->Scale(1.0/HistoPUMC->Integral());
+    
+    TFile * MuCorrId= TFile::Open("../interface/pileup-hists/MuonID_Z_RunCD_Reco74X_Dec1.root");
+    TH2F * HistoMuId= (TH2F *) MuCorrId->Get("NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1/pt_abseta_ratio");
+    
+    TFile * MuCorrIso= TFile::Open("../interface/pileup-hists/MuonIso_Z_RunCD_Reco74X_Dec1.root");
+    TH2F * HistoMuIso= (TH2F *) MuCorrIso->Get("NUM_TightRelIso_DEN_MediumID_PAR_pt_spliteta_bin1/pt_abseta_ratio");
+    
+    TFile * MuCorrTrg= TFile::Open("../interface/pileup-hists/SingleMuonTrigger_Z_RunCD_Reco74X_Dec1.root");
+    TH2F * HistoMuTrg= (TH2F *) MuCorrTrg->Get("runD_Mu45_eta2p1_PtEtaBins/pt_abseta_ratio");
+    
+    
+    TFile * ElectronIdIso= TFile::Open("../interface/pileup-hists/Electron_IdIso0p10_eff.root");
+    
+    TGraphAsymmErrors *	eleMCEnd =  (TGraphAsymmErrors *) ElectronIdIso->Get("ZMassEtaGt1p48_MC");
+    TGraphAsymmErrors *	eleMCBar = (TGraphAsymmErrors *) ElectronIdIso->Get("ZMassEtaLt1p48_MC");
+    TGraphAsymmErrors *	eleDataEnd =  (TGraphAsymmErrors *) ElectronIdIso->Get("ZMassEtaGt1p48_Data");
+    TGraphAsymmErrors *	eleDataBar = (TGraphAsymmErrors *) ElectronIdIso->Get("ZMassEtaLt1p48_Data");
+    
+    vector<TGraphAsymmErrors *> EleScaleFactor;
+    EleScaleFactor.push_back(eleMCEnd);
+    EleScaleFactor.push_back(eleMCBar);
+    EleScaleFactor.push_back(eleDataEnd);
+    EleScaleFactor.push_back(eleDataBar);
     
     
     for (int k = 0; k < input.size(); k++) {
@@ -148,7 +172,7 @@ int main(int argc, char** argv) {
         
         float LumiWeight = 1;
         
-
+        
         
         
         
@@ -159,17 +183,20 @@ int main(int argc, char** argv) {
             if (i % 10000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
             fflush(stdout);
             
-            if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
-//            cout<<"LumiWeight is "<<LumiWeight<<"\n";
             
+            
+            
+            //###############################################################################################
+            //  Weight Calculation
+            //###############################################################################################
+            float LumiWeight = 1;
             float GetGenWeight=1;
             float PUWeight = 1;
             
             if (!isData){
                 
+                if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
                 GetGenWeight=genWeight;
-                //                cout<<"   and GenHT = "<<genHT<<"\n";
-                
                 
                 int puNUmmc=int(puTrue->at(0)*10);
                 int puNUmdata=int(puTrue->at(0)*10);
@@ -178,200 +205,125 @@ int main(int argc, char** argv) {
                 PUWeight= PUData_/PUMC_;
             }
             float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
-            //            float TotalWeight = LumiWeight * GetGenWeight;
+            //###############################################################################################
+            //  Histogram Filling
+            //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
-            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
+//            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
             plotFill("WeightPU",PUWeight,50,0,5);
+            plotFill("WeightTotal",TotalWeight,200,0,2);
             plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
             plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
             for (int qq=0; qq < 50;qq++){
                 if ((HLTEleMuX >> qq & 1) == 1)
                     plotFill("HLT",qq,50,0,50,TotalWeight);
             }
+
+            
             
             //###############################################################################################
-            //  Doing MuTau Analysis
-            //###############################################################################################
-            
-            
-            
-//            
-//            //Loop over Di-Mu events
-//            bool IsthereDiMuon= false;
-//            for  (int imu=0 ; imu < nMu; imu++){
-//                for  (int jmu=0 ; jmu < nMu; jmu++){
-//                    
-//                    
-//                    bool MuPtCut1 = muPt->at(imu) > 15 && fabs(muEta->at(imu)) < 2.4 ;
-//                    float IsoMu1=muPFChIso->at(imu)/muPt->at(imu);
-//                    if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
-//                        IsoMu1= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
-//                    bool MuIdIso1=(muIsLooseID->at(imu) > 0 && IsoMu1 < 0.30 && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
-//                    
-//                    
-//                    
-//                    bool MuPtCut2 = muPt->at(jmu) > 15 && fabs(muEta->at(jmu)) < 2.4 ;
-//                    float IsoMu2=muPFChIso->at(jmu)/muPt->at(jmu);
-//                    if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
-//                        IsoMu2= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
-//                    bool MuIdIso2=(muIsLooseID->at(jmu) > 0 && IsoMu2 < 0.30 && fabs(muD0->at(jmu)) < 0.045 && fabs(muDz->at(jmu)) < 0.2);
-//                    
-//                    
-//                    bool  OS = muCharge->at(imu) * muCharge->at(jmu) < 0;
-//                    
-//                    if(MuIdIso1 && MuIdIso2 && OS)
-//                        IsthereDiMuon=true;
-//                    
-//                }
-//            }
-//            //###############################################################################################
-//            
-//            
-//            //                    //
-//            //                    //Loop over Di-Electron events
-//            bool IsthereDieleon= false;
-//
-//            for  (int iele=0 ; iele < nEle; iele++){
-//                for  (int jele=0 ; jele < nEle; jele++){
-//                    
-//                    
-//                    
-//                    bool eleMVAId= false;
-//                    if (fabs (eleSCEta->at(iele)) < 0.8 && eleIDMVANonTrg->at(iele) > 0.967083) eleMVAId= true;
-//                    else if (fabs (eleSCEta->at(iele)) >  0.8 &&fabs (eleSCEta->at(iele)) <  1.5 && eleIDMVANonTrg->at(iele) > 0.929117) eleMVAId= true;
-//                    else if ( fabs (eleSCEta->at(iele)) >  1.5 && eleIDMVANonTrg->at(iele) > 0.726311 ) eleMVAId= true;
-//                    else eleMVAId= false;
-//                    bool elePtCut1 = elePt->at(iele) > 15 && fabs(eleEta->at(iele)) < 2.5 ;
-//                    float Isoele1=elePFChIso->at(iele)/elePt->at(iele);
-//                    if ( (elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele) )  > 0.0)
-//                        Isoele1= ( elePFChIso->at(iele)/elePt->at(iele) + elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))/elePt->at(iele);
-//                    bool eleIdIso1=( eleMVAId  && Isoele1 < 0.30 && fabs(eleD0->at(iele)) < 0.045 && fabs(eleDz->at(iele)) < 0.2);
-//                    
-//                    
-//                    
-//                    
-//                    bool eleMVAIdj= false;
-//                    if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) > 0.967083) eleMVAIdj= true;
-//                    else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) > 0.929117) eleMVAIdj= true;
-//                    else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) > 0.726311 ) eleMVAIdj= true;
-//                    else eleMVAIdj= false;
-//                    bool elePtCut2 = elePt->at(jele) > 15 && fabs(eleEta->at(jele)) < 2.5 ;
-//                    float Isoele2=elePFChIso->at(jele)/elePt->at(jele);
-//                    if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele) )  > 0.0)
-//                        Isoele2= ( elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
-//                    bool eleIdIso2=( eleMVAIdj && Isoele2 < 0.30 && fabs(eleD0->at(jele)) < 0.045 && fabs(eleDz->at(jele)) < 0.2);
-//                    
-//                    
-//                    bool  OS = eleCharge->at(iele) * eleCharge->at(jele) < 0;
-//                    
-//                    if(eleIdIso1 && eleIdIso2 && OS)
-//                        IsthereDieleon=true;
-//                    
-//                }
-//            }
-//            //
-            
+            //  Doing MuEle Analysis
             //###############################################################################################
             
             
             //Loop over MuEle events
             for  (int imu=0 ; imu < nMu; imu++){
-              for  (int iele=0 ; iele < nEle; iele++){
+                for  (int iele=0 ; iele < nEle; iele++){
                     
                     
                     float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
                     if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
                         IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                     
-                    bool MuPtCut = muPt->at(imu) > 30 && fabs(muEta->at(imu)) < 2.1 ;
-                    bool MuIdIso=(muIsMediumID->at(imu) > 0 && IsoMu < 0.12 && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
-                  
+                    bool MuPtCut = muPt->at(imu) > 40 && fabs(muEta->at(imu)) < 2.1 ;
+                    bool MuIdIso=(muIsMediumID->at(imu) > 0 && IsoMu < 0.10 && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
+                    
                     
                     
                     TLorentzVector Mu4Momentum,  ele4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, Extraele4Momentum;;
                     Mu4Momentum.SetPtEtaPhiM(muPt->at(imu),muEta->at(imu),muPhi->at(imu),MuMass);
-                  ele4Momentum.SetPtEtaPhiM(elePt->at(iele),eleEta->at(iele),elePhi->at(iele),eleMass);
-                  Z4Momentum=ele4Momentum+Mu4Momentum;
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  float IsoEle=elePFChIso->at(iele)/elePt->at(iele);
-                  if ( (elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))  > 0.0)
-                      IsoEle= (elePFChIso->at(iele)/elePt->at(iele) + elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))/elePt->at(iele);
-                  
-                  bool eleMVAId= false;
-                  if (fabs (eleSCEta->at(iele)) < 0.8 && eleIDMVANonTrg->at(iele) > 0.967083) eleMVAId= true;
-                  else if (fabs (eleSCEta->at(iele)) >  0.8 &&fabs (eleSCEta->at(iele)) <  1.5 && eleIDMVANonTrg->at(iele) > 0.929117) eleMVAId= true;
-                  else if ( fabs (eleSCEta->at(iele)) >  1.5 && eleIDMVANonTrg->at(iele) > 0.726311 ) eleMVAId= true;
-                  else eleMVAId= false;
-                  
-                  
+                    ele4Momentum.SetPtEtaPhiM(elePt->at(iele),eleEta->at(iele),elePhi->at(iele),eleMass);
+                    Z4Momentum=ele4Momentum+Mu4Momentum;
+                    
+                    
+                    
+                    
+                    float IsoEle=elePFChIso->at(iele)/elePt->at(iele);
+                    if ( (elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))  > 0.0)
+                        IsoEle= (elePFChIso->at(iele)/elePt->at(iele) + elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))/elePt->at(iele);
+                    
+                    bool eleMVAId= false;
+                    if (fabs (eleSCEta->at(iele)) < 0.8 && eleIDMVANonTrg->at(iele) > 0.967083) eleMVAId= true;
+                    else if (fabs (eleSCEta->at(iele)) >  0.8 &&fabs (eleSCEta->at(iele)) <  1.5 && eleIDMVANonTrg->at(iele) > 0.929117) eleMVAId= true;
+                    else if ( fabs (eleSCEta->at(iele)) >  1.5 && eleIDMVANonTrg->at(iele) > 0.726311 ) eleMVAId= true;
+                    else eleMVAId= false;
+                    
+                    
+                    
+                    
+                    
+                    bool elePtCut = elePt->at(iele) > 40 && fabs(eleEta->at(iele)) < 2.1 ;
+                    bool eleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele) && IsoEle < 0.10);
+                    
+                    
+                    
+                    float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
+                    float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
+                    
+                    TotalWeight= TotalWeight * muCorr * eleCorr;
 
-                  
-                  
-                  bool elePtCut = elePt->at(iele) > 30 && fabs(eleEta->at(iele)) < 2.1 ;
-                  bool eleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele) && IsoEle < 0.12);
-
-                  
-
-                  
-                  
-                  
-                  
-                  
-                  //###########      Extra Mu Veto   ###########################################################
-                  bool extraMuonExist= false;
-//                  for  (int jmu=0 ; jmu < nMu; jmu++){
-//                      //                        cout<<"step3\n";
-//                      ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
-//                      
-//                      if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
-//                      if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
-//                      
-//                      float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
-//                      if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
-//                      IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
-//                      
-//                      if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
-//                      
-//                      extraMuonExist=true;
-//                  }
-                  //###########      Extra Ele Veto   ###########################################################
-                  
-                  bool extraElectronExist= false;
-//                  for  (int jele=0 ; jele < nEle; jele++){
-//                      //                        cout<<"step4\n";
-//                      Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
-//                      
-//                      if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
-//                      if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
-//                      
-//                      float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
-//                      if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
-//                      IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
-//                      
-//                      bool eleMVAIdExtra= false;
-//                      if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
-//                      else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
-//                      else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
-//                      else eleMVAIdExtra= false;
-//                      
-//                      
-//                      if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
-//                      extraElectronExist= true;
-//                      
-//                  }
-                  
-                //################################################################################################
-                  
-                  
-                  
+                    plotFill("Weight_Mu",muCorr,200,0,2);
+                    plotFill("Weight_Ele",eleCorr,200,0,2);
+                    
+                    //###########      Extra Mu Veto   ###########################################################
+                    bool extraMuonExist= false;
+                    //                  for  (int jmu=0 ; jmu < nMu; jmu++){
+                    //                      //                        cout<<"step3\n";
+                    //                      ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
+                    //
+                    //                      if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
+                    //                      if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
+                    //
+                    //                      float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
+                    //                      if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
+                    //                      IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
+                    //
+                    //                      if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
+                    //
+                    //                      extraMuonExist=true;
+                    //                  }
+                    //###########      Extra Ele Veto   ###########################################################
+                    
+                    bool extraElectronExist= false;
+                    //                  for  (int jele=0 ; jele < nEle; jele++){
+                    //                      //                        cout<<"step4\n";
+                    //                      Extraele4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
+                    //
+                    //                      if (Extraele4Momentum.DeltaR(Mu4Momentum) < 0.5  || Extraele4Momentum.DeltaR(ele4Momentum) < 0.5 ) continue;
+                    //                      if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
+                    //
+                    //                      float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
+                    //                      if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
+                    //                      IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
+                    //
+                    //                      bool eleMVAIdExtra= false;
+                    //                      if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
+                    //                      else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
+                    //                      else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
+                    //                      else eleMVAIdExtra= false;
+                    //
+                    //
+                    //                      if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
+                    //                      extraElectronExist= true;
+                    //
+                    //                  }
+                    
+                    //################################################################################################
+                    
+                    
+                    
                     bool  GeneralMuEleSelection= !extraMuonExist && MuPtCut && MuIdIso && Mu4Momentum.DeltaR(ele4Momentum) > 0.5 && !extraElectronExist && elePtCut &&  eleIdIso;
+                    if ( GeneralMuEleSelection && muCorr==0)   cout <<"!!!!!!!!!!!! "<< muPt->at(imu)<< "   "<< muEta->at(imu)<<"\n";
                     
                     vector<float> EveJetPt;
                     vector<float> EveBJetPt;
@@ -380,7 +332,7 @@ int main(int argc, char** argv) {
                     
                     for (int ijet= 0 ; ijet < nJet ; ijet++){
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                        if (jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.5  && Jet4Momentum.DeltaR(ele4Momentum) > 0.5  && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                        if (jetPt->at(ijet) > 40 && fabs(jetEta->at(ijet)) < 2.5  && Jet4Momentum.DeltaR(ele4Momentum) > 0.5  && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                             EveJetPt.push_back(jetPt->at(ijet));
                             if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.89 ){
                                 EveBJetPt.push_back(jetPt->at(ijet));
@@ -393,7 +345,7 @@ int main(int argc, char** argv) {
                     bool JetBJet_Selection=EveJetPt.size() > 1& EveBJetPt.size()> 0 && (EveBJetPt[0]== EveJetPt[0] || EveBJetPt[0] ==EveJetPt[1]);
                     if (JetBJet_Selection){
                         ST_JetBjet=EveJetPt[0]+EveJetPt[1]+muPt->at(imu)+elePt->at(iele);
-                       if ((EveJetPt[0]-EveJetPt[0]) * (EveBJetPt[0] - EveJetPt[1])) cout<<"MisMatch ij Jet BJet "<<"\n";
+                        if ((EveJetPt[0]-EveJetPt[0]) * (EveBJetPt[0] - EveJetPt[1])) cout<<"MisMatch ij Jet BJet "<<"\n";
                     }
                     float ST_DiJet=0;
                     bool DiJet_Selection=EveJetPt.size() > 1;
@@ -412,7 +364,7 @@ int main(int argc, char** argv) {
                     //  Tau Lep Charge Categorization
                     //###############################################################################################
                     const int size_Q = 1;
-//                    bool charge_No = 1;
+                    //                    bool charge_No = 1;
                     bool charge_OS = muCharge->at(imu) * eleCharge->at(iele) < 0;
                     bool charge_SS = muCharge->at(imu) * eleCharge->at(iele) > 0;
                     bool charge_category[size_Q] = {charge_OS};
@@ -423,7 +375,7 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     const int size_isoCat = 1;
                     bool TightIso = 1;
-//                    bool RelaxIso = 1;
+                    //                    bool RelaxIso = 1;
                     bool Iso_category[size_isoCat] = {TightIso};
                     std::string iso_Cat[size_isoCat] = {""};
                     //###############################################################################################
@@ -474,13 +426,13 @@ int main(int argc, char** argv) {
                                                                 plotFill("MuEle_tmass"+FullStringName,tmass,200,0,2000,TotalWeight);
                                                                 plotFill("MuEle_VisMass"+FullStringName,Z4Momentum.M(),200,0,1000,TotalWeight);
                                                                 plotFill("MuEle_MuPt"+FullStringName,muPt->at(imu),200,0,200,TotalWeight);
-//                                                                plotFill("MuEle_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
+                                                                plotFill("MuEle_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
                                                                 plotFill("MuEle_MuEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
                                                                 plotFill("MuEle_ElePt"+FullStringName,elePt->at(iele),200,0,200,TotalWeight);
                                                                 plotFill("MuEle_EleEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,TotalWeight);
                                                                 plotFill("MuEle_NumJet"+FullStringName,EveJetPt.size(),10,0,10,TotalWeight);
                                                                 plotFill("MuEle_NumBJet"+FullStringName,EveBJetPt.size(),10,0,10,TotalWeight);
-                                                                if (ST_JetBjet < 300) plotFill("MuEle_NumBJet_STLess300"+FullStringName,EveBJetPt.size(),10,0,10,TotalWeight);
+                                                                if (ST_JetBjet < 700) plotFill("MuEle_NumBJet_STLess700"+FullStringName,EveBJetPt.size(),10,0,10,TotalWeight);
                                                                 if (EveJetPt.size() > 1) plotFill("MuEle_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
                                                                 if (EveJetPt.size() > 1) plotFill("MuEle_ST_JetBJet"+FullStringName,ST_JetBjet,100,0,1000,TotalWeight);
                                                                 
@@ -498,10 +450,10 @@ int main(int argc, char** argv) {
                 }
             }
             
-          
+            
             
             //###############################################################################################
-        
+            
             //##############  end of dielectron
             
         }

@@ -12,6 +12,8 @@
 #include "math.h"
 #include "TGaxis.h"
 #include "TLegend.h"
+#include "TGraph.h"
+#include "TGraphAsymmErrors.h"
 #include "TInterpreter.h"
 #include "TSystem.h"
 #include "TNtuple.h"
@@ -33,6 +35,13 @@
 
 float TMass_F(float pt3lep, float px3lep, float py3lep, float met, float metPhi) {
     return sqrt(pow(pt3lep + met, 2) - pow(px3lep + met * cos(metPhi), 2) - pow(py3lep + met * sin(metPhi), 2));
+}
+
+float deltaPhi(float a, float b) {
+    float result = a - b;
+    while (result > M_PI) result -= 2 * M_PI;
+    while (result <= -M_PI) result += 2 * M_PI;
+    return fabs(result);
 }
 
 

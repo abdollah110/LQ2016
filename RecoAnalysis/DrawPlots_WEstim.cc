@@ -147,7 +147,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     
 }
 
-void draw_prefit_Leppt_WEstim() {
+void DrawPlots_WEstim() {
     
     
     

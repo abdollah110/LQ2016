@@ -16,6 +16,13 @@
 #include <TLorentzVector.h>
 using namespace std;
 
+
+float WScaleFactor=1.0;
+float TTScaleFactor=1.0;
+//float WScaleFactor=1.22;
+//float TTScaleFactor=0.856;
+
+
 float XSection(std::string OutName) {
     
     
@@ -24,7 +31,7 @@ float XSection(std::string OutName) {
     
     
     //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
-//     if (OutName.compare("WJetsToLNu") == 0) return 50690;
+    //     if (OutName.compare("WJetsToLNu") == 0) return 50690;
     if (OutName.compare("WJetsToLNu_Inc") == 0) return 61526.7;
     else if (OutName.compare("WJetsToLNu_HT-100To200") == 0) return 1345;
     else if (OutName.compare("WJetsToLNu_HT-200To400") == 0) return 359.7;
@@ -50,16 +57,19 @@ float XSection(std::string OutName) {
     else if (OutName.compare("ST_tW_top_5f_inclusiveDecays") == 0) return 35.6;
     
     
-//    else if (OutName.compare("TTJets_DiLept") == 0) return (89.05);
-//    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46);
-//    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46);
+    //    else if (OutName.compare("TTJets_DiLept") == 0) return (89.05);
+    //    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46);
+    //    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46);
     
-//    else if (OutName.compare("TTJets_DiLept_Ext") == 0) return (89.05);
-//    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46);
-//    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46);
+    //    else if (OutName.compare("TTJets_DiLept_Ext") == 0) return (89.05);
+    //    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46);
+    //    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46);
     
-    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76 * 0.9);
-
+//    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76);
+//    else if (OutName.compare("NewTT") == 0) return (831.76);
+   
+    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76 * TTScaleFactor);
+//    else if (OutName.compare("NewTT") == 0) return (831.76 * 0.9);
     
     //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
     else if (OutName.compare("skimed_lq200.root") == 0) return 60.6;
@@ -90,6 +100,16 @@ float XSection(std::string OutName) {
     else if (OutName.compare("skimed_lq1450.root") == 0) return     3.21E-04;
     else if (OutName.compare("skimed_lq1500.root") == 0) return     2.40E-04;
     
+    
+    
+    
+    else if (OutName.compare("skimed_0_RHNu_1000-500") == 0) return      1.692E+00;
+    else if (OutName.compare("skimed_0_RHNu_1500-750") == 0) return      2.90E-01;
+    else if (OutName.compare("skimed_0_RHNu_2000-1000") == 0) return     6.563E-02;
+    else if (OutName.compare("skimed_0_RHNu_2500-1250") == 0) return     1.92E-02;
+    else if (OutName.compare("skimed_0_RHNu_3000-1500") == 0) return     6.030E-03;
+    
+    
     else {
         cout<<"Not Listed in XSection menu !!!! Watch cout \n";
         return 0;
@@ -110,7 +130,7 @@ vector <float> W_HTBin(std::string FileLoc){
     for (int i=0; i <WSize;i++){
         
         TFile * File_W = new TFile((FileLoc+W_ROOTFiles[i]).c_str());
-        TH1F * Histo_W = (TH1F*) File_W->Get("hcount");
+        TH1F * Histo_W = (TH1F*) File_W->Get("hEvents");
         W_events.push_back(Histo_W->GetBinContent(2));
         cout<<"Number of proccessed evenets for "<<W_ROOTFiles[i]<<" = "<<Histo_W->GetBinContent(2)<<"\n";
     }
@@ -130,7 +150,7 @@ vector <float> DY_HTBin(std::string FileLoc){
     for (int i=0; i < DYSize;i++){
         
         TFile * File_DY = new TFile((FileLoc+DY_ROOTFiles[i]).c_str());
-        TH1F * Histo_DY= (TH1F*) File_DY->Get("hcount");
+        TH1F * Histo_DY= (TH1F*) File_DY->Get("hEvents");
         DY_events.push_back(Histo_DY->GetBinContent(2));
         cout<<"Number of proccessed evenets for "<<DY_ROOTFiles[i]<<" = "<<Histo_DY->GetBinContent(2)<<"\n";
     }
@@ -165,12 +185,12 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     std::string LastPart = ".root";
     std::string newOut = M.substr(FirstPart.size());
     newOut = newOut.substr(0, newOut.size() - LastPart.size());
-//    cout<<"--->  Check Name is "<<newOut<<"\n";
+    //    cout<<"--->  Check Name is "<<newOut<<"\n";
     
     
     float LOtoNLO_DY = 1.230888662;
-    float LOtoNLO_W = 1.213783784;
-//    float luminosity=2154;
+    float LOtoNLO_W = 1.213783784 * WScaleFactor;
+    //    float luminosity=2154;
     float luminosity=    2262.946;
     
     size_t isSingleMu = outputName.find("SingleMu");
@@ -186,18 +206,18 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     if (isSingleMu != string::npos || isSingleEle!= string::npos)   return 1;
     
     else if (isWjet != string::npos) {
-//        return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
+        //        return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
         
-
         
-//    } else if (isDYJet != string::npos) {
-//        
-//        return luminosity*LOtoNLO_DY / (DY_events[0] / XSection("DYJetsToLL"));
-//        
-//    }
-//    
-//    
-//    else if (isWjet != string::npos) {
+        
+        //    } else if (isDYJet != string::npos) {
+        //
+        //        return luminosity*LOtoNLO_DY / (DY_events[0] / XSection("DYJetsToLL"));
+        //
+        //    }
+        //
+        //
+        //    else if (isWjet != string::npos) {
         if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu_Inc"));
@@ -217,43 +237,43 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     }
     
     
+    
+    
+    else if (isSignalLQ != string::npos) {
+        stringstream ss(outputName);
         
-        
-        else if (isSignalLQ != string::npos) {
-            stringstream ss(outputName);
-            
-            string token;
-            string M;
-            while (getline(ss,token, '/'))
-            {
-//                cout<< token <<endl;
-                M=token;
-            }
-            
-//            cout<<"last one is "<< M<<"\n";
-            
-            
-            
-            return luminosity * XSection(M)*1.0 / Histo->GetBinContent(2) ;
+        string token;
+        string M;
+        while (getline(ss,token, '/'))
+        {
+            //                cout<< token <<endl;
+            M=token;
         }
         
-        else
-            return luminosity * XSection(newOut)*1.0 / Histo->GetBinContent(2);
-//            return luminosity * XSection(newOut)*1.0 / Histo->Integral();  BUG found  25 Feb
-    
+        //            cout<<"last one is "<< M<<"\n";
         
+        
+        
+        return luminosity * XSection(M)*1.0 / Histo->GetBinContent(2) ;
     }
     
+    else
+        return luminosity * XSection(newOut)*1.0 / Histo->GetBinContent(2);
+    //            return luminosity * XSection(newOut)*1.0 / Histo->Integral();  BUG found  25 Feb
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
