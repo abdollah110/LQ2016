@@ -70,7 +70,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     TH1F* QCD = (TH1F*) input->Get((channel + "QCD").c_str());
     InitHist(QCD, "", "", TColor::GetColor(408, 106, 154), 1001);
     cout << "QCD= " << QCD->Integral() << "\n";
-//    hs.Add(QCD);
+    hs.Add(QCD);
     
     TH1F* W = (TH1F*) input->Get((channel + "W").c_str());
     InitHist(W, "", "", TColor::GetColor(200, 2, 285), 1001);
@@ -99,6 +99,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     zero->GetXaxis()->SetTitle(xTitle.c_str());
     cout<<"max(hs.GetMaximum(),data->GetMaximum())"<<hs.GetMaximum()<<"   "<<data->GetMaximum()<<"\n";
     zero->SetMaximum(1.5*max(hs.GetMaximum(),data->GetMaximum()));
+    zero->SetMaximum(2*data->GetMaximum());
     zero->Draw();
     
     hs.Draw("histsame");
@@ -123,7 +124,7 @@ void draw_prefit_Sample(std::string inputF, std::string channel, std::string xTi
     SetLegendStyle(leg);
     leg->AddEntry(data, "observed", "LP");
     leg->AddEntry(W, "W", "F");
-//    leg->AddEntry(QCD, "QCD", "F");
+    leg->AddEntry(QCD, "QCD", "F");
     leg->AddEntry(ZTT, "Z#rightarrow#tau#tau", "F");
     leg->AddEntry(TT, "t#bar{t}", "F");
     leg->AddEntry(SingleTop, "SingleTop", "F");
@@ -152,47 +153,7 @@ void DrawPlots_WEstim() {
     
     
     
-//    const int numPlots=1;
-//    const int numCat=2;
-//    
-//    const int numch =1;
-//    
-//    
-//    
-//    
-//    
-//    
-//    string Names [numPlots]= {"fileWEstim.root"};
-//    string Xaxis[numPlots]={ "ST  [GeV]"};
-//    
-//    
-//    string category[numCat] = {"beforeScale","afterScale"};
-//    string     legendN[numCat]= {"Before Scale Correction", "After Scale Correction"}
-//    string channelDirectory[numch] = {"MuTau"};
-//    
-//    
-//    for (int iname=0;iname < numPlots;iname++){
-//        for (int iCat=0;iCat < numCat;iCat++){
-//            for (int ich=0;ich < numch;ich++){
-//                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
-//                string RootName="fileWEstim.root";
-//                string ChanCat=category[iCat]+"/";
-//                string LegName=legendN[iCat];
-//                string OutName="Plot_"+category[iCat]+Names[iname];
-//                
-//                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
-//                
-//            }
-//        }
-//        
-//    }
-    
-    
-    
-    
-    
-    
-    const int numPlots=6;
+    const int numPlots=1;
     const int numCat=2;
     
     const int numch =1;
@@ -202,12 +163,12 @@ void DrawPlots_WEstim() {
     
     
     
-    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_LowMT_SS_Total","_tmass_HighMT_SS_TauIsoLepAntiIso","_tmass_LowMT_SS_LepIso","_tmass_HighMT_OS_TauIsoLepAntiIso","_tmass_HighMT_SS"};
-    string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]"};
+    string Names [numPlots]= {"fileWEstim.root"};
+    string Xaxis[numPlots]={ "ST  [GeV]"};
     
-    //    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
-    string category[numCat] = {"_inclusive","_DiNonBJet"};
-    //    string channelDirectory[numch] = {"muTau", "eleTau"};
+    
+    string category[numCat] = {"beforeScale","afterScale"};
+    string     legendN[numCat]= {"Before Scale Correction", "After Scale Correction"}
     string channelDirectory[numch] = {"MuTau"};
     
     
@@ -215,10 +176,10 @@ void DrawPlots_WEstim() {
         for (int iCat=0;iCat < numCat;iCat++){
             for (int ich=0;ich < numch;ich++){
                 cout<< "\n\n\n ------------------------------------------  Start New plot\n";
-                string RootName="WEstimation_TotalRootForLimit_"+channelDirectory[ich]+Names[iname]+".root";
-                string ChanCat=channelDirectory[ich]+category[iCat]+"/";
-                string LegName=channelDirectory[ich]+category[iCat];
-                string OutName="Plot_"+channelDirectory[ich]++category[iCat]+Names[iname];
+                string RootName="fileWEstim.root";
+                string ChanCat=category[iCat]+"/";
+                string LegName=legendN[iCat];
+                string OutName="Plot_"+category[iCat]+Names[iname];
                 
                 draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
                 
@@ -226,6 +187,46 @@ void DrawPlots_WEstim() {
         }
         
     }
+    
+    
+    
+    
+    
+    
+//    const int numPlots=6;
+//    const int numCat=2;
+//    
+//    const int numch =1;
+//    
+//    
+//    
+//    
+//    
+//    
+//    string Names [numPlots]= {"_tmass_HighMT_OS","_tmass_LowMT_SS_Total","_tmass_HighMT_SS_TauIsoLepAntiIso","_tmass_LowMT_SS_LepIso","_tmass_HighMT_OS_TauIsoLepAntiIso","_tmass_HighMT_SS"};
+//    string Xaxis[numPlots]={ "M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]","M_{T}(lep,MET)  [GeV]"};
+//    
+//    //    string category[numCat] = {"_inclusive","_JetBJet","_DiNonBJet"};
+//    string category[numCat] = {"_inclusive","_DiNonBJet"};
+//    //    string channelDirectory[numch] = {"muTau", "eleTau"};
+//    string channelDirectory[numch] = {"MuTau"};
+//    
+//    
+//    for (int iname=0;iname < numPlots;iname++){
+//        for (int iCat=0;iCat < numCat;iCat++){
+//            for (int ich=0;ich < numch;ich++){
+//                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
+//                string RootName="WEstimation_TotalRootForLimit_"+channelDirectory[ich]+Names[iname]+".root";
+//                string ChanCat=channelDirectory[ich]+category[iCat]+"/";
+//                string LegName=channelDirectory[ich]+category[iCat];
+//                string OutName="Plot_"+channelDirectory[ich]++category[iCat]+Names[iname];
+//                
+//                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
+//                
+//            }
+//        }
+//        
+//    }
     
     
 

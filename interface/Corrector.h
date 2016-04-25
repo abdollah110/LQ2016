@@ -624,10 +624,7 @@ float Cor74X_Trigger_Mu(float pt,float eta, TH2F* HistoTrg ){
     if (0.9 <= fabs(eta) && fabs(eta) < 1.2) etaBIN=2;
     if (1.2 <= fabs(eta) && fabs(eta) < 2.1) etaBIN=3;
     
-//    if (pt < 45 ) return  1;
-//    else
-//    return HistoTrg->GetBinContent(ptBIN,etaBIN);
-    return  1;
+    return HistoTrg->GetBinContent(ptBIN,etaBIN);
     
 }
 

@@ -36,7 +36,8 @@ ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
 #SubRootDir = 'OutFiles_WEstim/'
 #SubRootDir = 'OutFiles_WEstim_OLD/'
-SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
+#SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
+SubRootDir = 'OutFiles_WEstim_RelIso02/'
 
 verbos_ = False
 TauScale = [ ""]
@@ -47,7 +48,7 @@ def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
         os.makedirs(SubRootDir)
     myfile = TFile(SubRootDir + Name +CoMEnergy+ '.root')
     Histo =  myfile.Get(channel+HistoName + cat+ PostFix)
-    print "0--------->>>>>>  ", channel+HistoName + cat+ PostFix
+#    print "0--------->>>>>>  ", channel+HistoName + cat+ PostFix
     if not os.path.exists("Extra"):
         os.makedirs("Extra")
     NewFile=TFile("Extra/XXX.root","RECREATE")
@@ -151,43 +152,49 @@ def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,Na
 ##   Fit Functions
 #############################################################################################################
 def _FIT_Jet(x, p):
-    Land = p[1] * TMath.Landau(x[0], p[2], p[3])
-    Pol0 = p[0]
+    Land = p[2] * TMath.Landau(x[0], p[3], p[4])
+    Pol0 = p[0]+p[1]*x[0]
     return Land + Pol0
 def _FIT_Jet_Function(x, p):
-    Land = p[1] * TMath.Landau(x, p[2], p[3])
-    Pol0 = p[0]
+    Land = p[2] * TMath.Landau(x, p[3], p[4])
+    Pol0 = p[0]+p[1]*x
     return Land + Pol0
 
 
 
 def _FIT_Lepton( x,  par) :
-    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x[0])) + par[3]
+    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x[0]))
 def _FIT_Lepton_Function( x,  par) :
-    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x)) + par[3]
+    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x))
 
 
 category_FakeEstim= "_inclusive"
+#category_FakeApply= "_DiNonBJet"
 category_FakeApply= "_DiNonBJet"
 channelName="MuTau"
-FR_vs_LeptonPT=True
+FR_vs_LeptonPT=0
+if FR_vs_LeptonPT:
+    ObjectPT="_LepPt"
+    BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
+else:
+    ObjectPT="_CloseJetMuPt"
+    BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400])
+#HistoFakeNum=ObjectPT+"_LowMT_SS_TauAntiIsoLepIso"
+#HistoFakeDeNum=ObjectPT+"_LowMT_SSTauAntiIso"
+#HistoFakeNum=ObjectPT+"_LowMT_SS"
+#HistoFakeDeNum=ObjectPT+"_LowMT_SS_TauIso"
+HistoFakeNum=ObjectPT+"_LowMT_SS_LepIso"
+HistoFakeDeNum=ObjectPT+"_LowMT_SS_Total"
+
 #############################################################################################################
 ##   Calculating the Fake Rate ---> "Linear Fit, 2 parameters"
 #############################################################################################################
 def Make_Tau_FakeRate():
     
-    if FR_vs_LeptonPT:
-        Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
-        NormQCDNum="_LepPt_LowMT_SS_LepIso"
-        NormQCDDeNum="_LepPt_LowMT_SS_Total"
-    else:
-        Binning = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400])
-        NormQCDNum="_CloseJetMuPt_LowMT_SS_LepIso"
-        NormQCDDeNum="_CloseJetMuPt_LowMT_SS_Total"
 
-    ShapeNum=MakeTheHistogram(channelName,NormQCDNum,NormQCDNum,"",0,Binning,1,category_FakeEstim)
+    ShapeNum=MakeTheHistogram(channelName,HistoFakeNum,HistoFakeNum,"",0,BinningFake,1,category_FakeEstim)
     HistoNum=ShapeNum.Get("XXX")
-    ShapeDeNum=MakeTheHistogram(channelName,NormQCDDeNum,NormQCDDeNum,"",0,Binning,1,category_FakeEstim)
+    ShapeDeNum=MakeTheHistogram(channelName,HistoFakeDeNum,HistoFakeDeNum,"",0,BinningFake,1,category_FakeEstim)
     HistoDeNum=ShapeDeNum.Get("XXX")
 
 
@@ -198,13 +205,15 @@ def Make_Tau_FakeRate():
     canv = TCanvas("canv", "histograms", 600, 600)
 #    HistoNum.SetMinimum(0.5)
 #    HistoNum.GetXaxis().SetRangeUser(0,400)
+#    canv.SetLogy()
     canv.SetGridx()
     canv.SetGridy()
     HistoNum.SetTitle("")
-    HistoNum.GetXaxis().SetTitle("#mu p_{T} [GeV]")
+    if FR_vs_LeptonPT: HistoNum.GetXaxis().SetTitle("#mu p_{T} [GeV]")
+    else: HistoNum.GetXaxis().SetTitle("Jet p_{T} [GeV]")
     HistoNum.GetYaxis().SetTitle("Muon Fake Rate  (Tight Iso + Id / Id)")
     HistoNum.GetYaxis().SetTitleOffset(1.3)
-    HistoNum.GetYaxis().SetRangeUser(0,1)
+    HistoNum.GetYaxis().SetRangeUser(0.001,1)
     HistoNum.SetStats(0)
     HistoNum.SetMarkerStyle(20)
     
@@ -212,24 +221,25 @@ def Make_Tau_FakeRate():
 #    ######  Fit parameters for fake rate v.s. Jet Pt
 
 #####  Fit parameters for fake rate v.s. muon Pt
-    nPar = 4 # number of parameters in the fit
+ # number of parameters in the fit
     if FR_vs_LeptonPT:
-        
+        nPar = 3
         theFit=TF1("theFit", _FIT_Lepton, 50, 300,nPar)
         theFit.SetParameter(0, .2)
         theFit.SetParLimits(0, 0.1, 0.4)
         theFit.SetParameter(1, 4)
         theFit.SetParameter(2, -.30)
-        theFit.SetParameter(3, 0)
 
     else:
-        
+        nPar = 5
         theFit=TF1("theFit",_FIT_Jet,50,400,nPar)
         theFit.SetParLimits(0,    0,     0.5);
         theFit.SetParameter(0, 0.03)
-        theFit.SetParameter(1, 0.6)
-        theFit.SetParameter(2, -0.6)
-        theFit.SetParameter(3, 96.6)
+        theFit.SetParameter(1, 0)
+        theFit.SetParameter(2, 0.6)
+        theFit.SetParameter(3, -0.6)
+        theFit.SetParameter(4, 96.6)
+
 
 
     HistoNum.Fit("theFit", "R0")
@@ -242,8 +252,12 @@ def Make_Tau_FakeRate():
 
     canv.SaveAs("fitResults_LeptonFakeRate"+category_FakeEstim+channelName+".pdf")
     canv.SaveAs("fitResults_LeptonFakeRate"+category_FakeEstim+channelName+".root")
-    
-    return FitParam[0],FitParam[1],FitParam[2],FitParam[3]
+
+
+    if FR_vs_LeptonPT:
+        return FitParam[0],FitParam[1],FitParam[2]
+    else:
+        return FitParam[0],FitParam[1],FitParam[2],FitParam[3],FitParam[4]
 
 
     ##########################################    ##########################################    ##########################################
@@ -277,12 +291,17 @@ if __name__ == "__main__":
         else:
             FR= _FIT_Jet_Function(bin+1.5,FR_FitMaram)
         qcdEstim += value * FR/(1-FR)
-    print  "------> Final estimate is", qcdEstim
+    print  "\n\n\n\n------> Final QCD estimate is", qcdEstim, "\n\n\n\n"
     newcan.SaveAs("Onedplts.pdf")
     newcan.SaveAs("Onedplts.root")
     
     NormQCD="_ST_JetBJet_HighMT_OS"
+#    ShapeQCD="_ST_JetBJet_HighMT_OS_TauIsoLepAntiIso"
     ShapeQCD="_ST_JetBJet_HighMT_OS_TauIsoLepAntiIso"
+#    NormQCD="_VisMass_HighMT_OS"
+#    ShapeQCD="_VisMass_HighMT_OS_TauIsoLepAntiIso"
+#    Binning = array.array("d",[0,40,80,120,160,200,240,280,320,360,400,500,600])
+    Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000])
     FinalWPlots=MakeTheHistogram(channelName,NormQCD,ShapeQCD,"",0,Binning,0,category_FakeApply)
 
     TT=FinalWPlots.Get("TT")
@@ -309,11 +328,12 @@ if __name__ == "__main__":
     QCD_rb.Scale(qcdEstim/QCD_rb.Integral())
 
     dataMCScale=(Data.Integral()- ( qcdEstim+TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())) / W.Integral()
+    print "\n\n************************************************************"
     print "Scale Factor is =",     dataMCScale
     print "Num is  =", Data.Integral()- ( qcdEstim + TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())
     print "Denum is =",  W.Integral()
-
-    myOut = TFile("fileWEstim.root" , 'RECREATE') # Name Of the output file
+    print "************************************************************\n\n"
+    myOut = TFile("WEstimation_Check_Histograms.root" , 'RECREATE') # Name Of the output file
     
     
         

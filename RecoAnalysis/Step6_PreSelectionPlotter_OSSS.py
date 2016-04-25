@@ -23,11 +23,6 @@ from ctypes import *
 import ROOT as r
 import array
 
-##### Get Jet to Tau FR
-from Step7_TauFakeRate import Make_Tau_FakeRate
-from Step7_TauFakeRate import _FIT_Jet_Function
-##### Get Jet to Tau FR
-
 gROOT.Reset()
 import os
 
@@ -41,8 +36,7 @@ SubRootDir = 'OutFiles_PreSelection/'
 
 
 verbos_ = False
-#OS_SS_Ratio=1.06
-OS_SS_Ratio=1.00
+OS_SS_Ratio=1.06
 RB_=1
 
 TauScale = [ ""]
@@ -266,8 +260,6 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             WSampleQCDShapeHist=WSampleQCDShape.Get("XXX")
             DataSampleQCDShapeHist=DataSampleQCDShape.Get("XXX")
 
-            print "\n##########\nlooseQCDNORM before=",    DataSampleQCDShapeHist.Integral()
-            
             if (SingleTSampleQCDShapeHist) : DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
             if (VVSampleQCDShapeHist): DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
             DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
@@ -282,25 +274,20 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             WSampleQCDNormHist=WSampleQCDNorm.Get("XXX")
             DataSampleQCDNormHist=DataSampleQCDNorm.Get("XXX")
             
-
-            if (SingleTSampleQCDNormHist) : DataSampleQCDNormHist.Add(SingleTSampleQCDNormHist, -1)
-            if (VVSampleQCDNormHist): DataSampleQCDNormHist.Add(VVSampleQCDNormHist, -1)
-            DataSampleQCDNormHist.Add(TTSampleQCDNormHist, -1)
-            DataSampleQCDNormHist.Add(ZTTSampleQCDNormHist, -1)
-            DataSampleQCDNormHist.Add(WSampleQCDNormHist, -1)
+            SingleT_qcd=0;
+            if (SingleTSampleQCDNormHist): SingleT_qcd=SingleTSampleQCDNormHist.Integral()
+            VV_qcd=0;
+            if (VVSampleQCDNormHist): VV_qcd=VVSampleQCDNormHist.Integral()
+            TT_qcd=0;
+            if (TTSampleQCDNormHist): TT_qcd=TTSampleQCDNormHist.Integral()
+            ZTT_qcd=0;
+            if (ZTTSampleQCDNormHist): ZTT_qcd=ZTTSampleQCDNormHist.Integral()
+            W_qcd=0;
+            if (WSampleQCDNormHist): W_qcd=WSampleQCDNormHist.Integral()
             
-            print "\n##########\nlooseQCDNORM after=",    DataSampleQCDShapeHist.Integral()
-            FR_FitMaram=Make_Tau_FakeRate()
-            QCDEstimation=0
-            for bin in xrange(50,400):
-                value=DataSampleQCDNormHist.GetBinContent(bin)
-                if value < 0 : value=0
-                FR= _FIT_Jet_Function(bin+1.5,FR_FitMaram)
-                QCDEstimation += value * FR/(1-FR)
-            QCDEstimation    *= OS_SS_Ratio
-            print "\n##########\n QCDEstimation",    QCDEstimation
+            
 
-#            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd)) * OS_SS_Ratio
+            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd)) * OS_SS_Ratio
 
             NameOut= "QCD"+str(TauScaleOut[tscale])
             DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
@@ -346,5 +333,5 @@ if __name__ == "__main__":
 
     for NormMC in PlotName:
 
-        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",1,Binning)
+        MakeTheHistogram("MuTau",NormMC+"_OS",NormMC+"_SS",NormMC+"_SS_Total","",0,Binning)
+        MakeTheHistogram("EleTau",NormMC+"_OS",NormMC+"_SS",NormMC+"_SS_Total","",1,Binning)

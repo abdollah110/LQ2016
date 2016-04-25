@@ -22,10 +22,7 @@ int main(int argc, char** argv) {
     }
     
     
-    //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
-    //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
-    //    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
-    //        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
+
     TFile * PUData= TFile::Open("../interface/pileup-hists/Data_Pileup_2015D_Nov17.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());

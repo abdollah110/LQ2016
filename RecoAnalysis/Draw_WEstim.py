@@ -53,7 +53,7 @@ def make_legend():
         return output
 
 
-def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
+def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     ROOT.gStyle.SetFrameLineWidth(3)
     ROOT.gStyle.SetLineWidth(3)
     ROOT.gStyle.SetOptStat(0)
@@ -118,15 +118,17 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     Data.SetLineWidth(2)
 
     stack=ROOT.THStack("stack","stack")
+
     stack.Add(QCD)
-    stack.Add(W)
     stack.Add(VV)
     stack.Add(DYS)
     stack.Add(SingleT)
     stack.Add(TT)
+    stack.Add(W)
 
-    errorBand = QCD.Clone()
-    errorBand.Add(W)
+
+    errorBand=W.Clone()
+    errorBand.Add(QCD)
     errorBand.Add(TT)
     errorBand.Add(VV)
     errorBand.Add(SingleT)
@@ -155,21 +157,22 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad1.SetFrameBorderSize(10)
 
     Data.GetXaxis().SetLabelSize(0)
-    Data.SetMaximum(Data.GetMaximum()*1.5)
+    Data.SetMaximum(Data.GetMaximum()*1.8)
     Data.Draw("e")
     stack.Draw("histsame")
-    errorBand.Draw("e2same")
+#    errorBand.Draw("e2same")
     Data.Draw("esame")
 
     legende=make_legend()
     legende.AddEntry(Data,"Observed","elp")
+    legende.AddEntry(W,"W","f")
     legende.AddEntry(TT,"t#bar{t}+jets","f")
     legende.AddEntry(SingleT,"SingleTop","f")
     legende.AddEntry(DYS,"DY #rightarrowll ","f")
     legende.AddEntry(VV,"VV","f")
-    legende.AddEntry(W,"W","f")
+
     legende.AddEntry(QCD,"QCD multijet","f")
-    legende.AddEntry(errorBand,"Uncertainty","f")
+#    legende.AddEntry(errorBand,"Uncertainty","f")
 
     legende.Draw()
 
@@ -190,7 +193,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     categ.SetTextColor(    1 )
     categ.SetTextFont (   41 )
     #       if i==1 or i==3: 
-    categ.AddText(channel)
+    categ.AddText(Info)
     #       else :
     #        categ.AddText("SS")
     categ.Draw()
@@ -209,7 +212,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad2.Draw()
     pad2.cd()
     h1=Data.Clone()
-    h1.SetMaximum(1.5)
+    h1.SetMaximum(1.8)
     h1.SetMinimum(0.5)
     h1.SetMarkerStyle(20)
     h3=errorBand.Clone()
@@ -235,7 +238,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     h1.GetYaxis().SetTitleFont(42)
 
     h1.Draw("ep")
-    h3.Draw("e2same")
+#    h3.Draw("e2same")
 
     c.cd()
     pad1.Draw()
@@ -243,41 +246,55 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     ROOT.gPad.RedrawAxis()
 
     c.Modified()
-    c.SaveAs("_plot"+HistName+"_"+categoriy+".pdf")
+    c.SaveAs("_plot_WEstim"+HistName+"_"+categoriy+".pdf")
     #       c.SaveAs("mvis"+categoriy+".png")
 
+#
+#
+#string Names [numPlots]= {"fileWEstim.root"};
+#    string Xaxis[numPlots]={ "ST  [GeV]"};
+#    
+#    
+#    string category[numCat] = {"beforeScale","afterScale"};
+#    string     legendN[numCat]= {"Before Scale Correction", "After Scale Correction"}
+#    string channelDirectory[numch] = {"MuTau"};
+#    
+#    
+#    for (int iname=0;iname < numPlots;iname++){
+#        for (int iCat=0;iCat < numCat;iCat++){
+#            for (int ich=0;ich < numch;ich++){
+#                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
+#                string RootName="fileWEstim.root";
+#                string ChanCat=category[iCat]+"/";
+#                string LegName=legendN[iCat];
+#                string OutName="Plot_"+category[iCat]+Names[iname];
+#                
+#                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
+#    
+#        }
+#    }
+#
+#}
 
-channelDirectory = ["MuTau", "EleTau"]
-Category = ["_DiJet","_JetBJet"]
-#Category = ["_inclusive"]
+
+
+
+
+
+Category = ["beforeScale","afterScale"]
+INFO = ["before W Scale","after W Scale"]
+
 
 
 FileNamesInfo=[
-               ["_tmass_OS","M_{T}(lep,MET) (GeV)","",20],
-               ["_VisMass_OS","VisMass (GeV)","",20],
-               ["_LepPt_OS","lep PT (GeV)","",10],
-               ["_LepEta_OS","lep #eta ","",10],
-               ["_TauPt_OS","#tau PT (GeV)","",10],
-               ["_TauEta_OS","#tau #eta ","",10],
-               ["_NumJet_OS","Jet multiplicity","",1],
-               ["_NumBJet_OS","B Jet multiplicity","",1],
-               ["_nVtx_OS","# of vertex","",1],
-               ["_nVtx_NoPU_OS","# of vertex before PU reweighting","",1],
-               ["_MET_OS","MET  (GeV)","",20],
-               ["_M_taujet_OS","M_{#tauj}   (GeV)","",40],
-               ["_LeadJetPt_OS","Leading Jet PT  (GeV)","",20],
-               ["_SubLeadJetPt_OS","subLeading Jet PT  (GeV)","",20],
-               ["_ST_DiJet_OS","ST_{l#taujj}  (GeV) ","",10],
-               ["_ST_MET_OS","ST_{l#taujjMET}  (GeV)","",10],
-               
-               
+               ["ST","ST_{l#taujj}  (GeV)","",1]
                ]
 
 
-for ch in channelDirectory:
-    for cat in Category:
-        for i in range(0,len(FileNamesInfo)):
 
-            FileName="TotalRootForLimit_"+ch+FileNamesInfo[i][0]+".root"
-            MakePlot(FileName,ch+cat,FileNamesInfo[i][0],FileNamesInfo[i][1],FileNamesInfo[i][2],FileNamesInfo[i][3],ch+cat)
+for cat in range(0,len(Category)):
+    for i in range(0,len(FileNamesInfo)):
+
+        FileName="WEstimation_Check_Histograms.root"
+        MakePlot(FileName,Category[cat],FileNamesInfo[i][0],FileNamesInfo[i][1],INFO[cat],FileNamesInfo[i][3])
 
