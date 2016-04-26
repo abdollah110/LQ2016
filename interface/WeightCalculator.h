@@ -18,7 +18,7 @@ using namespace std;
 
 
 float WScaleFactor=1.15; // computed on Apr 20th
-float TTScaleFactor=1.0;
+float TTScaleFactor=0.91;
 //float WScaleFactor=1.22;
 //float TTScaleFactor=0.856;
 
