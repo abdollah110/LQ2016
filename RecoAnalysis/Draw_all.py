@@ -155,7 +155,8 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad1.SetFrameBorderSize(10)
 
     Data.GetXaxis().SetLabelSize(0)
-    Data.SetMaximum(Data.GetMaximum()*1.5)
+    Data.SetMaximum(Data.GetMaximum()*2)
+    Data.SetMinimum(0)
     Data.Draw("e")
     stack.Draw("histsame")
     errorBand.Draw("e2same")
@@ -249,6 +250,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
 
 channelDirectory = ["MuTau", "EleTau"]
 Category = ["_DiJet","_JetBJet"]
+#Category = ["_DiJet"]
 #Category = ["_inclusive"]
 
 

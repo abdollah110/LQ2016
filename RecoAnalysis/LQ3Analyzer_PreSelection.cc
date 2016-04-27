@@ -175,8 +175,8 @@ int main(int argc, char** argv) {
         
         Int_t nentries_wtn = (Int_t) Run_Tree->GetEntries();
         cout<<"nentries_wtn===="<<nentries_wtn<<"\n";
-//        for (Int_t i = 0; i < nentries_wtn; i++) {
-        for (Int_t i = 0; i < 50000; i++) {
+        for (Int_t i = 0; i < nentries_wtn; i++) {
+//        for (Int_t i = 0; i < 50000; i++) {
             Run_Tree->GetEntry(i);
             if (i % 10000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
             fflush(stdout);
@@ -207,7 +207,7 @@ int main(int argc, char** argv) {
             //  Histogram Filling
             //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
-            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
+//            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
             plotFill("WeightPU",PUWeight,50,0,5);
 //            plotFill("WeightTotal",TotalWeight,50,0,5);
             plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
@@ -456,10 +456,15 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-                        const int size_ST = 4;
-                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+//                        const int size_ST = 4;
+//                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+//                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
+//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        const int size_ST = 2;
+                        bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
+                        std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
+//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+
                         
                         //###############################################################################################
                         
@@ -494,12 +499,12 @@ int main(int argc, char** argv) {
                                                                     plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
                                                                     plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
                                                                     plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,TotalWeight / PUWeight);
-                                                                    plotFill("MuTau_MET"+FullStringName,pfMET,1000,0,1000,TotalWeight);
+                                                                    plotFill("MuTau_MET"+FullStringName,pfMET,500,0,500,TotalWeight);
                                                                     plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,TotalWeight);
                                                                     if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                     if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                    plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,300,0,3000,TotalWeight);
-                                                                    plotFill("MuTau_ST_MET"+FullStringName,ST_MET,300,0,3000,TotalWeight);
+                                                                    plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
+                                                                    plotFill("MuTau_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
                                                                     
                                                                     
                                                                 }
@@ -758,10 +763,13 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-                        const int size_ST = 4;
-                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+//                        const int size_ST = 4;
+//                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+//                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
+//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        const int size_ST = 2;
+                        bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
+                        std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
                         
                         //###############################################################################################
                         
@@ -788,19 +796,19 @@ int main(int argc, char** argv) {
                                                                     plotFill("EleTau_LepPt"+FullStringName,elePt->at(iele),300,0,300,TotalWeight);
                                                                     plotFill("EleTau_LepEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,TotalWeight);
                                                                     plotFill("EleTau_LepIso"+FullStringName,IsoEle,100,0,10,TotalWeight);
-                                                                    plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
+                                                                    plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
                                                                     plotFill("EleTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,TotalWeight);
                                                                     plotFill("EleTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
                                                                     plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
                                                                     plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
                                                                     plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
                                                                     plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,TotalWeight / PUWeight);
-                                                                    plotFill("EleTau_MET"+FullStringName,pfMET,1000,0,1000,TotalWeight);
+                                                                    plotFill("EleTau_MET"+FullStringName,pfMET,500,0,500,TotalWeight);
                                                                     plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,TotalWeight);
                                                                     if (JetVector.size() > 1)  plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
                                                                     if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                    plotFill("EleTau_ST_DiJet"+FullStringName,ST_DiJet,300,0,3000,TotalWeight);
-                                                                    plotFill("EleTau_ST_MET"+FullStringName,ST_MET,300,0,3000,TotalWeight);
+                                                                    plotFill("EleTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
+                                                                    plotFill("EleTau_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
                                                                     
                                                                     
                                                                 }

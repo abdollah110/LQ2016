@@ -108,6 +108,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauByMVA5MediumElectronRejection"  ,&tauByMVA5MediumElectronRejection);
         Run_Tree->SetBranchAddress("tauByLooseCombinedIsolationDeltaBetaCorr3Hits",&tauByLooseCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMediumCombinedIsolationDeltaBetaCorr3Hits",&tauByMediumCombinedIsolationDeltaBetaCorr3Hits);
+        Run_Tree->SetBranchAddress("tauByTightCombinedIsolationDeltaBetaCorr3Hits",&tauByTightCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMVA5LooseElectronRejection", &tauByMVA5LooseElectronRejection);
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
         Run_Tree->SetBranchAddress("tauPx",&tauPx);
@@ -435,11 +436,11 @@ int main(int argc, char** argv) {
                         //  Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 7;
-                        bool Isolation = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < LeptonIsoCut;
-                        bool AntiIsolation = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= LeptonIsoCut;
-                        bool TauIsoLepAntiIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= LeptonIsoCut;
-                        bool TauAntiIsoLepIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < LeptonIsoCut;
-                        bool TauIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < LeptonIsoCut;
+                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= LeptonIsoCut;
+                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= LeptonIsoCut;
+                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < LeptonIsoCut;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoMu < LeptonIsoCut;
                         bool Total = 1;
                         
@@ -486,8 +487,8 @@ int main(int argc, char** argv) {
                         //  Analysis Categorization
                         //###############################################################################################
                         const int size_AN = 2;
-                        bool PassLQ= M_TauJet > 250;
-                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150;
+                        bool PassLQ= M_TauJet > 250 ;
+                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
                         bool AN_category[size_AN] = {PassLQ, PassRW};
                         std::string AN_Cat[size_AN] = {"_LQ","_RW"};
 
@@ -757,11 +758,11 @@ int main(int argc, char** argv) {
                         // Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 7;
-                        bool Isolation = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < LeptonIsoCut;
-                        bool AntiIsolation = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= LeptonIsoCut;
-                        bool TauIsoLepAntiIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= LeptonIsoCut;
-                        bool TauAntiIsoLepIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < LeptonIsoCut;
-                        bool TauIso = tauByMediumCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < LeptonIsoCut;
+                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= LeptonIsoCut;
+                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= LeptonIsoCut;
+                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < LeptonIsoCut;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoEle < LeptonIsoCut;
                         bool Total = 1;
 
@@ -811,7 +812,7 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         const int size_AN = 2;
                         bool PassLQ= M_TauJet > 250;
-                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150;
+                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
 
                         bool AN_category[size_AN] = {PassLQ, PassRW};
                         std::string AN_Cat[size_AN] = {"_LQ","_RW"};

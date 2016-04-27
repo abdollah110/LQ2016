@@ -37,10 +37,61 @@ ROOT.gROOT.SetBatch(True)
 #SubRootDir = 'OutFiles_WEstim/'
 #SubRootDir = 'OutFiles_WEstim_OLD/'
 #SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
-SubRootDir = 'OutFiles_WEstim_RelIso02/'
+SubRootDir = 'OutFiles_WEstim_RelIso03_Loose/'
+#SubRootDir = 'OutFiles_WEstim_RelIso03_Medium/'
+#SubRootDir = 'OutFiles_WEstim_RelIso03_Tight/'
 
 verbos_ = False
 TauScale = [ ""]
+
+
+def add_lumi():
+    lowX=0.69
+    lowY=0.835
+    lumi  = ROOT.TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC")
+    lumi.SetBorderSize(   0 )
+    lumi.SetFillStyle(    0 )
+    lumi.SetTextAlign(   12 )
+    lumi.SetTextColor(    1 )
+    lumi.SetTextSize(0.03)
+    lumi.SetTextFont (   42 )
+    lumi.AddText("2.2 fb^{-1} (13 TeV)")
+    return lumi
+
+def add_CMS():
+    lowX=0.21
+    lowY=0.75
+    lumi  = ROOT.TPaveText(lowX, lowY+0.06, lowX+0.15, lowY+0.16, "NDC")
+    lumi.SetTextFont(61)
+    lumi.SetTextSize(0.05)
+    lumi.SetBorderSize(   0 )
+    lumi.SetFillStyle(    0 )
+    lumi.SetTextAlign(   12 )
+    lumi.SetTextColor(    1 )
+    lumi.AddText("CMS")
+    return lumi
+
+def add_Preliminary():
+    lowX=0.21
+    lowY=0.68
+    lumi  = ROOT.TPaveText(lowX, lowY+0.06, lowX+0.15, lowY+0.16, "NDC")
+    lumi.SetTextFont(52)
+    lumi.SetTextSize(0.05)
+    lumi.SetBorderSize(   0 )
+    lumi.SetFillStyle(    0 )
+    lumi.SetTextAlign(   12 )
+    lumi.SetTextColor(    1 )
+    lumi.AddText("Preliminary")
+    return lumi
+
+def make_legend():
+    output = ROOT.TLegend(0.6, 0.7, 0.88, 0.88, "", "brNDC")
+    output.SetLineWidth(0)
+    output.SetLineStyle(0)
+    output.SetFillStyle(0)
+    output.SetBorderSize(0)
+    output.SetTextFont(62)
+    return output
 
 ############################################################################################################
 def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
@@ -204,14 +255,14 @@ def Make_Tau_FakeRate():
     #    HistoNum.SetMinimum(0.5)
     #    HistoNum.GetXaxis().SetRangeUser(0,400)
     canv.SetLogy()
-    canv.SetGridx()
+#    canv.SetGridx()
     canv.SetGridy()
     HistoNum.SetTitle("")
     if FR_vs_LeptonPT: HistoNum.GetXaxis().SetTitle("#tau p_{T} [GeV]")
     else: HistoNum.GetXaxis().SetTitle("Jet p_{T} [GeV]")
     HistoNum.GetYaxis().SetTitle("Tau Fake Rate  (Tight Iso / Loose Iso)")
     HistoNum.GetYaxis().SetTitleOffset(1.3)
-    HistoNum.GetYaxis().SetRangeUser(0.001,1)
+    HistoNum.GetYaxis().SetRangeUser(0.005,1)
     HistoNum.SetStats(0)
     HistoNum.SetMarkerStyle(20)
     
@@ -230,14 +281,21 @@ def Make_Tau_FakeRate():
     
     else:
         nPar = 5
-        theFit=TF1("theFit",_FIT_Jet,50,400,nPar)
-        theFit.SetParLimits(0,    0,     0.5);
-        theFit.SetParameter(0, 0.03)
-        theFit.SetParameter(1, 0)
+        theFit=TF1("theFit",_FIT_Jet,53,400,nPar)
+#        theFit.SetParLimits(0,    0,     0.5);
+##        theFit.SetParameter(0, 0.03)
+##        theFit.SetParameter(1, 0)
+#        theFit.SetParameter(2, 0.6)
+#        theFit.SetParameter(3, -0.6)
+##        theFit.SetParameter(4, 196.6)
+#Loose
+#        theFit.SetParLimits(0,    0,     0.5);
+#        theFit.SetParameter(0, 0.03)
+#        theFit.SetParameter(1, 0)
         theFit.SetParameter(2, 0.6)
-        theFit.SetParameter(3, -0.6)
-        theFit.SetParameter(4, 96.6)
-    
+#        theFit.SetParameter(3, -0.6)
+#        theFit.SetParameter(4, 96.6)
+
     
     
     HistoNum.Fit("theFit", "R0")
@@ -247,6 +305,19 @@ def Make_Tau_FakeRate():
     FitParam=theFit.GetParameters()
     theFit.Draw("SAME")
 
+    legende=make_legend()
+    legende.AddEntry(HistoNum,"Jet#rightarrow#tau fake rate","lp")
+    legende.AddEntry(theFit,"Fit (Landau + Pol1)","lp")
+
+    
+    legende.Draw()
+    
+    l1=add_lumi()
+    l1.Draw("same")
+    l2=add_CMS()
+    l2.Draw("same")
+    l3=add_Preliminary()
+    l3.Draw("same")
 
     canv.SaveAs("tauFakeRate"+category_FakeEstim+channelName+".pdf")
     canv.SaveAs("tauFakeRate"+category_FakeEstim+channelName+".root")

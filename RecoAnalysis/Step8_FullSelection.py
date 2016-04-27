@@ -37,8 +37,11 @@ import os
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
 #SubRootDir = 'OutFiles_FullSelection_Buggy/'
-SubRootDir = 'OutFiles_FullSelection/'
-#SubRootDir = 'OutFiles_org/'
+#SubRootDir = 'OutFiles_FullSelection/'
+#SubRootDir = 'OutFiles_FullSelection_MediumIso/'
+#SubRootDir = 'OutFiles_FullSelection_TightIso/'
+SubRootDir = 'OutFiles_FullSelection_PT60/'
+
 
 
 verbos_ = False
@@ -47,30 +50,17 @@ OS_SS_Ratio=1.00
 RB_=10
 
 TauScale = ["Down", "", "Up"]
+SystematicHighPtTau = ["TauHighPtRWUp","TauHighPtRWDown"]
 #TauScale = ["", "", ""]
 #POSTFIX=["","Up","Down"]
 
 
 
-#signal = ['LQ_']
-#signalName = ['LQ_']
-#mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
-#TOTMASS = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
 
-
-signal = ['RHNu_']
-signalName = ['RHW_']
-mass = ['1000-500','1500-750','2000-1000','2500-1250','3000-1500']
-TOTMASS = ['1000','1500','2000','2500','3000']
-
-lenghtSig = len(signal) * len(mass) +1
-
-#category = ["_inclusive"]
-category = ["_DiJet","_JetBJet"]
-#category = ["_JetBJet"]
 
 #channelDirectory = ["MuTau", "eleTau"]
 channelDirectory = ["MuTau", "EleTau"]
+FinalName = ["_mt", "_et"]
 
 ####################################################
 ##   Functions
@@ -100,13 +90,34 @@ def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
 ####################################################
 ##   Start Making the Datacard Histograms
 ####################################################
-def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
-    print "\n\n\n\n\n\n ****** ------------------------------>     Starting for ",NormMC, "in Channel= ",channel
+def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,Analysis):
+    
+    
+    if Analysis=="lq":
+        signal = ['LQ_']
+        signalName = ['LQ_']
+        mass = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
+        TOTMASS = [200,250, 300, 350, 400, 450, 500, 550,  600, 650, 700, 750, 800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
+        lenghtSig = len(signal) * len(mass) +1
+        category = ["_JetBJet"]
+        charge="_OS"
+
+    if Analysis=="RHW":
+        signal = ['RHNu_']
+        signalName = ['RHW_']
+        mass = ['1000-500','1500-750','2000-1000','2500-1250','3000-1500']
+        TOTMASS = ['1000','1500','2000','2500','3000']
+        lenghtSig = len(signal) * len(mass) +1
+        category = ["_DiJet"]
+        charge=""
+
+    
+#    print "\n\n\n\n\n\n ****** ------------------------------>     Starting for ",NormMC, "in Channel= ",channel
 
     TauScaleOut = ["_CMS_scale_t_"+channel+CoMEnergy+"Down", "", "_CMS_scale_t_"+channel+CoMEnergy+"Up"]
+    Signal_Unc_HighPtTau = ["_CMS_eff_t_HighPtTau_"+channel+CoMEnergy+"Up","_CMS_eff_t_HighPtTau_"+channel+CoMEnergy+"Down"]
 
-
-    myOut = TFile("TotalRootForLimit_"+channel + NormMC+".root" , 'RECREATE') # Name Of the output file
+    myOut = TFile(Analysis+FinalName[chl]+".inputs-sm-13TeV.root" , 'RECREATE') # Name Of the output file
 
 
     icat=-1
@@ -134,13 +145,22 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
                     NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
                     NormHisto=NormFile.Get("XXX")
             
-                    ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-                    ShapeHisto=ShapeFile.Get("XXX")
-            
-                    ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-                    RebinedHist= ShapeHisto.Rebin(RB_)
+                    RebinedHist= NormHisto.Rebin(RB_)
                     tDirectory.WriteObject(RebinedHist,NameOut)
-
+        
+                    ###############  Systematics on Shape and Norm for  High Tau Pt ####
+                    if  tscale==1 :
+                        for systHighpt in range(len(SystematicHighPtTau)):
+                            tDirectory.cd()
+                            Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+charge
+                            NameOut= str(signalName[sig]) +str(TOTMASS[m])+str(Signal_Unc_HighPtTau[systHighpt])
+                            
+                            NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                            NormHisto=NormFile.Get("XXX")
+                            
+                            RebinedHist= NormHisto.Rebin(RB_)
+                            tDirectory.WriteObject(RebinedHist,NameOut)
+        
             ################################################
             #  Filling SingleTop
             ################################################
@@ -153,12 +173,21 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-            
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(RB_)
+            RebinedHist= NormHisto.Rebin(RB_)
             tDirectory.WriteObject(RebinedHist,NameOut)
+            
+            ###############  Systematics on Shape and Norm for  High Tau Pt ####
+            if  tscale==1 :
+                for systHighpt in range(len(SystematicHighPtTau)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+ charge
+                    NameOut= "SingleTop"+str(Signal_Unc_HighPtTau[systHighpt])
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    RebinedHist= NormHisto.Rebin(RB_)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
             ################################################
             #  Filling VV
             ################################################
@@ -171,12 +200,21 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-            
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(RB_)
+            RebinedHist= NormHisto.Rebin(RB_)
             tDirectory.WriteObject(RebinedHist,NameOut)
+            
+            ###############  Systematics on Shape and Norm for  High Tau Pt ####
+            if  tscale==1 :
+                for systHighpt in range(len(SystematicHighPtTau)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+ charge
+                    NameOut= "VV"+str(Signal_Unc_HighPtTau[systHighpt])
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    RebinedHist= NormHisto.Rebin(RB_)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
 
 
             ################################################
@@ -191,12 +229,20 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
         
-            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(RB_)
+            RebinedHist= NormHisto.Rebin(RB_)
             tDirectory.WriteObject(RebinedHist,NameOut)
+            ###############  Systematics on Shape and Norm for  High Tau Pt ####
+            if  tscale==1 :
+                for systHighpt in range(len(SystematicHighPtTau)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+ charge
+                    NameOut= "TT"+str(Signal_Unc_HighPtTau[systHighpt])
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    RebinedHist= NormHisto.Rebin(RB_)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
             
             ################################################
             #  Filling ZTT
@@ -210,12 +256,20 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-            
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(RB_)
+            RebinedHist= NormHisto.Rebin(RB_)
             tDirectory.WriteObject(RebinedHist,NameOut)
+            ###############  Systematics on Shape and Norm for  High Tau Pt ####
+            if  tscale==1 :
+                for systHighpt in range(len(SystematicHighPtTau)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+ charge
+                    NameOut= "ZTT"+str(Signal_Unc_HighPtTau[systHighpt])
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    RebinedHist= NormHisto.Rebin(RB_)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
 
 
             ################################################
@@ -230,12 +284,21 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
-            ShapeHisto=ShapeFile.Get("XXX")
-            
-            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(RB_)
+            RebinedHist= NormHisto.Rebin(RB_)
             tDirectory.WriteObject(RebinedHist,NameOut)
+
+            ###############  Systematics on Shape and Norm for  High Tau Pt ####
+            if  tscale==1 :
+                for systHighpt in range(len(SystematicHighPtTau)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicHighPtTau[systHighpt]+ charge
+                    NameOut= "W"+str(Signal_Unc_HighPtTau[systHighpt])
+                        
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    RebinedHist= NormHisto.Rebin(RB_)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
 
             ################################################
             #  Filling QCD
@@ -331,11 +394,7 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
                 NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
                 NormHisto=NormFile.Get("XXX")
             
-                ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy) #for data Shape and Norm should be the same
-                ShapeHisto=ShapeFile.Get("XXX")
-                
-    #            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-                RebinedHist= ShapeHisto.Rebin(RB_)
+                RebinedHist= NormHisto.Rebin(RB_)
                 tDirectory.WriteObject(RebinedHist,NameOut)
 
 
@@ -350,13 +409,10 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
 if __name__ == "__main__":
     Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300,400,500])
 
-    PlotName= ["_LQ_ST_MET","_RW_ST_MET"]
+    NormMC="_LQ_ST_MET"
+    MakeTheHistogram("MuTau",NormMC+"_OS","_LQ_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_AntiIso","",0,Binning,"lq")
+    MakeTheHistogram("EleTau",NormMC+"_OS","_LQ_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_AntiIso","",1,Binning,"lq")
 
-
-    for NormMC in PlotName:
-
-        MakeTheHistogram("MuTau",NormMC+"_OS","_LQ_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC+"_OS","_LQ_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",1,Binning)
-        
-        MakeTheHistogram("MuTau",NormMC,"_RW_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_Total","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC,"_RW_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_Total","",1,Binning)
+    NormMC="_RW_ST_MET"
+    MakeTheHistogram("MuTau",NormMC,"_RW_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_AntiIso","",0,Binning,"RHW")
+    MakeTheHistogram("EleTau",NormMC,"_RW_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_AntiIso","",1,Binning,"RHW")

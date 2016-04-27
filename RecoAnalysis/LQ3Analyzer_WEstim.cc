@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauByMVA5MediumElectronRejection"  ,&tauByMVA5MediumElectronRejection);
         Run_Tree->SetBranchAddress("tauByLooseCombinedIsolationDeltaBetaCorr3Hits",&tauByLooseCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMediumCombinedIsolationDeltaBetaCorr3Hits",&tauByMediumCombinedIsolationDeltaBetaCorr3Hits);
+        Run_Tree->SetBranchAddress("tauByTightCombinedIsolationDeltaBetaCorr3Hits",&tauByTightCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMVA5LooseElectronRejection", &tauByMVA5LooseElectronRejection);
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
         
@@ -430,12 +431,12 @@ int main(int argc, char** argv) {
                         //  Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 9;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
+                        bool Isolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
+                        bool AntiIsolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
+                        bool TauIsoLepAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
+                        bool TauAntiIsoLepIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
+                        bool TauIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool TauAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
                         bool LepIso = IsoMu < 0.10;
                         bool LepAntiIso = IsoMu >= 0.10;
                         bool Total = 1;
@@ -495,9 +496,9 @@ int main(int argc, char** argv) {
                                                                     
                                                                     std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist];
                                                                     
-                                                                    plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_IsoMu"+FullStringName,IsoMu,1000,0,20,TotalWeight);
+//                                                                    plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
+//                                                                    plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
+//                                                                    plotFill("MuTau_IsoMu"+FullStringName,IsoMu,1000,0,20,TotalWeight);
                                                                     plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
                                                                     plotFill("MuTau_LepEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
                                                                     plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),400,0,400,TotalWeight);
@@ -511,14 +512,14 @@ int main(int argc, char** argv) {
                                                                     //                                                                plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
                                                                     //                                                                plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
                                                                     //                                                                plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,LumiWeight * GetGenWeight);
-                                                                    plotFill("MuTau_2D_LepPt_tmass"+FullStringName,muPt->at(imu),tmass,300,0,300,500,0,500,TotalWeight);
-                                                                    
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                    if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
-                                                                    
+//                                                                    plotFill("MuTau_2D_LepPt_tmass"+FullStringName,muPt->at(imu),tmass,300,0,300,500,0,500,TotalWeight);
+//                                                                    
+//                                                                    if (JetVector.size() > 1) plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,100,0,1000,TotalWeight);
+//                                                                    if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
+//                                                                    if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
+//                                                                    if (JetVector.size() > 1) plotFill("MuTau_ST_JetBJet"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+//                                                                    if (JetVector.size() > 1 && tauPt->at(itau) > 50 && M_TauJet > 250) plotFill("MuTau_ST_JetBJetFinal"+FullStringName,ST_JetBjet,300,0,3000,TotalWeight);
+//                                                                    
                                                                     
                                                                 }
                                                             }
@@ -745,11 +746,11 @@ int main(int argc, char** argv) {
                         // Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 7;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.10;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.10;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.10;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.10;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool Isolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.10;
+                        bool AntiIsolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.10;
+                        bool TauIsoLepAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.10;
+                        bool TauAntiIsoLepIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.10;
+                        bool TauIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoEle < 0.10;
                         bool Total = 1;
                         

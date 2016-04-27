@@ -57,6 +57,7 @@ lenghtSig = len(signal) * len(mass) +1
 
 #category = ["_inclusive"]
 category = ["_DiJet","_JetBJet"]
+#category = ["_DiJet"]
 #category = ["_JetBJet"]
 
 #channelDirectory = ["MuTau", "eleTau"]
@@ -346,5 +347,5 @@ if __name__ == "__main__":
 
     for NormMC in PlotName:
 
-        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_OS_Total","",1,Binning)
+#        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
+        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",1,Binning)
