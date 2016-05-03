@@ -249,8 +249,9 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
 
 
 channelDirectory = ["MuTau", "EleTau"]
+#channelDirectory = ["EleTau"]
 Category = ["_DiJet","_JetBJet"]
-#Category = ["_DiJet"]
+#Category = ["_JetBJet"]
 #Category = ["_inclusive"]
 
 

@@ -222,7 +222,7 @@ def _FIT_Lepton_Function( x,  par) :
 
 
 category_FakeEstim= "_inclusive"
-#category_FakeApply= "_DiNonBJet"
+#category_FakeApply= "_DiJet"
 category_FakeApply= "_DiNonBJet"
 channelName="MuTau"
 FR_vs_LeptonPT=0
@@ -346,6 +346,9 @@ if __name__ == "__main__":
     else:
         NormQCD="_CloseJetMuPt_HighMT_OS_TauIsoLepAntiIso"
         ShapeQCD="_CloseJetMuPt_HighMT_OS_TauIsoLepAntiIso"
+#        NormQCD="_CloseJetMuPt_HighMT_OS_LepAntiIso"
+#        ShapeQCD="_CloseJetMuPt_HighMT_OS_Total"
+
 
     FileQCDCR=MakeTheHistogram(channelName,NormQCD,ShapeQCD,"",0,Binning,0,category_FakeApply)
     HistoQCDCR=FileQCDCR.Get("XXX")
@@ -363,13 +366,13 @@ if __name__ == "__main__":
     print  "\n\n\n\n------> Final QCD estimate is", qcdEstim, "\n\n\n\n"
     newcan.SaveAs("Onedplts.pdf")
     newcan.SaveAs("Onedplts.root")
-    
-    NormQCD="_ST_JetBJet_HighMT_OS"
-#    ShapeQCD="_ST_JetBJet_HighMT_OS_TauIsoLepAntiIso"
-    ShapeQCD="_ST_JetBJet_HighMT_OS_TauIsoLepAntiIso"
-#    NormQCD="_VisMass_HighMT_OS"
-#    ShapeQCD="_VisMass_HighMT_OS_TauIsoLepAntiIso"
-#    Binning = array.array("d",[0,40,80,120,160,200,240,280,320,360,400,500,600])
+
+#    NormQCD="_tmass_HighMT_OS"
+#    ShapeQCD="_tmass_HighMT_OS_TauIsoLepAntiIso"
+    NormQCD="_ST_MET_HighMT_OS"
+    ShapeQCD="_ST_MET_HighMT_OS_TauIsoLepAntiIso"
+#    NormQCD="_ST_MET_HighMT_OS_LepIso"
+#    ShapeQCD="_ST_MET_HighMT_OS_Total"
     Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000])
     FinalWPlots=MakeTheHistogram(channelName,NormQCD,ShapeQCD,"",0,Binning,0,category_FakeApply)
 

@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("pfMETPhi",&pfMETPhi);
         Run_Tree->SetBranchAddress("genHT",&genHT);
         
-
+        
         //###############################################################################################
         //  Weight Calculation
         //###############################################################################################
@@ -171,12 +171,12 @@ int main(int argc, char** argv) {
         float LooseCSV= 0.605;                    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
         float LeptonIsoCut=0.10;
         
-
+        
         
         Int_t nentries_wtn = (Int_t) Run_Tree->GetEntries();
         cout<<"nentries_wtn===="<<nentries_wtn<<"\n";
         for (Int_t i = 0; i < nentries_wtn; i++) {
-//        for (Int_t i = 0; i < 50000; i++) {
+            //        for (Int_t i = 0; i < 50000; i++) {
             Run_Tree->GetEntry(i);
             if (i % 10000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
             fflush(stdout);
@@ -195,21 +195,21 @@ int main(int argc, char** argv) {
                 
                 if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
                 GetGenWeight=genWeight;
-            
+                
                 int puNUmmc=int(puTrue->at(0)*10);
                 int puNUmdata=int(puTrue->at(0)*10);
                 float PUMC_=HistoPUMC->GetBinContent(puNUmmc+1);
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
                 PUWeight= PUData_/PUMC_;
             }
-//            float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
+            //            float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
             //###############################################################################################
             //  Histogram Filling
             //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
-//            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
+            //            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
             plotFill("WeightPU",PUWeight,50,0,5);
-//            plotFill("WeightTotal",TotalWeight,50,0,5);
+            //            plotFill("WeightTotal",TotalWeight,50,0,5);
             plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
             plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
             for (int qq=0; qq < 50;qq++){
@@ -230,7 +230,7 @@ int main(int argc, char** argv) {
                 //Loop over MuTau events
                 for  (int imu=0 ; imu < nMu; imu++){
                     for  (int itau=0 ; itau < nTau; itau++){
-        
+                        
                         
                         float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
                         if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
@@ -242,10 +242,10 @@ int main(int argc, char** argv) {
                         bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
                         
                         
-                        float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);                        
+                        float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
                         float TotalWeight = LumiWeight * GetGenWeight * PUWeight * muCorr;
                         plotFill("Weight_Mu",muCorr,200,0,2);
-
+                        
                         
                         
                         TLorentzVector Mu4Momentum, Tau4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
@@ -261,7 +261,7 @@ int main(int argc, char** argv) {
                         float CLoseJetMuPt=muPt->at(imu);
                         float CLoseJetMuEta=muEta->at(imu);
                         
-                        if (TauPtCut&& TauPtCut && MuPtCut && MuIdIso ){
+                        if (TauPtCut&& TauIdIso && MuPtCut && MuIdIso ){
                             double Refer_R_jettau = 5;
                             double Refer_R_jetmu = 5;
                             
@@ -351,7 +351,7 @@ int main(int argc, char** argv) {
                         for (int ijet= 0 ; ijet < nJet ; ijet++){
                             Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
                             //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
-
+                            
                             if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                                 JetVector.push_back(Jet4Momentum);
                                 if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
@@ -365,23 +365,17 @@ int main(int argc, char** argv) {
                         }
                         
                         
-                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_MET ,ST_DiJet=0;
-
-                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet,ST_MET =0;
+                        
                         bool DiJet_Selection=JetVector.size() > 1;
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
                         
-                        if (DiJet_Selection)
-                        ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
-                        
-                        if (JetBJet_Selection){
-
-                            if ((BJetBVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
-                            
-                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
+                        if (DiJet_Selection){
+                            ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
                             ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau)+pfMET;
-                            
-
+                        }
+                        if (JetBJet_Selection){
                             
                             M_muj0= (Mu4Momentum+JetVector[0]).M();
                             M_muj1= (Mu4Momentum+JetVector[1]).M();
@@ -397,8 +391,8 @@ int main(int argc, char** argv) {
                             }
                         }
                         
-
-
+                        
+                        
                         
                         //###############################################################################################
                         //  Tau Lep Charge Categorization
@@ -425,7 +419,7 @@ int main(int argc, char** argv) {
                         
                         bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
                         std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
-
+                        
                         //###############################################################################################
                         //  MT Categorization
                         //###############################################################################################
@@ -434,18 +428,18 @@ int main(int argc, char** argv) {
                         bool NoMT = 1;
                         bool LoWMT = tmass < 30;
                         bool HighMT = tmass > 70;
-//                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
-//                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
+                        //                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                        //                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                         bool MT_category[size_mTCat] = {NoMT};
                         std::string MT_Cat[size_mTCat] = {""};
                         
                         //###############################################################################################
                         //  Trigger Categorization
                         //###############################################################################################
-//                        else if (name.find("HLT_Mu45_eta2p1_v") != string::npos) bitEleMuX = 26;
+                        //                        else if (name.find("HLT_Mu45_eta2p1_v") != string::npos) bitEleMuX = 26;
                         const int size_trgCat = 1;
                         bool PassTrigger = (HLTEleMuX >> 26 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
-//                        bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
+                        //                        bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
                         //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
                         bool NoTrigger = 1;
                         //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
@@ -456,15 +450,15 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-//                        const int size_ST = 4;
-//                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-//                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        //                        const int size_ST = 4;
+                        //                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+                        //                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
+                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
-
+                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        
                         
                         //###############################################################################################
                         
@@ -478,7 +472,7 @@ int main(int argc, char** argv) {
                                                 if (MT_category[imt]) {
                                                     for (int ist = 0; ist < size_ST; ist++) {
                                                         if (ST_category[ist]) {
-//                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
+                                                            //                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
                                                             
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 
@@ -527,7 +521,7 @@ int main(int argc, char** argv) {
             //###############################################################################################
             bool DoEleTauAnalysis=1;
             if (DoEleTauAnalysis  &&   isSingleMu== string::npos) {
-
+                
                 
                 
                 //loop over eleTau Channels
@@ -559,11 +553,11 @@ int main(int argc, char** argv) {
                         bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0;
                         
                         
-
+                        
                         float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
                         float TotalWeight = LumiWeight * GetGenWeight * PUWeight * eleCorr;
                         plotFill("Weight_Ele",eleCorr,200,0,2);
-
+                        
                         
                         //###########      Finding the close jet near tau   ###########################################################
                         float CLoseJetTauPt=tauPt->at(itau);
@@ -571,7 +565,7 @@ int main(int argc, char** argv) {
                         float CLoseJetElePt=elePt->at(iele);
                         float CLoseJetEleEta=eleEta->at(iele);
                         
-                        if (TauPtCut&& TauPtCut && ElePtCut && EleIdIso ){
+                        if (TauPtCut&& TauIdIso && ElePtCut && EleIdIso ){
                             double Refer_R_jettau = 5;
                             double Refer_R_jetele = 5;
                             
@@ -670,22 +664,20 @@ int main(int argc, char** argv) {
                             }
                         }
                         
-
-                        float ST_JetBjet,M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_MET ,ST_DiJet=0;
                         
-                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                        float ST_JetBjet,M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_DiJet,ST_MET=0;
+                        
                         bool DiJet_Selection=JetVector.size() > 1;
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
                         
-                        if (DiJet_Selection)
-                        ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
+                        if (DiJet_Selection){
+                            ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
+                            ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau)+pfMET;
+                        }
                         
                         if (JetBJet_Selection){
                             
-                            if ((BJetBVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
-                            
-                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
-                            ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau)+pfMET;
                             
                             
                             M_elej0= (Ele4Momentum+JetVector[0]).M();
@@ -726,8 +718,8 @@ int main(int argc, char** argv) {
                         bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoEle < LeptonIsoCut;
                         bool Total = 1;
-
-
+                        
+                        
                         bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
                         std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
                         
@@ -741,18 +733,18 @@ int main(int argc, char** argv) {
                         bool HighMT = tmass > 70;
                         bool MT_category[size_mTCat] = {NoMT};
                         std::string MT_Cat[size_mTCat] = {""};
-//                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
-//                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
+                        //                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                        //                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                         
                         //###############################################################################################
                         //  Trigger Categorization
                         //###############################################################################################
-//https://twiki.cern.ch/twiki/bin/view/CMS/ElectronScaleFactorsRun2
+                        //https://twiki.cern.ch/twiki/bin/view/CMS/ElectronScaleFactorsRun2
                         const int size_trgCat = 1;
                         //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 11 & 1) == 1;
                         //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 1 & 1) == 1 || (HLTEleMuX >> 6 & 1) == 1|| (HLTEleMuX >> 11 & 1) == 1;
                         bool PassTrigger =   ((HLTEleMuX >> 2 & 1) == 1 && isData )|| (1 && !isData );
-//                        bool PassTrigger =   ((HLTEleMuX >> 6 & 1) == 1 && isData )|| ((HLTEleMuX >> 11 & 1) == 1 && !isData );
+                        //                        bool PassTrigger =   ((HLTEleMuX >> 6 & 1) == 1 && isData )|| ((HLTEleMuX >> 11 & 1) == 1 && !isData );
                         
                         bool NoTrigger = 1;
                         //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
@@ -763,10 +755,10 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-//                        const int size_ST = 4;
-//                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-//                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-//                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        //                        const int size_ST = 4;
+                        //                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
+                        //                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
+                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
@@ -784,7 +776,7 @@ int main(int argc, char** argv) {
                                                 if (MT_category[imt]) {
                                                     for (int ist = 0; ist < size_ST; ist++) {
                                                         if (ST_category[ist]) {
-//                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
+                                                            //                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 if (Trigger_category[trg]) {
                                                                     

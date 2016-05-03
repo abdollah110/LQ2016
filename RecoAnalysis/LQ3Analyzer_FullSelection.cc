@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
         Run_Tree->SetBranchAddress("tauPx",&tauPx);
         Run_Tree->SetBranchAddress("tauPy",&tauPy);
-
+        
         
         /////////////////////////   Mu Info
         Run_Tree->SetBranchAddress("nMu", &nMu);
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("pfMETPhi",&pfMETPhi);
         Run_Tree->SetBranchAddress("genHT",&genHT);
         
-
+        
         //###############################################################################################
         //  Weight Calculation
         //###############################################################################################
@@ -178,11 +178,11 @@ int main(int argc, char** argv) {
         float tauES[3]={0.97,1.00,1.03};
         std::string Scale_Cat[3] = {"Down", "", "Up"};
         
-
+        
         
         Int_t nentries_wtn = (Int_t) Run_Tree->GetEntries();
         cout<<"nentries_wtn===="<<nentries_wtn<<"\n";
-//        for (Int_t i = 0; i < 50000; i++) {
+        //        for (Int_t i = 0; i < 50000; i++) {
         for (Int_t i = 0; i < nentries_wtn; i++) {
             Run_Tree->GetEntry(i);
             if (i % 10000 == 0) fprintf(stdout, "\r  Processed events: %8d of %8d ", i, nentries_wtn);
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
                 
                 if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
                 GetGenWeight=genWeight;
-            
+                
                 int puNUmmc=int(puTrue->at(0)*10);
                 int puNUmdata=int(puTrue->at(0)*10);
                 float PUMC_=HistoPUMC->GetBinContent(puNUmmc+1);
@@ -214,11 +214,11 @@ int main(int argc, char** argv) {
             //  Histogram Filling
             //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
-//            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
-//            plotFill("WeightPU",PUWeight,50,0,5);
+            //            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
+            //            plotFill("WeightPU",PUWeight,50,0,5);
             plotFill("WeightTotal",TotalWeight,50,0,5);
-//            plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
-//            plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
+            //            plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
+            //            plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
             for (int qq=0; qq < 50;qq++){
                 if ((HLTEleMuX >> qq & 1) == 1)
                     plotFill("HLT",qq,50,0,50);
@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
                 //Loop over MuTau events
                 for  (int imu=0 ; imu < nMu; imu++){
                     for  (int itau=0 ; itau < nTau; itau++){
-
+                        
                         for (int scale=0;scale < 3;scale++){
                             TLorentzVector Tau4Momentum;
                             Tau4Momentum.SetPtEtaPhiM(tauPt->at(itau)*tauES[scale],tauEta->at(itau),tauPhi->at(itau),tauMass->at(itau));
@@ -250,285 +250,280 @@ int main(int argc, char** argv) {
                             if (pfMETPhi < (-TMath::Pi() / 2)) NewMETPhi -= TMath::Pi();
                             
                             
-                        float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
-                        if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
-                            IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
-                        
-                        bool MuPtCut = muPt->at(imu) > LeptonPtCut_ && fabs(muEta->at(imu)) < 2.1 ;
-                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
-                        bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
-                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
-                        
-                        
-                        float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);                        
-                        float TotalWeight = LumiWeight * GetGenWeight * PUWeight * muCorr;
-                        plotFill("Weight_Mu",muCorr,200,0,2);
-
-                        
-                        
-                        TLorentzVector Mu4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
-                        Mu4Momentum.SetPtEtaPhiM(muPt->at(imu),muEta->at(imu),muPhi->at(imu),MuMass);
-
-                        Z4Momentum=Mu4Momentum+Tau4Momentum;
-                        
-                        
-                        
-                        //###########      Finding the close jet near tau   ###########################################################
-                        float CLoseJetTauPt=Tau4Momentum.Pt();
-                        float CLoseJetTauEta=Tau4Momentum.Eta();
-                        float CLoseJetMuPt=muPt->at(imu);
-                        float CLoseJetMuEta=muEta->at(imu);
-                        
-                        if (TauPtCut&& TauPtCut && MuPtCut && MuIdIso ){
-                            double Refer_R_jettau = 5;
-                            double Refer_R_jetmu = 5;
+                            float IsoMu=muPFChIso->at(imu)/muPt->at(imu);
+                            if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
+                                IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                             
-                            for (int kjet= 0 ; kjet < nJet ; kjet++){
-                                KJet4Momentum.SetPtEtaPhiE(jetPt->at(kjet),jetEta->at(kjet),jetPhi->at(kjet),jetEn->at(kjet));
+                            bool MuPtCut = muPt->at(imu) > LeptonPtCut_ && fabs(muEta->at(imu)) < 2.1 ;
+                            bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
+                            bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
+                            bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
+                            
+                            
+                            float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
+                            float TotalWeight = LumiWeight * GetGenWeight * PUWeight * muCorr;
+                            plotFill("Weight_Mu",muCorr,200,0,2);
+                            
+                            
+                            
+                            TLorentzVector Mu4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
+                            Mu4Momentum.SetPtEtaPhiM(muPt->at(imu),muEta->at(imu),muPhi->at(imu),MuMass);
+                            
+                            Z4Momentum=Mu4Momentum+Tau4Momentum;
+                            
+                            
+                            
+                            //###########      Finding the close jet near tau   ###########################################################
+                            float CLoseJetTauPt=Tau4Momentum.Pt();
+                            float CLoseJetTauEta=Tau4Momentum.Eta();
+                            float CLoseJetMuPt=muPt->at(imu);
+                            float CLoseJetMuEta=muEta->at(imu);
+                            
+                            if (TauPtCut&& TauIdIso && MuPtCut && MuIdIso ){
+                                double Refer_R_jettau = 5;
+                                double Refer_R_jetmu = 5;
                                 
-                                if (KJet4Momentum.DeltaR(Tau4Momentum) < Refer_R_jettau) {
-                                    Refer_R_jettau = KJet4Momentum.DeltaR(Tau4Momentum);
-                                    if (Refer_R_jettau < 0.5 && jetPt->at(kjet)  >= Tau4Momentum.Pt()) {
-                                        CLoseJetTauPt = jetPt->at(kjet);
-                                        CLoseJetTauEta = jetEta->at(kjet);
+                                for (int kjet= 0 ; kjet < nJet ; kjet++){
+                                    KJet4Momentum.SetPtEtaPhiE(jetPt->at(kjet),jetEta->at(kjet),jetPhi->at(kjet),jetEn->at(kjet));
+                                    
+                                    if (KJet4Momentum.DeltaR(Tau4Momentum) < Refer_R_jettau) {
+                                        Refer_R_jettau = KJet4Momentum.DeltaR(Tau4Momentum);
+                                        if (Refer_R_jettau < 0.5 && jetPt->at(kjet)  >= Tau4Momentum.Pt()) {
+                                            CLoseJetTauPt = jetPt->at(kjet);
+                                            CLoseJetTauEta = jetEta->at(kjet);
+                                            
+                                        }
+                                        
+                                        
+                                    }
+                                    
+                                    if (KJet4Momentum.DeltaR(Mu4Momentum) < Refer_R_jetmu) {
+                                        Refer_R_jetmu = KJet4Momentum.DeltaR(Mu4Momentum);
+                                        if (Refer_R_jetmu < 0.5 && jetPt->at(kjet)  >= muPt->at(imu)) {
+                                            CLoseJetMuPt = jetPt->at(kjet);
+                                            CLoseJetMuEta = jetEta->at(kjet);
+                                            
+                                        }
                                         
                                     }
                                     
                                     
                                 }
+                            }
+                            
+                            
+                            //###########      Extra Mu Veto   ###########################################################
+                            bool extraMuonExist= false;
+                            for  (int jmu=0 ; jmu < nMu; jmu++){
+                                ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
                                 
-                                if (KJet4Momentum.DeltaR(Mu4Momentum) < Refer_R_jetmu) {
-                                    Refer_R_jetmu = KJet4Momentum.DeltaR(Mu4Momentum);
-                                    if (Refer_R_jetmu < 0.5 && jetPt->at(kjet)  >= muPt->at(imu)) {
-                                        CLoseJetMuPt = jetPt->at(kjet);
-                                        CLoseJetMuEta = jetEta->at(kjet);
-                                        
+                                if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
+                                if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
+                                
+                                float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
+                                if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
+                                    IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
+                                
+                                if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
+                                
+                                extraMuonExist=true;
+                            }
+                            //###########      Extra Ele Veto   ###########################################################
+                            
+                            bool extraElectronExist= false;
+                            for  (int jele=0 ; jele < nEle; jele++){
+                                ExtraEle4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
+                                
+                                if (ExtraEle4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraEle4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
+                                if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
+                                
+                                float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
+                                if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
+                                    IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
+                                
+                                bool eleMVAIdExtra= false;
+                                if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
+                                else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
+                                else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
+                                else eleMVAIdExtra= false;
+                                
+                                
+                                if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
+                                extraElectronExist= true;
+                                
+                            }
+                            
+                            //###########      General   ###########################################################
+                            
+                            bool  GeneralMuTauSelection=  !extraMuonExist && !extraElectronExist && MuPtCut && TauPtCut && MuIdIso && TauIdIso && Mu4Momentum.DeltaR(Tau4Momentum) > 0.5;
+                            
+                            
+                            //###########      Jet definition   ###########################################################
+                            vector<TLorentzVector> JetVector;
+                            vector<TLorentzVector> BJetBVector;
+                            vector<TLorentzVector> BJet20Vector;
+                            JetVector.clear();
+                            BJetBVector.clear();
+                            BJet20Vector.clear();
+                            
+                            for (int ijet= 0 ; ijet < nJet ; ijet++){
+                                Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
+                                //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
+                                
+                                if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                                    JetVector.push_back(Jet4Momentum);
+                                    if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
+                                        BJetBVector.push_back(Jet4Momentum);
                                     }
+                                }
+                                if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > BJetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV ){
+                                    BJet20Vector.push_back(Jet4Momentum);
+                                }
+                                
+                            }
+                            
+                            
+                            float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet,ST_MET =0;
+                            
+                            bool DiJet_Selection=JetVector.size() > 1;
+                            bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                            bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                            
+                            if (DiJet_Selection){
+                                ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt();
+                                ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt()+NewMET;
+                            }
+                            if (JetBJet_Selection){
+                                
+                                M_muj0= (Mu4Momentum+JetVector[0]).M();
+                                M_muj1= (Mu4Momentum+JetVector[1]).M();
+                                M_tauj0= (Tau4Momentum+JetVector[0]).M();
+                                M_tauj1= (Tau4Momentum+JetVector[1]).M();
+                                
+                                M_MuJet=M_muj0;
+                                M_TauJet=M_tauj1;
+                                if ( fabs(M_muj0-M_tauj1) > fabs(M_muj1-M_tauj0)){
+                                    M_MuJet=M_muj1;
+                                    M_TauJet=M_tauj0;
                                     
                                 }
+                            }
+                            
+                            
+                            
+                            //###############################################################################################
+                            // Tau Pt Reweighting
+                            //###############################################################################################
+                            float tauPtReweightingUp = 1 + 0.2 * (Tau4Momentum.Pt() / 1000);
+                            float tauPtReweightingDown = 1 - 0.2 * (Tau4Momentum.Pt() / 1000);
+                            //###############################################################################################
+                            //  Tau Lep Charge Categorization
+                            //###############################################################################################
+                            const int size_Q = 3;
+                            bool charge_No = 1;
+                            bool charge_OS = muCharge->at(imu) * tauCharge->at(itau) < 0;
+                            bool charge_SS = muCharge->at(imu) * tauCharge->at(itau) > 0;
+                            bool charge_category[size_Q] = {1,charge_OS, charge_SS};
+                            std::string q_Cat[size_Q] = {"","_OS", "_SS"};
+                            
+                            //###############################################################################################
+                            //  Isolation Categorization
+                            //###############################################################################################
+                            const int size_isoCat = 7;
+                            bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < LeptonIsoCut;
+                            bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= LeptonIsoCut;
+                            bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= LeptonIsoCut;
+                            bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < LeptonIsoCut;
+                            bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                            bool LepIso = IsoMu < LeptonIsoCut;
+                            bool Total = 1;
+                            
+                            
+                            bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
+                            std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
+                            
+                            //###############################################################################################
+                            //  MT Categorization
+                            //###############################################################################################
+                            float tmass= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , NewMET, NewMETPhi);
+                            const int size_mTCat = 1;
+                            bool NoMT = 1;
+                            bool LoWMT = tmass < 30;
+                            bool HighMT = tmass > 70;
+                            //                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                            //                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
+                            bool MT_category[size_mTCat] = {NoMT};
+                            std::string MT_Cat[size_mTCat] = {""};
+                            
+                            //###############################################################################################
+                            //  Trigger Categorization
+                            //###############################################################################################
+                            //                        else if (name.find("HLT_Mu45_eta2p1_v") != string::npos) bitEleMuX = 26;
+                            const int size_trgCat = 1;
+                            bool PassTrigger = (HLTEleMuX >> 26 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
+                            //                        bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
+                            //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
+                            bool NoTrigger = 1;
+                            //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
+                            //                    std::string trg_Cat[size_trgCat] = {"", "_NoTrigger"};
+                            bool Trigger_category[size_trgCat] = {PassTrigger};
+                            std::string trg_Cat[size_trgCat] = {""};
+                            
+                            //###############################################################################################
+                            //  ST Categorization
+                            //###############################################################################################
+                            const int size_ST = 2;
+                            bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
+                            std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
+                            float TTScaleFactor[size_ST]={0.91,0.91};
+                            
+                            //###############################################################################################
+                            //  Analysis Categorization
+                            //###############################################################################################
+                            const int size_AN = 2;
+                            bool PassLQ= M_TauJet > 250 ;
+                            bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
+                            bool AN_category[size_AN] = {PassLQ, PassRW};
+                            std::string AN_Cat[size_AN] = {"_LQ","_RW"};
+                            
+                            
+                            //###############################################################################################
+                            
+                            std::string CHANNEL="MuTau";
+                            if (GeneralMuTauSelection){
                                 
-                                
-                            }
-                        }
-                        
-                        
-                        //###########      Extra Mu Veto   ###########################################################
-                        bool extraMuonExist= false;
-                        for  (int jmu=0 ; jmu < nMu; jmu++){
-                            ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
-                            
-                            if (ExtraMu4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
-                            if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
-                            
-                            float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
-                            if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
-                                IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
-                            
-                            if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
-                            
-                            extraMuonExist=true;
-                        }
-                        //###########      Extra Ele Veto   ###########################################################
-                        
-                        bool extraElectronExist= false;
-                        for  (int jele=0 ; jele < nEle; jele++){
-                            ExtraEle4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
-                            
-                            if (ExtraEle4Momentum.DeltaR(Mu4Momentum) < 0.5  || ExtraEle4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
-                            if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
-                            
-                            float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
-                            if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
-                                IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
-                            
-                            bool eleMVAIdExtra= false;
-                            if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
-                            else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
-                            else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
-                            else eleMVAIdExtra= false;
-                            
-                            
-                            if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
-                            extraElectronExist= true;
-                            
-                        }
-                        
-                        //###########      General   ###########################################################
-                        
-                        bool  GeneralMuTauSelection=  !extraMuonExist && !extraElectronExist && MuPtCut && TauPtCut && MuIdIso && TauIdIso && Mu4Momentum.DeltaR(Tau4Momentum) > 0.5;
-                        
-                        
-                        //###########      Jet definition   ###########################################################
-                        vector<TLorentzVector> JetVector;
-                        vector<TLorentzVector> BJetBVector;
-                        vector<TLorentzVector> BJet20Vector;
-                        JetVector.clear();
-                        BJetBVector.clear();
-                        BJet20Vector.clear();
-                        
-                        for (int ijet= 0 ; ijet < nJet ; ijet++){
-                            Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                            //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
-
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
-                                JetVector.push_back(Jet4Momentum);
-                                if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
-                                    BJetBVector.push_back(Jet4Momentum);
-                                }
-                            }
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > BJetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV ){
-                                BJet20Vector.push_back(Jet4Momentum);
-                            }
-                            
-                        }
-                        
-                        
-                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_MET ,ST_DiJet=0;
-
-                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
-                        bool DiJet_Selection=JetVector.size() > 1;
-                        bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
-                        
-                        if (DiJet_Selection)
-                        ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt();
-                        
-                        if (JetBJet_Selection){
-
-                            if ((BJetBVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
-                            
-                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt();
-                            ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt()+NewMET;
-                            
-
-                            
-                            M_muj0= (Mu4Momentum+JetVector[0]).M();
-                            M_muj1= (Mu4Momentum+JetVector[1]).M();
-                            M_tauj0= (Tau4Momentum+JetVector[0]).M();
-                            M_tauj1= (Tau4Momentum+JetVector[1]).M();
-                            
-                            M_MuJet=M_muj0;
-                            M_TauJet=M_tauj1;
-                            if ( fabs(M_muj0-M_tauj1) > fabs(M_muj1-M_tauj0)){
-                                M_MuJet=M_muj1;
-                                M_TauJet=M_tauj0;
-                                
-                            }
-                        }
-                        
-
-
-                        //###############################################################################################
-                        // Tau Pt Reweighting
-                        //###############################################################################################
-                        float tauPtReweightingUp = 1 + 0.2 * (Tau4Momentum.Pt() / 1000);
-                        float tauPtReweightingDown = 1 - 0.2 * (Tau4Momentum.Pt() / 1000);
-                        //###############################################################################################
-                        //  Tau Lep Charge Categorization
-                        //###############################################################################################
-                        const int size_Q = 3;
-                        bool charge_No = 1;
-                        bool charge_OS = muCharge->at(imu) * tauCharge->at(itau) < 0;
-                        bool charge_SS = muCharge->at(imu) * tauCharge->at(itau) > 0;
-                        bool charge_category[size_Q] = {1,charge_OS, charge_SS};
-                        std::string q_Cat[size_Q] = {"","_OS", "_SS"};
-                        
-                        //###############################################################################################
-                        //  Isolation Categorization
-                        //###############################################################################################
-                        const int size_isoCat = 7;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < LeptonIsoCut;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= LeptonIsoCut;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= LeptonIsoCut;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < LeptonIsoCut;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool LepIso = IsoMu < LeptonIsoCut;
-                        bool Total = 1;
-                        
-                        
-                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
-
-                        //###############################################################################################
-                        //  MT Categorization
-                        //###############################################################################################
-                        float tmass= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , NewMET, NewMETPhi);
-                        const int size_mTCat = 1;
-                        bool NoMT = 1;
-                        bool LoWMT = tmass < 30;
-                        bool HighMT = tmass > 70;
-//                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
-//                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
-                        bool MT_category[size_mTCat] = {NoMT};
-                        std::string MT_Cat[size_mTCat] = {""};
-                        
-                        //###############################################################################################
-                        //  Trigger Categorization
-                        //###############################################################################################
-//                        else if (name.find("HLT_Mu45_eta2p1_v") != string::npos) bitEleMuX = 26;
-                        const int size_trgCat = 1;
-                        bool PassTrigger = (HLTEleMuX >> 26 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
-//                        bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
-                        //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
-                        bool NoTrigger = 1;
-                        //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
-                        //                    std::string trg_Cat[size_trgCat] = {"", "_NoTrigger"};
-                        bool Trigger_category[size_trgCat] = {PassTrigger};
-                        std::string trg_Cat[size_trgCat] = {""};
-                        
-                        //###############################################################################################
-                        //  ST Categorization
-                        //###############################################################################################
-                        const int size_ST = 2;
-                        bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
-                        std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                        float TTScaleFactor[size_ST]={0.91,0.91};
-                        
-                        //###############################################################################################
-                        //  Analysis Categorization
-                        //###############################################################################################
-                        const int size_AN = 2;
-                        bool PassLQ= M_TauJet > 250 ;
-                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
-                        bool AN_category[size_AN] = {PassLQ, PassRW};
-                        std::string AN_Cat[size_AN] = {"_LQ","_RW"};
-
-                        
-                        //###############################################################################################
-                        
-                        std::string CHANNEL="MuTau";
-                        if (GeneralMuTauSelection){
-                            
-                            for (int an = 0; an < size_AN; an++) {
-                                if (AN_category[an]) {
-                            
-                            for (int qcat = 0; qcat < size_Q; qcat++) {
-                                if (charge_category[qcat]) {
-                                    for (int iso = 0; iso < size_isoCat; iso++) {
-                                        if (Iso_category[iso]) {
-                                            for (int imt = 0; imt < size_mTCat; imt++) {
-                                                if (MT_category[imt]) {
-                                                    for (int ist = 0; ist < size_ST; ist++) {
-                                                        if (ST_category[ist]) {
-//                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
-                                                            
-                                                            for (int trg = 0; trg < size_trgCat; trg++) {
-                                                                
-                                                                if (Trigger_category[trg]) {
-                                                                    
-                                                                    
-                                                                    std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist]+Scale_Cat[scale];
-                                                                    
-//                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,300,0,3000,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,300,0,3000,TotalWeight *  tauPtReweightingDown);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,300,0,3000,TotalWeight * tauPtReweightingUp);
-                                                                    
-                                                                    
-                                                                    
-                                                                }
-                                                            }
-                                                            
+                                for (int an = 0; an < size_AN; an++) {
+                                    if (AN_category[an]) {
+                                        
+                                        for (int qcat = 0; qcat < size_Q; qcat++) {
+                                            if (charge_category[qcat]) {
+                                                for (int iso = 0; iso < size_isoCat; iso++) {
+                                                    if (Iso_category[iso]) {
+                                                        for (int imt = 0; imt < size_mTCat; imt++) {
+                                                            if (MT_category[imt]) {
+                                                                for (int ist = 0; ist < size_ST; ist++) {
+                                                                    if (ST_category[ist]) {
+                                                                        //                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
+                                                                        
+                                                                        for (int trg = 0; trg < size_trgCat; trg++) {
+                                                                            
+                                                                            if (Trigger_category[trg]) {
+                                                                                
+                                                                                
+                                                                                std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist]+Scale_Cat[scale];
+                                                                                
+                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,TotalWeight *  tauPtReweightingDown);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,TotalWeight * tauPtReweightingUp);
+                                                                                
+                                                                                
+                                                                                
+                                                                            }
+                                                                        }
+                                                                        
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -541,7 +536,6 @@ int main(int argc, char** argv) {
                             }
                         }
                     }
-                    }
                 }
             }
             
@@ -550,7 +544,7 @@ int main(int argc, char** argv) {
             //###############################################################################################
             bool DoEleTauAnalysis=1;
             if (DoEleTauAnalysis  &&   isSingleMu== string::npos) {
-
+                
                 
                 
                 //loop over eleTau Channels
@@ -569,300 +563,297 @@ int main(int argc, char** argv) {
                             float NewMETPhi = atan(NewMET_y / NewMET_x);
                             if (pfMETPhi > (TMath::Pi() / 2)) NewMETPhi += TMath::Pi();
                             if (pfMETPhi < (-TMath::Pi() / 2)) NewMETPhi -= TMath::Pi();
-
-                        
-                        
-                        float IsoEle=elePFChIso->at(iele)/elePt->at(iele);
-                        if ( (elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))  > 0.0)
-                            IsoEle= (elePFChIso->at(iele)/elePt->at(iele) + elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))/elePt->at(iele);
-                        
-                        bool eleMVAId= false;
-                        if (fabs (eleSCEta->at(iele)) < 0.8 && eleIDMVANonTrg->at(iele) > 0.967083) eleMVAId= true;
-                        else if (fabs (eleSCEta->at(iele)) >  0.8 &&fabs (eleSCEta->at(iele)) <  1.5 && eleIDMVANonTrg->at(iele) > 0.929117) eleMVAId= true;
-                        else if ( fabs (eleSCEta->at(iele)) >  1.5 && eleIDMVANonTrg->at(iele) > 0.726311 ) eleMVAId= true;
-                        else eleMVAId= false;
-                        
-                        
-                        TLorentzVector Ele4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
-                        Ele4Momentum.SetPtEtaPhiM(elePt->at(iele),eleEta->at(iele),elePhi->at(iele),eleMass);
-                        Z4Momentum=Ele4Momentum+Tau4Momentum;
-                        
-                        
-                        bool ElePtCut = elePt->at(iele) > LeptonPtCut_ && fabs(eleEta->at(iele)) < 2.1 ;
-                        bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
-                        bool EleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele));
-                        bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0;
-                        
-                        
-
-                        float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
-                        float TotalWeight = LumiWeight * GetGenWeight * PUWeight *  eleCorr;
-                        plotFill("Weight_Ele",eleCorr,200,0,2);
-
-                        
-                        //###########      Finding the close jet near tau   ###########################################################
-                        float CLoseJetTauPt=Tau4Momentum.Pt();
-                        float CLoseJetTauEta=Tau4Momentum.Eta();
-                        float CLoseJetElePt=elePt->at(iele);
-                        float CLoseJetEleEta=eleEta->at(iele);
-                        
-                        if (TauPtCut&& TauPtCut && ElePtCut && EleIdIso ){
-                            double Refer_R_jettau = 5;
-                            double Refer_R_jetele = 5;
                             
-                            for (int kjet= 0 ; kjet < nJet ; kjet++){
-                                KJet4Momentum.SetPtEtaPhiE(jetPt->at(kjet),jetEta->at(kjet),jetPhi->at(kjet),jetEn->at(kjet));
+                            
+                            
+                            float IsoEle=elePFChIso->at(iele)/elePt->at(iele);
+                            if ( (elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))  > 0.0)
+                                IsoEle= (elePFChIso->at(iele)/elePt->at(iele) + elePFNeuIso->at(iele) + elePFPhoIso->at(iele) - 0.5* elePFPUIso->at(iele))/elePt->at(iele);
+                            
+                            bool eleMVAId= false;
+                            if (fabs (eleSCEta->at(iele)) < 0.8 && eleIDMVANonTrg->at(iele) > 0.967083) eleMVAId= true;
+                            else if (fabs (eleSCEta->at(iele)) >  0.8 &&fabs (eleSCEta->at(iele)) <  1.5 && eleIDMVANonTrg->at(iele) > 0.929117) eleMVAId= true;
+                            else if ( fabs (eleSCEta->at(iele)) >  1.5 && eleIDMVANonTrg->at(iele) > 0.726311 ) eleMVAId= true;
+                            else eleMVAId= false;
+                            
+                            
+                            TLorentzVector Ele4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
+                            Ele4Momentum.SetPtEtaPhiM(elePt->at(iele),eleEta->at(iele),elePhi->at(iele),eleMass);
+                            Z4Momentum=Ele4Momentum+Tau4Momentum;
+                            
+                            
+                            bool ElePtCut = elePt->at(iele) > LeptonPtCut_ && fabs(eleEta->at(iele)) < 2.1 ;
+                            bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
+                            bool EleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele));
+                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0;
+                            
+                            
+                            
+                            float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
+                            float TotalWeight = LumiWeight * GetGenWeight * PUWeight *  eleCorr;
+                            plotFill("Weight_Ele",eleCorr,200,0,2);
+                            
+                            
+                            //###########      Finding the close jet near tau   ###########################################################
+                            float CLoseJetTauPt=Tau4Momentum.Pt();
+                            float CLoseJetTauEta=Tau4Momentum.Eta();
+                            float CLoseJetElePt=elePt->at(iele);
+                            float CLoseJetEleEta=eleEta->at(iele);
+                            
+                            if (TauPtCut&& TauIdIso && ElePtCut && EleIdIso ){
+                                double Refer_R_jettau = 5;
+                                double Refer_R_jetele = 5;
                                 
-                                if (KJet4Momentum.DeltaR(Tau4Momentum) < Refer_R_jettau) {
-                                    Refer_R_jettau = KJet4Momentum.DeltaR(Tau4Momentum);
-                                    if (Refer_R_jettau < 0.5 && jetPt->at(kjet)  >= Tau4Momentum.Pt()) {
-                                        CLoseJetTauPt = jetPt->at(kjet);
-                                        CLoseJetTauEta = jetEta->at(kjet);
+                                for (int kjet= 0 ; kjet < nJet ; kjet++){
+                                    KJet4Momentum.SetPtEtaPhiE(jetPt->at(kjet),jetEta->at(kjet),jetPhi->at(kjet),jetEn->at(kjet));
+                                    
+                                    if (KJet4Momentum.DeltaR(Tau4Momentum) < Refer_R_jettau) {
+                                        Refer_R_jettau = KJet4Momentum.DeltaR(Tau4Momentum);
+                                        if (Refer_R_jettau < 0.5 && jetPt->at(kjet)  >= Tau4Momentum.Pt()) {
+                                            CLoseJetTauPt = jetPt->at(kjet);
+                                            CLoseJetTauEta = jetEta->at(kjet);
+                                            
+                                        }
+                                        
                                         
                                     }
                                     
-                                    
-                                }
-                                
-                                if (KJet4Momentum.DeltaR(Ele4Momentum) < Refer_R_jetele) {
-                                    Refer_R_jetele = KJet4Momentum.DeltaR(Ele4Momentum);
-                                    if (Refer_R_jetele < 0.5 && jetPt->at(kjet)  >= elePt->at(iele)) {
-                                        CLoseJetElePt = jetPt->at(kjet);
-                                        CLoseJetEleEta = jetEta->at(kjet);
-                                        
+                                    if (KJet4Momentum.DeltaR(Ele4Momentum) < Refer_R_jetele) {
+                                        Refer_R_jetele = KJet4Momentum.DeltaR(Ele4Momentum);
+                                        if (Refer_R_jetele < 0.5 && jetPt->at(kjet)  >= elePt->at(iele)) {
+                                            CLoseJetElePt = jetPt->at(kjet);
+                                            CLoseJetEleEta = jetEta->at(kjet);
+                                            
+                                        }
                                     }
                                 }
                             }
-                        }
-                        
-                        
-                        //###########      Extra Mu Veto   ###########################################################
-                        bool extraMuonExist= false;
-                        for  (int jmu=0 ; jmu < nMu; jmu++){
-                            
-                            ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
-                            
-                            if (ExtraMu4Momentum.DeltaR(Ele4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
-                            if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
-                            
-                            float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
-                            if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
-                                IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
-                            
-                            if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
-                            
-                            extraMuonExist=true;
-                        }
-                        //###########      Extra Ele Veto   ###########################################################
-                        
-                        bool extraElectronExist= false;
-                        for  (int jele=0 ; jele < nEle; jele++){
-                            
-                            ExtraEle4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
-                            
-                            if (ExtraEle4Momentum.DeltaR(Ele4Momentum) < 0.5  || ExtraEle4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
-                            if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
-                            
-                            float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
-                            if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
-                                IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
-                            
-                            bool eleMVAIdExtra= false;
-                            if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
-                            else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
-                            else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
-                            else eleMVAIdExtra= false;
                             
                             
-                            if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
-                            extraElectronExist= true;
-                            
-                        }
-                        
-                        //###########      General  ###########################################################
-                        
-                        bool GeneralEleTauSelection=  !extraMuonExist && !extraElectronExist && ElePtCut && TauPtCut && EleIdIso && TauIdIso  && Ele4Momentum.DeltaR(Tau4Momentum) > 0.5;
-                        
-                        //###########      Jet definition   ###########################################################
-                        vector<TLorentzVector> JetVector;
-                        vector<TLorentzVector> BJetBVector;
-                        vector<TLorentzVector> BJet20Vector;
-                        JetVector.clear();
-                        BJetBVector.clear();
-                        BJet20Vector.clear();
-                        
-                        for (int ijet= 0 ; ijet < nJet ; ijet++){
-                            Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                            //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Ele4Momentum) > 0.5 ){
-                                JetVector.push_back(Jet4Momentum);
-                                if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
-                                    BJetBVector.push_back(Jet4Momentum);
-                                }
+                            //###########      Extra Mu Veto   ###########################################################
+                            bool extraMuonExist= false;
+                            for  (int jmu=0 ; jmu < nMu; jmu++){
+                                
+                                ExtraMu4Momentum.SetPtEtaPhiM(muPt->at(jmu),muEta->at(jmu),muPhi->at(jmu),MuMass);
+                                
+                                if (ExtraMu4Momentum.DeltaR(Ele4Momentum) < 0.5  || ExtraMu4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
+                                if  ( muPt->at(jmu) < 15 ||  fabs(muEta->at(jmu)) > 2.4 ) continue ;
+                                
+                                float IsoMuExtra=muPFChIso->at(jmu)/muPt->at(jmu);
+                                if ( (muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu) )  > 0.0)
+                                    IsoMuExtra= ( muPFChIso->at(jmu)/muPt->at(jmu) + muPFNeuIso->at(jmu) + muPFPhoIso->at(jmu) - 0.5* muPFPUIso->at(jmu))/muPt->at(jmu);
+                                
+                                if (! (muIsLooseID->at(jmu) > 0 && IsoMuExtra < 0.30) ) continue;
+                                
+                                extraMuonExist=true;
                             }
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > BJetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Ele4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV ){
-                                BJet20Vector.push_back(Jet4Momentum);
-                            }
-                        }
-                        
-
-                        float ST_JetBjet,M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_MET ,ST_DiJet=0;
-                        
-                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
-                        bool DiJet_Selection=JetVector.size() > 1;
-                        bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
-                        
-                        if (DiJet_Selection)
-                        ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+Tau4Momentum.Pt();
-                        
-                        if (JetBJet_Selection){
+                            //###########      Extra Ele Veto   ###########################################################
                             
-                            if ((BJetBVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
-                            
-                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+Tau4Momentum.Pt();
-                            ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+Tau4Momentum.Pt()+NewMET;
-                            
-                            
-                            M_elej0= (Ele4Momentum+JetVector[0]).M();
-                            M_elej1= (Ele4Momentum+JetVector[1]).M();
-                            M_tauj0= (Tau4Momentum+JetVector[0]).M();
-                            M_tauj1= (Tau4Momentum+JetVector[1]).M();
-                            
-                            M_EleJet=M_elej0;
-                            M_TauJet=M_tauj1;
-                            if ( fabs(M_elej0-M_tauj1) > fabs(M_elej1-M_tauj0)){
-                                M_EleJet=M_elej1;
-                                M_TauJet=M_tauj0;
+                            bool extraElectronExist= false;
+                            for  (int jele=0 ; jele < nEle; jele++){
+                                
+                                ExtraEle4Momentum.SetPtEtaPhiM(elePt->at(jele),eleEta->at(jele),elePhi->at(jele),eleMass);
+                                
+                                if (ExtraEle4Momentum.DeltaR(Ele4Momentum) < 0.5  || ExtraEle4Momentum.DeltaR(Tau4Momentum) < 0.5 ) continue;
+                                if ( elePt->at(jele) < 15 || fabs(eleEta->at(jele)) > 2.5) continue;
+                                
+                                float IsoEleExtra=elePFChIso->at(jele)/elePt->at(jele);
+                                if ( (elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))  > 0.0)
+                                    IsoEleExtra= (elePFChIso->at(jele)/elePt->at(jele) + elePFNeuIso->at(jele) + elePFPhoIso->at(jele) - 0.5* elePFPUIso->at(jele))/elePt->at(jele);
+                                
+                                bool eleMVAIdExtra= false;
+                                if (fabs (eleSCEta->at(jele)) < 0.8 && eleIDMVANonTrg->at(jele) >  0.913286 ) eleMVAIdExtra= true;
+                                else if (fabs (eleSCEta->at(jele)) >  0.8 &&fabs (eleSCEta->at(jele)) <  1.5 && eleIDMVANonTrg->at(jele) >  0.805013 ) eleMVAIdExtra= true;
+                                else if ( fabs (eleSCEta->at(jele)) >  1.5 && eleIDMVANonTrg->at(jele) >  0.358969  ) eleMVAIdExtra= true;
+                                else eleMVAIdExtra= false;
+                                
+                                
+                                if (!(eleMVAIdExtra && eleMissHits->at(jele) < 2 && eleConvVeto->at(jele) && IsoEleExtra < 0.30)) continue;
+                                extraElectronExist= true;
                                 
                             }
-                        }
-                        
-                        
-                        
-                        //###############################################################################################
-                        // Tau Pt Reweighting
-                        //###############################################################################################
-                        float tauPtReweightingUp = 1 + 0.2 * (Tau4Momentum.Pt() / 1000);
-                        float tauPtReweightingDown = 1 - 0.2 * (Tau4Momentum.Pt() / 1000);
-                        //###############################################################################################
-                        //  Tau Lep Charge Categorization
-                        //###############################################################################################
-                        const int size_Q = 3;
-                        bool charge_No = 1;
-                        bool charge_OS = eleCharge->at(iele) * tauCharge->at(itau) < 0;
-                        bool charge_SS = eleCharge->at(iele) * tauCharge->at(itau) > 0;
-                        bool charge_category[size_Q] = {1,charge_OS, charge_SS};
-                        std::string q_Cat[size_Q] = {"","_OS", "_SS"};
-                        
-                        //###############################################################################################
-                        // Isolation Categorization
-                        //###############################################################################################
-                        const int size_isoCat = 7;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < LeptonIsoCut;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= LeptonIsoCut;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= LeptonIsoCut;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < LeptonIsoCut;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool LepIso = IsoEle < LeptonIsoCut;
-                        bool Total = 1;
-
-
-                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
-                        
-                        //###############################################################################################
-                        //  MT Categorization
-                        //###############################################################################################
-                        float tmass= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) ,  NewMET, NewMETPhi);
-                        const int size_mTCat = 1;
-                        bool NoMT = 1;
-                        bool LoWMT = tmass < 30;
-                        bool HighMT = tmass > 70;
-                        bool MT_category[size_mTCat] = {NoMT};
-                        std::string MT_Cat[size_mTCat] = {""};
-//                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
-//                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
-                        
-                        //###############################################################################################
-                        //  Trigger Categorization
-                        //###############################################################################################
-//https://twiki.cern.ch/twiki/bin/view/CMS/ElectronScaleFactorsRun2
-                        const int size_trgCat = 1;
-                        //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 11 & 1) == 1;
-                        //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 1 & 1) == 1 || (HLTEleMuX >> 6 & 1) == 1|| (HLTEleMuX >> 11 & 1) == 1;
-                        bool PassTrigger =   ((HLTEleMuX >> 2 & 1) == 1 && isData )|| (1 && !isData );
-//                        bool PassTrigger =   ((HLTEleMuX >> 6 & 1) == 1 && isData )|| ((HLTEleMuX >> 11 & 1) == 1 && !isData );
-                        
-                        bool NoTrigger = 1;
-                        //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
-                        //                    std::string trg_Cat[size_trgCat] = {"", "_NoTrigger"};
-                        bool Trigger_category[size_trgCat] = {PassTrigger};
-                        std::string trg_Cat[size_trgCat] = {""};
-                        
-                        //###############################################################################################
-                        //  ST Categorization
-                        //###############################################################################################
+                            
+                            //###########      General  ###########################################################
+                            
+                            bool GeneralEleTauSelection=  !extraMuonExist && !extraElectronExist && ElePtCut && TauPtCut && EleIdIso && TauIdIso  && Ele4Momentum.DeltaR(Tau4Momentum) > 0.5;
+                            
+                            //###########      Jet definition   ###########################################################
+                            vector<TLorentzVector> JetVector;
+                            vector<TLorentzVector> BJetBVector;
+                            vector<TLorentzVector> BJet20Vector;
+                            JetVector.clear();
+                            BJetBVector.clear();
+                            BJet20Vector.clear();
+                            
+                            for (int ijet= 0 ; ijet < nJet ; ijet++){
+                                Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
+                                //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
+                                if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Ele4Momentum) > 0.5 ){
+                                    JetVector.push_back(Jet4Momentum);
+                                    if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
+                                        BJetBVector.push_back(Jet4Momentum);
+                                    }
+                                }
+                                if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > BJetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Ele4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV ){
+                                    BJet20Vector.push_back(Jet4Momentum);
+                                }
+                            }
+                            
+                            
+                            float ST_JetBjet,M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_DiJet,ST_MET =0;
+                            
+                            bool DiJet_Selection=JetVector.size() > 1;
+                            bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                            bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                            
+                            
+                            if (DiJet_Selection){
+                                ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+Tau4Momentum.Pt();
+                                ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+Tau4Momentum.Pt()+NewMET;
+                            }
+                            
+                            if (JetBJet_Selection){
+                                
+                                M_elej0= (Ele4Momentum+JetVector[0]).M();
+                                M_elej1= (Ele4Momentum+JetVector[1]).M();
+                                M_tauj0= (Tau4Momentum+JetVector[0]).M();
+                                M_tauj1= (Tau4Momentum+JetVector[1]).M();
+                                
+                                M_EleJet=M_elej0;
+                                M_TauJet=M_tauj1;
+                                if ( fabs(M_elej0-M_tauj1) > fabs(M_elej1-M_tauj0)){
+                                    M_EleJet=M_elej1;
+                                    M_TauJet=M_tauj0;
+                                    
+                                }
+                            }
+                            
+                            
+                            
+                            //###############################################################################################
+                            // Tau Pt Reweighting
+                            //###############################################################################################
+                            float tauPtReweightingUp = 1 + 0.2 * (Tau4Momentum.Pt() / 1000);
+                            float tauPtReweightingDown = 1 - 0.2 * (Tau4Momentum.Pt() / 1000);
+                            //###############################################################################################
+                            //  Tau Lep Charge Categorization
+                            //###############################################################################################
+                            const int size_Q = 3;
+                            bool charge_No = 1;
+                            bool charge_OS = eleCharge->at(iele) * tauCharge->at(itau) < 0;
+                            bool charge_SS = eleCharge->at(iele) * tauCharge->at(itau) > 0;
+                            bool charge_category[size_Q] = {1,charge_OS, charge_SS};
+                            std::string q_Cat[size_Q] = {"","_OS", "_SS"};
+                            
+                            //###############################################################################################
+                            // Isolation Categorization
+                            //###############################################################################################
+                            const int size_isoCat = 7;
+                            bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < LeptonIsoCut;
+                            bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= LeptonIsoCut;
+                            bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= LeptonIsoCut;
+                            bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < LeptonIsoCut;
+                            bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                            bool LepIso = IsoEle < LeptonIsoCut;
+                            bool Total = 1;
+                            
+                            
+                            bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
+                            std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
+                            
+                            //###############################################################################################
+                            //  MT Categorization
+                            //###############################################################################################
+                            float tmass= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) ,  NewMET, NewMETPhi);
+                            const int size_mTCat = 1;
+                            bool NoMT = 1;
+                            bool LoWMT = tmass < 30;
+                            bool HighMT = tmass > 70;
+                            bool MT_category[size_mTCat] = {NoMT};
+                            std::string MT_Cat[size_mTCat] = {""};
+                            //                        bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
+                            //                        std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
+                            
+                            //###############################################################################################
+                            //  Trigger Categorization
+                            //###############################################################################################
+                            //https://twiki.cern.ch/twiki/bin/view/CMS/ElectronScaleFactorsRun2
+                            const int size_trgCat = 1;
+                            //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 11 & 1) == 1;
+                            //                            bool PassTrigger = (HLTEleMuX >> 0 & 1) == 1 || (HLTEleMuX >> 1 & 1) == 1 || (HLTEleMuX >> 6 & 1) == 1|| (HLTEleMuX >> 11 & 1) == 1;
+                            bool PassTrigger =   ((HLTEleMuX >> 2 & 1) == 1 && isData )|| (1 && !isData );
+                            //                        bool PassTrigger =   ((HLTEleMuX >> 6 & 1) == 1 && isData )|| ((HLTEleMuX >> 11 & 1) == 1 && !isData );
+                            
+                            bool NoTrigger = 1;
+                            //                    bool Trigger_category[size_trgCat] = {PassTrigger, NoTrigger};
+                            //                    std::string trg_Cat[size_trgCat] = {"", "_NoTrigger"};
+                            bool Trigger_category[size_trgCat] = {PassTrigger};
+                            std::string trg_Cat[size_trgCat] = {""};
+                            
+                            //###############################################################################################
+                            //  ST Categorization
+                            //###############################################################################################
                             const int size_ST = 2;
                             bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                             std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
                             float TTScaleFactor[size_ST]={0.91,0.91};
-                        
-                        //###############################################################################################
-                        //  Analysis Categorization
-                        //###############################################################################################
-                        const int size_AN = 2;
-                        bool PassLQ= M_TauJet > 250;
-                        bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
-
-                        bool AN_category[size_AN] = {PassLQ, PassRW};
-                        std::string AN_Cat[size_AN] = {"_LQ","_RW"};
-
-                        
-                        //###############################################################################################
-                        
-                        
-                        std::string CHANNEL="EleTau";
-                        for (int an = 0; an < size_AN; an++) {
-                            if (AN_category[an]) {
-
-                        if (GeneralEleTauSelection){
-                            for (int qcat = 0; qcat < size_Q; qcat++) {
-                                if (charge_category[qcat]) {
-                                    for (int iso = 0; iso < size_isoCat; iso++) {
-                                        if (Iso_category[iso]) {
-                                            for (int imt = 0; imt < size_mTCat; imt++) {
-                                                if (MT_category[imt]) {
-                                                    for (int ist = 0; ist < size_ST; ist++) {
-                                                        if (ST_category[ist]) {
-//                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
-                                                            for (int trg = 0; trg < size_trgCat; trg++) {
-                                                                if (Trigger_category[trg]) {
-                                                                    
-                                                                    
-                                                                    std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] +trg_Cat[trg]+ST_Cat[ist] + Scale_Cat[scale];
-                                                                    
-//                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,300,0,3000,TotalWeight);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,300,0,3000,TotalWeight *  tauPtReweightingDown);
-                                                                    plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,300,0,3000,TotalWeight * tauPtReweightingUp );
-                                                                    
-                                                                 
-                                                                }
-                                                            }
+                            
+                            //###############################################################################################
+                            //  Analysis Categorization
+                            //###############################################################################################
+                            const int size_AN = 2;
+                            bool PassLQ= M_TauJet > 250;
+                            bool PassRW= NewMET > 50 && Z4Momentum.M() > 150 && Tau4Momentum.Pt() > 60;
+                            
+                            bool AN_category[size_AN] = {PassLQ, PassRW};
+                            std::string AN_Cat[size_AN] = {"_LQ","_RW"};
+                            
+                            
+                            //###############################################################################################
+                            
+                            
+                            std::string CHANNEL="EleTau";
+                            for (int an = 0; an < size_AN; an++) {
+                                if (AN_category[an]) {
+                                    
+                                    if (GeneralEleTauSelection){
+                                        for (int qcat = 0; qcat < size_Q; qcat++) {
+                                            if (charge_category[qcat]) {
+                                                for (int iso = 0; iso < size_isoCat; iso++) {
+                                                    if (Iso_category[iso]) {
+                                                        for (int imt = 0; imt < size_mTCat; imt++) {
+                                                            if (MT_category[imt]) {
+                                                                for (int ist = 0; ist < size_ST; ist++) {
+                                                                    if (ST_category[ist]) {
+                                                                        //                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
+                                                                        for (int trg = 0; trg < size_trgCat; trg++) {
+                                                                            if (Trigger_category[trg]) {
+                                                                                
+                                                                                
+                                                                                std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] +trg_Cat[trg]+ST_Cat[ist] + Scale_Cat[scale];
+                                                                                
+                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,TotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,TotalWeight *  tauPtReweightingDown);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,TotalWeight * tauPtReweightingUp );
+                                                                                
+                                                                                
+                                                                            }
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
+                                                    
                                                 }
-                                                
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
                     }
                     
                 } //End of Tree

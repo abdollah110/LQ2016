@@ -17,7 +17,7 @@
 using namespace std;
 
 
-float WScaleFactor=1.15; // computed on Apr 20th
+float WScaleFactor=1.20; // computed on Apr 20th
 float TTScaleFactor=0.91;
 //float WScaleFactor=1.22;
 //float TTScaleFactor=0.856;
@@ -32,7 +32,7 @@ float XSection(std::string OutName) {
     
     //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
     //     if (OutName.compare("WJetsToLNu") == 0) return 50690;
-    if (OutName.compare("WJetsToLNu_Inc") == 0) return 61526.7;
+    if (OutName.compare("WJetsToLNu_Inc") == 0) return 50690; //61526.7;
     else if (OutName.compare("WJetsToLNu_HT-100To200") == 0) return 1345;
     else if (OutName.compare("WJetsToLNu_HT-200To400") == 0) return 359.7;
     else if (OutName.compare("WJetsToLNu_HT-400To600") == 0) return 48.91;

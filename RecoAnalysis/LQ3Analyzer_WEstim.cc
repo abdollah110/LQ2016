@@ -142,9 +142,16 @@ int main(int argc, char** argv) {
         
         
         
-        
         float MuMass= 0.10565837;
         float eleMass= 0.000511;
+//        float LeptonPtCut_=50;
+//        float TauPtCut_=50;
+        float JetPtCut=30;
+        float BJetPtCut=20;
+        float LooseCSV= 0.605;                    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
+        float LeptonIsoCut=0.10;
+        
+        
         
         float LumiWeight = 1;
         
@@ -359,6 +366,65 @@ int main(int argc, char** argv) {
                         //                   cout<<extraMuonExist<<extraElectronExist<<IsthereDiMuon<<MuPtCut<<TauPtCut<<MuIdIso<<TauIdIso<<"\v";
                         
                         
+//                        //###########      Jet definition   ###########################################################
+//                        vector<TLorentzVector> JetVector;
+//                        vector<TLorentzVector> BJetBVector;
+//                        vector<TLorentzVector> BJet20Vector;
+//                        JetVector.clear();
+//                        BJetBVector.clear();
+//                        BJet20Vector.clear();
+//                        
+//                        for (int ijet= 0 ; ijet < nJet ; ijet++){
+//                            Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
+//                            //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
+//                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+//                                JetVector.push_back(Jet4Momentum);
+//                                //                            https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
+//                                if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605  ){
+//                                    BJetBVector.push_back(Jet4Momentum);
+//                                }
+//                            }
+//                        }
+//                        
+//                        for (int ijet= 0 ; ijet < nJet ; ijet++){
+//                            Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
+//                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 20 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605 ){
+//                                BJet20Vector.push_back(Jet4Momentum);
+//                            }
+//                        }
+//                        
+//                        
+//                        
+//                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet =0;
+//                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+//                        if (JetBJet_Selection){
+//                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
+//                            if ((JetVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
+//                            
+//                            M_muj0= (Mu4Momentum+JetVector[0]).M();
+//                            M_muj1= (Mu4Momentum+JetVector[1]).M();
+//                            M_tauj0= (Tau4Momentum+JetVector[0]).M();
+//                            M_tauj1= (Tau4Momentum+JetVector[1]).M();
+//                            
+//                            M_MuJet=M_muj0;
+//                            M_TauJet=M_tauj1;
+//                            if ( fabs(M_muj0-M_tauj1) > fabs(M_muj1-M_tauj0)){
+//                                M_MuJet=M_muj1;
+//                                M_TauJet=M_tauj0;
+//                                
+//                            }
+//                        }
+//                        
+//                        float ST_DiJet=0;
+//                        bool DiJet_Selection=JetVector.size() > 1;
+//                        if (DiJet_Selection)
+//                            ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
+//                        
+//                        
+//                        bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                        
+                        
+                        
                         //###########      Jet definition   ###########################################################
                         vector<TLorentzVector> JetVector;
                         vector<TLorentzVector> BJetBVector;
@@ -370,51 +436,32 @@ int main(int argc, char** argv) {
                         for (int ijet= 0 ; ijet < nJet ; ijet++){
                             Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
                             //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 30 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                            
+                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > JetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                                 JetVector.push_back(Jet4Momentum);
-                                //                            https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
-                                if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605  ){
+                                if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
                                     BJetBVector.push_back(Jet4Momentum);
                                 }
                             }
-                        }
-                        
-                        for (int ijet= 0 ; ijet < nJet ; ijet++){
-                            Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 20 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.605 ){
+                            if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > BJetPtCut && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(Tau4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 && jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV ){
                                 BJet20Vector.push_back(Jet4Momentum);
                             }
+                            
                         }
                         
                         
+                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet=0;
+                        float ST_MET=0;
                         
-                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet =0;
-                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
-                        if (JetBJet_Selection){
-                            ST_JetBjet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
-                            if ((JetVector[0].Pt()-JetVector[0].Pt()) * (BJetBVector[0].Pt() - JetVector[1].Pt())) cout<<"MisMatch in Jet BJet "<<"\n";
-                            
-                            M_muj0= (Mu4Momentum+JetVector[0]).M();
-                            M_muj1= (Mu4Momentum+JetVector[1]).M();
-                            M_tauj0= (Tau4Momentum+JetVector[0]).M();
-                            M_tauj1= (Tau4Momentum+JetVector[1]).M();
-                            
-                            M_MuJet=M_muj0;
-                            M_TauJet=M_tauj1;
-                            if ( fabs(M_muj0-M_tauj1) > fabs(M_muj1-M_tauj0)){
-                                M_MuJet=M_muj1;
-                                M_TauJet=M_tauj0;
-                                
-                            }
-                        }
-                        
-                        float ST_DiJet=0;
                         bool DiJet_Selection=JetVector.size() > 1;
-                        if (DiJet_Selection)
-                            ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
-                        
-                        
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
+                        bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                        
+                        if (DiJet_Selection){
+                            ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt();
+                            ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+Tau4Momentum.Pt()+pfMET;
+                        }
+                        
                         
                         
                         //###############################################################################################
@@ -431,12 +478,12 @@ int main(int argc, char** argv) {
                         //  Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 9;
-                        bool Isolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
-                        bool AntiIsolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
-                        bool TauIsoLepAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
-                        bool TauAntiIsoLepIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
-                        bool TauIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool TauAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
+                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
+                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
+                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
+                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
                         bool LepIso = IsoMu < 0.10;
                         bool LepAntiIso = IsoMu >= 0.10;
                         bool Total = 1;
@@ -507,6 +554,11 @@ int main(int argc, char** argv) {
                                                                     plotFill("MuTau_CloseJetTauEta"+FullStringName,CLoseJetTauEta,100,-2.5,2.5,TotalWeight);
                                                                     plotFill("MuTau_CloseJetMuPt"+FullStringName,CLoseJetMuPt,400,0,400,TotalWeight);
                                                                     plotFill("MuTau_CloseJetMuEta"+FullStringName,CLoseJetMuEta,100,-2.5,2.5,TotalWeight);
+                                                                    plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
+                                                                    plotFill("MuTau_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
+                                                                    plotFill("MuTau_MET"+FullStringName,pfMET,500,0,500,TotalWeight);
+                                                                    plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
+                                                                    
 
                                                                     //                                                                plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
                                                                     //                                                                plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
@@ -746,11 +798,11 @@ int main(int argc, char** argv) {
                         // Isolation Categorization
                         //###############################################################################################
                         const int size_isoCat = 7;
-                        bool Isolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.10;
-                        bool AntiIsolation = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.10;
-                        bool TauIsoLepAntiIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.10;
-                        bool TauAntiIsoLepIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.10;
-                        bool TauIso = tauByTightCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < 0.10;
+                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= 0.10;
+                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= 0.10;
+                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < 0.10;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
                         bool LepIso = IsoEle < 0.10;
                         bool Total = 1;
                         
