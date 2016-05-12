@@ -348,5 +348,9 @@ if __name__ == "__main__":
 
     for NormMC in PlotName:
 
-        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_Total","",1,Binning)
+        MakeTheHistogram("MuTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
+        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",1,Binning)
+
+#        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
+#        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_Total","",1,Binning)
+

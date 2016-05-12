@@ -48,4 +48,22 @@ step1:   limit.py --max-likelihood --stable --rMin -5 --rMax 5 outputLQ/lq9_Fina
 ste2:cd outputLQ/lq9_FinalPreTalk/LIMITS/700/out
 
 step 3:  PostFitShapes -o final_lq_mt_700.root -m 700 -f mlfit.root:fit_s --postfit --sampling --print -d ../lq_mt_1_13TeV.txt
+         PostFitShapes -o final_lq_et_700.root -m 700 -f mlfit.root:fit_s --postfit --sampling --print -d ../lq_et_1_13TeV.txt
+
+
+
+
+limit.py --max-likelihood --stable --rMin -5 --rMax 5 LIMITS/2000
+PostFitShapes -o final_rw_mt_2000.root -m 2000 -f LIMITS/2000/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/2000/RHW__mt_1_13TeV.txt
+PostFitShapes -o final_rw_et_2000.root -m 2000 -f LIMITS/2000/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/2000/RHW__et_1_13TeV.txt
+
+
+
+limit.py --max-likelihood --stable --rMin -5 --rMax 5 LIMITS/700/
+PostFitShapes -o final_lq_mt_700.root -m 700 -f LIMITS/700/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/700/lq_mt_1_13TeV.txt
+PostFitShapes -o final_lq_et_700.root -m 700 -f LIMITS/700/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/700/lq_et_1_13TeV.txt
+
+
+
+
 

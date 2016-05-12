@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
             //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
             //            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
-            plotFill("WeightPU",PUWeight,50,0,5);
+            plotFill("WeightPU",PUWeight,100,0,10);
             //            plotFill("WeightTotal",TotalWeight,50,0,5);
             plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
             plotFill("nVtx_PUCorr",nVtx,60,0,60,PUWeight);
@@ -244,8 +244,7 @@ int main(int argc, char** argv) {
                         
                         float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
                         float TotalWeight = LumiWeight * GetGenWeight * PUWeight * muCorr;
-                        plotFill("Weight_Mu",muCorr,200,0,2);
-                        
+                        float NewTotalWeight=TotalWeight;
                         
                         
                         TLorentzVector Mu4Momentum, Tau4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, ExtraEle4Momentum,KJet4Momentum;
@@ -365,7 +364,7 @@ int main(int argc, char** argv) {
                         }
                         
                         
-                        float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet,ST_MET =0;
+                        float M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet,ST_MET =0;
                         
                         bool DiJet_Selection=JetVector.size() > 1;
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
@@ -374,8 +373,7 @@ int main(int argc, char** argv) {
                         if (DiJet_Selection){
                             ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau);
                             ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+tauPt->at(itau)+pfMET;
-                        }
-                        if (JetBJet_Selection){
+
                             
                             M_muj0= (Mu4Momentum+JetVector[0]).M();
                             M_muj1= (Mu4Momentum+JetVector[1]).M();
@@ -397,12 +395,12 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  Tau Lep Charge Categorization
                         //###############################################################################################
-                        const int size_Q = 2;
-                        //                    bool charge_No = 1;
+                        const int size_Q = 3;
+                                            bool charge_No = 1;
                         bool charge_OS = muCharge->at(imu) * tauCharge->at(itau) < 0;
                         bool charge_SS = muCharge->at(imu) * tauCharge->at(itau) > 0;
-                        bool charge_category[size_Q] = {charge_OS, charge_SS};
-                        std::string q_Cat[size_Q] = {"_OS", "_SS"};
+                        bool charge_category[size_Q] = {charge_No,charge_OS, charge_SS};
+                        std::string q_Cat[size_Q] = {"","_OS", "_SS"};
                         
                         //###############################################################################################
                         //  Isolation Categorization
@@ -450,20 +448,20 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-                        //                        const int size_ST = 4;
-                        //                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-                        //                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
+                        float TTScaleFactor[size_ST]={0.88,0.94};
                         
                         
                         //###############################################################################################
                         
                         
                         if (GeneralMuTauSelection){
+                            plotFill("Weight_Mu",muCorr,200,0,2);
+                            plotFill("TotalWeight_Mu",TotalWeight,1000,0,10);
+                            plotFill("TotalNonLumiWeight_Mu",TotalWeight/LumiWeight,1000,0,10);                            
+                            
                             for (int qcat = 0; qcat < size_Q; qcat++) {
                                 if (charge_category[qcat]) {
                                     for (int iso = 0; iso < size_isoCat; iso++) {
@@ -472,7 +470,8 @@ int main(int argc, char** argv) {
                                                 if (MT_category[imt]) {
                                                     for (int ist = 0; ist < size_ST; ist++) {
                                                         if (ST_category[ist]) {
-                                                            //                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
+                                                            
+                                                            if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
                                                             
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 
@@ -481,24 +480,24 @@ int main(int argc, char** argv) {
                                                                     
                                                                     std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist];
                                                                     
-                                                                    plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,TotalWeight);
-                                                                    plotFill("MuTau_LepIso"+FullStringName,IsoMu,100,0,10,TotalWeight);
-                                                                    plotFill("MuTau_LepEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
-                                                                    plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
-                                                                    plotFill("MuTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,TotalWeight);
-                                                                    plotFill("MuTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
-                                                                    plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
-                                                                    plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
-                                                                    plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,TotalWeight / PUWeight);
-                                                                    plotFill("MuTau_MET"+FullStringName,pfMET,500,0,500,TotalWeight);
-                                                                    plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                    plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
-                                                                    plotFill("MuTau_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
+                                                                    plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,NewTotalWeight);
+                                                                    plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,NewTotalWeight);
+                                                                    plotFill("MuTau_LepPt"+FullStringName,muPt->at(imu),300,0,300,NewTotalWeight);
+                                                                    plotFill("MuTau_LepIso"+FullStringName,IsoMu,100,0,10,NewTotalWeight);
+                                                                    plotFill("MuTau_LepEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,NewTotalWeight);
+                                                                    plotFill("MuTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,NewTotalWeight);
+                                                                    plotFill("MuTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,NewTotalWeight);
+                                                                    plotFill("MuTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,NewTotalWeight);
+                                                                    plotFill("MuTau_NumJet"+FullStringName,JetVector.size(),10,0,10,NewTotalWeight);
+                                                                    plotFill("MuTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,NewTotalWeight);
+                                                                    plotFill("MuTau_nVtx"+FullStringName,nVtx,50,0,50,NewTotalWeight);
+                                                                    plotFill("MuTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,NewTotalWeight / PUWeight);
+                                                                    plotFill("MuTau_MET"+FullStringName,pfMET,500,0,500,NewTotalWeight);
+                                                                    plotFill("MuTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,NewTotalWeight);
+                                                                    if (JetVector.size() > 1) plotFill("MuTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,NewTotalWeight);
+                                                                    if (JetVector.size() > 1) plotFill("MuTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,NewTotalWeight);
+                                                                    plotFill("MuTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,NewTotalWeight);
+                                                                    plotFill("MuTau_ST_MET"+FullStringName,ST_MET,100,0,1000,NewTotalWeight);
                                                                     
                                                                     
                                                                 }
@@ -556,7 +555,7 @@ int main(int argc, char** argv) {
                         
                         float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
                         float TotalWeight = LumiWeight * GetGenWeight * PUWeight * eleCorr;
-                        plotFill("Weight_Ele",eleCorr,200,0,2);
+                        float NewTotalWeight=TotalWeight;
                         
                         
                         //###########      Finding the close jet near tau   ###########################################################
@@ -665,7 +664,7 @@ int main(int argc, char** argv) {
                         }
                         
                         
-                        float ST_JetBjet,M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_DiJet,ST_MET=0;
+                        float M_elej0,M_elej1,M_tauj0,M_tauj1, M_EleJet,M_TauJet,ST_DiJet,ST_MET=0;
                         
                         bool DiJet_Selection=JetVector.size() > 1;
                         bool DiNonBJet_Selection=JetVector.size() > 1 && BJet20Vector.size() < 1 ;
@@ -674,11 +673,6 @@ int main(int argc, char** argv) {
                         if (DiJet_Selection){
                             ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau);
                             ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+elePt->at(iele)+tauPt->at(itau)+pfMET;
-                        }
-                        
-                        if (JetBJet_Selection){
-                            
-                            
                             
                             M_elej0= (Ele4Momentum+JetVector[0]).M();
                             M_elej1= (Ele4Momentum+JetVector[1]).M();
@@ -700,12 +694,12 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  Tau Lep Charge Categorization
                         //###############################################################################################
-                        const int size_Q = 2;
-                        //                    bool charge_No = 1;
+                        const int size_Q = 3;
+                        bool charge_No = 1;
                         bool charge_OS = eleCharge->at(iele) * tauCharge->at(itau) < 0;
                         bool charge_SS = eleCharge->at(iele) * tauCharge->at(itau) > 0;
-                        bool charge_category[size_Q] = {charge_OS, charge_SS};
-                        std::string q_Cat[size_Q] = {"_OS", "_SS"};
+                        bool charge_category[size_Q] = {charge_No,charge_OS, charge_SS};
+                        std::string q_Cat[size_Q] = {"","_OS", "_SS"};
                         
                         //###############################################################################################
                         // Isolation Categorization
@@ -755,19 +749,22 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  ST Categorization
                         //###############################################################################################
-                        //                        const int size_ST = 4;
-                        //                        bool ST_category[size_ST] = {1,JetBJet_Selection,DiJet_Selection,DiNonBJet_Selection};
-                        //                        std::string ST_Cat[size_ST] = {"_inclusive","_JetBJet","_DiJet","_DiNonBJet"};
-                        //                        float TTScaleFactor[size_ST]={0.91,0.88,0.94,0.94};
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
+                        float TTScaleFactor[size_ST]={0.88,0.94};
                         
                         //###############################################################################################
                         
                         
                         
                         if (GeneralEleTauSelection){
+                            
+                            plotFill("Weight_Ele",eleCorr,200,0,2);
+                            plotFill("TotalWeight_Ele",TotalWeight,1000,0,10);
+                            plotFill("TotalNonLumiWeight_Ele",TotalWeight/LumiWeight,1000,0,10);
+                            
+                            
                             for (int qcat = 0; qcat < size_Q; qcat++) {
                                 if (charge_category[qcat]) {
                                     for (int iso = 0; iso < size_isoCat; iso++) {
@@ -776,31 +773,33 @@ int main(int argc, char** argv) {
                                                 if (MT_category[imt]) {
                                                     for (int ist = 0; ist < size_ST; ist++) {
                                                         if (ST_category[ist]) {
-                                                            //                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
+
+                                                            if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
+                                                            
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 if (Trigger_category[trg]) {
                                                                     
                                                                     
                                                                     std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] +trg_Cat[trg]+ST_Cat[ist];
                                                                     
-                                                                    plotFill("EleTau_tmass"+FullStringName,tmass,500,0,500,TotalWeight);
-                                                                    plotFill("EleTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,TotalWeight);
-                                                                    plotFill("EleTau_LepPt"+FullStringName,elePt->at(iele),300,0,300,TotalWeight);
-                                                                    plotFill("EleTau_LepEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,TotalWeight);
-                                                                    plotFill("EleTau_LepIso"+FullStringName,IsoEle,100,0,10,TotalWeight);
-                                                                    plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
-                                                                    plotFill("EleTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,TotalWeight);
-                                                                    plotFill("EleTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                    plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
-                                                                    plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
-                                                                    plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,TotalWeight);
-                                                                    plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,TotalWeight / PUWeight);
-                                                                    plotFill("EleTau_MET"+FullStringName,pfMET,500,0,500,TotalWeight);
-                                                                    plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,TotalWeight);
-                                                                    if (JetVector.size() > 1)  plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,TotalWeight);
-                                                                    if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,TotalWeight);
-                                                                    plotFill("EleTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
-                                                                    plotFill("EleTau_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
+                                                                    plotFill("EleTau_tmass"+FullStringName,tmass,500,0,500,NewTotalWeight);
+                                                                    plotFill("EleTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,NewTotalWeight);
+                                                                    plotFill("EleTau_LepPt"+FullStringName,elePt->at(iele),300,0,300,NewTotalWeight);
+                                                                    plotFill("EleTau_LepEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,NewTotalWeight);
+                                                                    plotFill("EleTau_LepIso"+FullStringName,IsoEle,100,0,10,NewTotalWeight);
+                                                                    plotFill("EleTau_TauPt"+FullStringName,tauPt->at(itau),200,0,200,NewTotalWeight);
+                                                                    plotFill("EleTau_TauEta"+FullStringName,tauEta->at(itau),100,-2.5,2.5,NewTotalWeight);
+                                                                    plotFill("EleTau_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,NewTotalWeight);
+                                                                    plotFill("EleTau_NumJet"+FullStringName,JetVector.size(),10,0,10,NewTotalWeight);
+                                                                    plotFill("EleTau_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,NewTotalWeight);
+                                                                    plotFill("EleTau_nVtx"+FullStringName,nVtx,50,0,50,NewTotalWeight);
+                                                                    plotFill("EleTau_nVtx_NoPU"+FullStringName,nVtx,50,0,50,NewTotalWeight / PUWeight);
+                                                                    plotFill("EleTau_MET"+FullStringName,pfMET,500,0,500,NewTotalWeight);
+                                                                    plotFill("EleTau_M_taujet"+FullStringName,M_TauJet,1000,0,1000,NewTotalWeight);
+                                                                    if (JetVector.size() > 1)  plotFill("EleTau_LeadJetPt"+FullStringName,JetVector[0].Pt(),300,0,300,NewTotalWeight);
+                                                                    if (JetVector.size() > 1) plotFill("EleTau_SubLeadJetPt"+FullStringName,JetVector[1].Pt(),300,0,300,NewTotalWeight);
+                                                                    plotFill("EleTau_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,NewTotalWeight);
+                                                                    plotFill("EleTau_ST_MET"+FullStringName,ST_MET,100,0,1000,NewTotalWeight);
                                                                     
                                                                     
                                                                 }

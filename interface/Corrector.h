@@ -589,7 +589,7 @@ float Cor74X_ID_Mu(float pt, float eta , TH2F * HistoId) {
     if (0.9 <= fabs(eta) && fabs(eta) < 1.2) etaBIN=2;
     if (1.2 <= fabs(eta) && fabs(eta) < 2.1) etaBIN=3;
     if (2.1 <= fabs(eta) && fabs(eta) < 2.4) etaBIN=4;
-
+    
     return HistoId->GetBinContent(ptBIN,etaBIN);
 }
 ////////////////////////////////////////////////////////////
@@ -615,8 +615,8 @@ float Cor74X_Iso_Mu(float pt,float eta, TH2F* HistoIso){
 //  Muon Trigger Correction 74X
 ////////////////////////////////////////////////////////////
 float Cor74X_Trigger_Mu(float pt,float eta, TH2F* HistoTrg ){
-
-        if (pt >= 45 && pt < 50 ) ptBIN=1;
+    
+    if (pt >= 45 && pt < 50 ) ptBIN=1;
     if (pt >= 50 && pt < 60 ) ptBIN=2;
     if (pt >= 60 && pt < 120000) ptBIN=3;
     
@@ -648,16 +648,19 @@ float getCorrFactorMuon74X(bool isData, float pt, float eta, TH2F * HistoId, TH2
     
     if (isData)
         return 1;
-    else
+    else{
+        
+//        cout << Cor74X_ID_Mu(pt,eta,HistoId) << "  "<< Cor74X_Iso_Mu(pt,eta,HistoIso) << "  "<< Cor74X_Trigger_Mu(pt,eta,HistoTrg) << "\n";
         return (Cor74X_ID_Mu(pt,eta,HistoId) * Cor74X_Iso_Mu(pt,eta,HistoIso) * Cor74X_Trigger_Mu(pt,eta,HistoTrg) );
+            }
     
 }
 
 float getCorrFactorElectron74X(bool isData, float pt, float eta,    vector<TGraphAsymmErrors *> EleScaleFactor){
-if (isData)
-return 1;
-else
-return Cor74X_IDIso_Ele(pt,eta,EleScaleFactor);
+    if (isData)
+        return 1;
+    else
+        return Cor74X_IDIso_Ele(pt,eta,EleScaleFactor);
 }
 
 

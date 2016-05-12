@@ -132,7 +132,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     errorBand.Add(SingleT)
     errorBand.Add(DYS)
     errorBand.SetMarkerSize(0)
-    errorBand.SetFillColor(12)
+    errorBand.SetFillColor(16)
     errorBand.SetFillStyle(3001)
     errorBand.SetLineWidth(1)
 
@@ -210,8 +210,10 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad2.Draw()
     pad2.cd()
     h1=Data.Clone()
-    h1.SetMaximum(1.5)
-    h1.SetMinimum(0.5)
+#    h1.SetMaximum(1.5)
+#    h1.SetMinimum(0.5)
+    h1.SetMaximum(1.9)
+    h1.SetMinimum(0.1)
     h1.SetMarkerStyle(20)
     h3=errorBand.Clone()
     h3.Sumw2()
@@ -256,22 +258,22 @@ Category = ["_DiJet","_JetBJet"]
 
 
 FileNamesInfo=[
-               ["_tmass_OS","M_{T}(lep,MET) (GeV)","",20],
-               ["_VisMass_OS","VisMass (GeV)","",20],
-               ["_LepPt_OS","lep PT (GeV)","",10],
-               ["_LepEta_OS","lep #eta ","",10],
-               ["_TauPt_OS","#tau PT (GeV)","",10],
-               ["_TauEta_OS","#tau #eta ","",10],
-               ["_NumJet_OS","Jet multiplicity","",1],
-               ["_NumBJet_OS","B Jet multiplicity","",1],
-               ["_nVtx_OS","# of vertex","",1],
-               ["_nVtx_NoPU_OS","# of vertex before PU reweighting","",1],
-               ["_MET_OS","MET  (GeV)","",20],
-               ["_M_taujet_OS","M_{#tauj}   (GeV)","",40],
-               ["_LeadJetPt_OS","Leading Jet PT  (GeV)","",20],
-               ["_SubLeadJetPt_OS","subLeading Jet PT  (GeV)","",20],
-               ["_ST_DiJet_OS","ST_{l#taujj}  (GeV) ","",10],
-               ["_ST_MET_OS","ST_{l#taujjMET}  (GeV)","",10],
+               ["_tmass","M_{T}(lep,MET) (GeV)","",20],
+               ["_VisMass","VisMass (GeV)","",20],
+               ["_LepPt","lep PT (GeV)","",10],
+               ["_LepEta","lep #eta ","",10],
+               ["_TauPt","#tau PT (GeV)","",10],
+               ["_TauEta","#tau #eta ","",10],
+               ["_NumJet","Jet multiplicity","",1],
+               ["_NumBJet","B Jet multiplicity","",1],
+               ["_nVtx","# of vertex","",1],
+               ["_nVtx_NoPU","# of vertex before PU reweighting","",1],
+               ["_MET","MET  (GeV)","",20],
+               ["_M_taujet","M_{#tauj}   (GeV)","",40],
+               ["_LeadJetPt","Leading Jet PT  (GeV)","",20],
+               ["_SubLeadJetPt","subLeading Jet PT  (GeV)","",20],
+               ["_ST_DiJet","ST_{l#taujj}  (GeV) ","",10],
+               ["_ST_MET","ST_{l#taujjMET}  (GeV)","",10],
                
                
                ]

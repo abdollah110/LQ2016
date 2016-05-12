@@ -18,7 +18,7 @@ using namespace std;
 
 
 float WScaleFactor=1.20; // computed on Apr 20th
-float TTScaleFactor=0.91;
+//float TTScaleFactor=0.91;
 //float WScaleFactor=1.22;
 //float TTScaleFactor=0.856;
 
@@ -31,83 +31,87 @@ float XSection(std::string OutName) {
     
     
     //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
-    //     if (OutName.compare("WJetsToLNu") == 0) return 50690;
-    if (OutName.compare("WJetsToLNu_Inc") == 0) return 50690; //61526.7;
-    else if (OutName.compare("WJetsToLNu_HT-100To200") == 0) return 1345;
-    else if (OutName.compare("WJetsToLNu_HT-200To400") == 0) return 359.7;
-    else if (OutName.compare("WJetsToLNu_HT-400To600") == 0) return 48.91;
-    else if (OutName.compare("WJetsToLNu_HT-600ToInf") == 0) return 18.77;
+    //     if (OutName.find("WJetsToLNu") != string::npos) return 50690;
+    if (OutName.find("WJetsToLNu_Inc") != string::npos) return 50690; //61526.7;
+    else if (OutName.find("WJetsToLNu_HT-100To200") != string::npos) return 1345;
+    else if (OutName.find("WJetsToLNu_HT-200To400") != string::npos) return 359.7;
+    else if (OutName.find("WJetsToLNu_HT-400To600") != string::npos) return 48.91;
+    else if (OutName.find("WJetsToLNu_HT-600ToInf") != string::npos) return 18.77;
     
     //DYJets   float XSection_DY[numBG] = {2950, 561, 181, 51.1, 23};
-    else if (OutName.compare("DYJetsToLL_Inc") == 0) return 4895;
-    else if (OutName.compare("DYJetsToLL_M-50_HT-100to200") == 0) return 147.4;
-    else if (OutName.compare("DYJetsToLL_M-50_HT-200to400") == 0) return 40.99;
-    else if (OutName.compare("DYJetsToLL_M-50_HT-400to600") == 0) return 5.678;
-    else if (OutName.compare("DYJetsToLL_M-50_HT-600toInf") == 0) return 2.198;
+    else if (OutName.find("DYJetsToLL_Inc") != string::npos) return 4895;
+    else if (OutName.find("DYJetsToLL_M-50_HT-100to200") != string::npos) return 147.4;
+    else if (OutName.find("DYJetsToLL_M-50_HT-200to400") != string::npos) return 40.99;
+    else if (OutName.find("DYJetsToLL_M-50_HT-400to600") != string::npos) return 5.678;
+    else if (OutName.find("DYJetsToLL_M-50_HT-600toInf") != string::npos) return 2.198;
     
     //Di-boson
-    else if (OutName.compare("WW") == 0) return 115.0;
-    else if (OutName.compare("WZ") == 0) return 47.13;
-    else if (OutName.compare("ZZ") == 0) return 16.523;
+    else if (OutName.find("WW") != string::npos) return 115.0;
+    else if (OutName.find("WZ") != string::npos) return 47.13;
+    else if (OutName.find("ZZ") != string::npos) return 16.523;
     
     //SingleTop
-    else if (OutName.compare("ST_t-channel_antitop_4f_leptonDecays") == 0) return 80.95 * 0.108*3;
-    else if (OutName.compare("ST_t-channel_top_4f_leptonDecays") == 0) return 136.02 * 0.108*3;
-    else if (OutName.compare("ST_tW_antitop_5f_inclusiveDecays") == 0) return 35.6;
-    else if (OutName.compare("ST_tW_top_5f_inclusiveDecays") == 0) return 35.6;
+    else if (OutName.find("ST_t-channel_antitop_4f_leptonDecays") != string::npos) return 80.95 * 0.108*3;
+    else if (OutName.find("ST_t-channel_top_4f_leptonDecays") != string::npos) return 136.02 * 0.108*3;
+    else if (OutName.find("ST_tW_antitop_5f_inclusiveDecays") != string::npos) return 35.6;
+    else if (OutName.find("ST_tW_top_5f_inclusiveDecays") != string::npos) return 35.6;
     
     
-    //    else if (OutName.compare("TTJets_DiLept") == 0) return (89.05);
-    //    else if (OutName.compare("TTJets_SingleLeptFromT") == 0) return (183.46);
-    //    else if (OutName.compare("TTJets_SingleLeptFromTbar") == 0) return (183.46);
+    //    else if (OutName.find("TTJets_DiLept") != string::npos) return (89.05);
+    //    else if (OutName.find("TTJets_SingleLeptFromT") != string::npos) return (183.46);
+    //    else if (OutName.find("TTJets_SingleLeptFromTbar") != string::npos) return (183.46);
     
-    //    else if (OutName.compare("TTJets_DiLept_Ext") == 0) return (89.05);
-    //    else if (OutName.compare("TTJets_SingleLeptFromT_Ext") == 0) return (183.46);
-    //    else if (OutName.compare("TTJets_SingleLeptFromTbar_Ext") == 0) return (183.46);
+    //    else if (OutName.find("TTJets_DiLept_Ext") != string::npos) return (89.05);
+    //    else if (OutName.find("TTJets_SingleLeptFromT_Ext") != string::npos) return (183.46);
+    //    else if (OutName.find("TTJets_SingleLeptFromTbar_Ext") != string::npos) return (183.46);
     
-//    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76);
-//    else if (OutName.compare("NewTT") == 0) return (831.76);
+//    else if (OutName.find("Inclusive_TTJets") != string::npos) return (831.76);
+//    else if (OutName.find("NewTT") != string::npos) return (831.76);
    
-    else if (OutName.compare("Inclusive_TTJets") == 0) return (831.76 * TTScaleFactor);
-//    else if (OutName.compare("NewTT") == 0) return (831.76 * 0.9);
+    else if (OutName.find("Inclusive_TTJets") != string::npos) return (831.76);
+//    else if (OutName.find("NewTT") != string::npos) return (831.76 * 0.9);
     
-    //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
-    else if (OutName.compare("skimed_lq200.root") == 0) return 60.6;
-    else if (OutName.compare("skimed_lq250.root") == 0) return 20.3;
-    else if (OutName.compare("skimed_lq300.root") == 0) return     8.05E+00;
-    else if (OutName.compare("skimed_lq350.root") == 0) return     3.58E+00;
-    else if (OutName.compare("skimed_lq400.root") == 0) return     1.74E+00;
-    else if (OutName.compare("skimed_lq450.root") == 0) return     9.05E-01;
-    else if (OutName.compare("skimed_lq500.root") == 0) return     4.96E-01;
-    else if (OutName.compare("skimed_lq550.root") == 0) return     2.84E-01;
-    else if (OutName.compare("skimed_lq600.root") == 0) return     1.69E-01;
-    else if (OutName.compare("skimed_lq650.root") == 0) return     1.03E-01;
-    else if (OutName.compare("skimed_lq700.root") == 0) return     6.48E-02;
-    else if (OutName.compare("skimed_lq750.root") == 0) return     4.16E-02;
-    else if (OutName.compare("skimed_lq800.root") == 0) return     2.73E-02;
-    else if (OutName.compare("skimed_lq850.root") == 0) return     1.82E-02;
-    else if (OutName.compare("skimed_lq900.root") == 0) return     1.23E-02;
-    else if (OutName.compare("skimed_lq950.root") == 0) return     8.45E-03;
-    else if (OutName.compare("skimed_lq1000.root") == 0) return     5.86E-03;
-    else if (OutName.compare("skimed_lq1050.root") == 0) return     4.11E-03;
-    else if (OutName.compare("skimed_lq1100.root") == 0) return     2.91E-03;
-    else if (OutName.compare("skimed_lq1150.root") == 0) return     2.08E-03;
-    else if (OutName.compare("skimed_lq1200.root") == 0) return     1.50E-03;
-    else if (OutName.compare("skimed_lq1250.root") == 0) return     1.09E-03;
-    else if (OutName.compare("skimed_lq1300.root") == 0) return     7.95E-04;
-    else if (OutName.compare("skimed_lq1350.root") == 0) return     5.85E-04;
-    else if (OutName.compare("skimed_lq1400.root") == 0) return     4.33E-04;
-    else if (OutName.compare("skimed_lq1450.root") == 0) return     3.21E-04;
-    else if (OutName.compare("skimed_lq1500.root") == 0) return     2.40E-04;
+//    //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
+//    else if (OutName.find("skimed_lq200.root") != string::npos) return 60.6;
+//    else if (OutName.find("skimed_lq250.root") != string::npos) return 20.3;
+//    else if (OutName.find("skimed_lq300.root") != string::npos) return     8.05E+00;
+//    else if (OutName.find("skimed_lq350.root") != string::npos) return     3.58E+00;
+//    else if (OutName.find("skimed_lq400.root") != string::npos) return     1.74E+00;
+//    else if (OutName.find("skimed_lq450.root") != string::npos) return     9.05E-01;
+//    else if (OutName.find("skimed_lq500.root") != string::npos) return     4.96E-01;
+//    else if (OutName.find("skimed_lq550.root") != string::npos) return     2.84E-01;
+//    else if (OutName.find("skimed_lq600.root") != string::npos) return     1.69E-01;
+//    else if (OutName.find("skimed_lq650.root") != string::npos) return     1.03E-01;
+//    else if (OutName.find("skimed_lq700.root") != string::npos) return     6.48E-02;
+//    else if (OutName.find("skimed_lq750.root") != string::npos) return     4.16E-02;
+//    else if (OutName.find("skimed_lq800.root") != string::npos) return     2.73E-02;
+//    else if (OutName.find("skimed_lq850.root") != string::npos) return     1.82E-02;
+//    else if (OutName.find("skimed_lq900.root") != string::npos) return     1.23E-02;
+//    else if (OutName.find("skimed_lq950.root") != string::npos) return     8.45E-03;
+//    else if (OutName.find("skimed_lq1000.root") != string::npos) return     5.86E-03;
+//    else if (OutName.find("skimed_lq1050.root") != string::npos) return     4.11E-03;
+//    else if (OutName.find("skimed_lq1100.root") != string::npos) return     2.91E-03;
+//    else if (OutName.find("skimed_lq1150.root") != string::npos) return     2.08E-03;
+//    else if (OutName.find("skimed_lq1200.root") != string::npos) return     1.50E-03;
+//    else if (OutName.find("skimed_lq1250.root") != string::npos) return     1.09E-03;
+//    else if (OutName.find("skimed_lq1300.root") != string::npos) return     7.95E-04;
+//    else if (OutName.find("skimed_lq1350.root") != string::npos) return     5.85E-04;
+//    else if (OutName.find("skimed_lq1400.root") != string::npos) return     4.33E-04;
+//    else if (OutName.find("skimed_lq1450.root") != string::npos) return     3.21E-04;
+//    else if (OutName.find("skimed_lq1500.root") != string::npos) return     2.40E-04;
+//    
+//    
+//    
+//    
+//    else if (OutName.find("skimed_0_RHNu_1000-500") != string::npos) return      1.692E+00;
+//    else if (OutName.find("skimed_0_RHNu_1500-750") != string::npos) return      2.90E-01;
+//    else if (OutName.find("skimed_0_RHNu_2000-1000") != string::npos) return     6.563E-02;
+//    else if (OutName.find("skimed_0_RHNu_2500-1250") != string::npos) return     1.92E-02;
+//    else if (OutName.find("skimed_0_RHNu_3000-1500") != string::npos) return     6.030E-03;
     
+    else if (OutName.find("skimed_lq") != string::npos) return     1.0;
+        else if (OutName.find("skimed_0_RHNu_") != string::npos ) return      1.0;
     
-    
-    
-    else if (OutName.compare("skimed_0_RHNu_1000-500") == 0) return      1.692E+00;
-    else if (OutName.compare("skimed_0_RHNu_1500-750") == 0) return      2.90E-01;
-    else if (OutName.compare("skimed_0_RHNu_2000-1000") == 0) return     6.563E-02;
-    else if (OutName.compare("skimed_0_RHNu_2500-1250") == 0) return     1.92E-02;
-    else if (OutName.compare("skimed_0_RHNu_3000-1500") == 0) return     6.030E-03;
     
     
     else {
@@ -199,25 +203,11 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     size_t isWjet = outputName.find("WJets");
     size_t isDYJet = outputName.find("DYJets");
     
-    size_t isSignalLQ = outputName.find("skimed_lq");
-    
-    
     
     if (isSingleMu != string::npos || isSingleEle!= string::npos)   return 1;
     
     else if (isWjet != string::npos) {
-        //        return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
-        
-        
-        
-        //    } else if (isDYJet != string::npos) {
-        //
-        //        return luminosity*LOtoNLO_DY / (DY_events[0] / XSection("DYJetsToLL"));
-        //
-        //    }
-        //
-        //
-        //    else if (isWjet != string::npos) {
+
         if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu_Inc"));
@@ -237,29 +227,8 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     }
     
     
-    
-    
-    else if (isSignalLQ != string::npos) {
-        stringstream ss(outputName);
-        
-        string token;
-        string M;
-        while (getline(ss,token, '/'))
-        {
-            //                cout<< token <<endl;
-            M=token;
-        }
-        
-        //            cout<<"last one is "<< M<<"\n";
-        
-        
-        
-        return luminosity * XSection(M)*1.0 / Histo->GetBinContent(2) ;
-    }
-    
     else
         return luminosity * XSection(newOut)*1.0 / Histo->GetBinContent(2);
-    //            return luminosity * XSection(newOut)*1.0 / Histo->Integral();  BUG found  25 Feb
     
     
 }
