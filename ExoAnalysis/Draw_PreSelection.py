@@ -259,7 +259,7 @@ Category = ["_DiJet","_JetBJet"]
 
 FileNamesInfo=[
                ["_tmass","M_{T}(lep,MET) (GeV)","",20],
-               ["_VisMass","VisMass (GeV)","",20],
+               ["_VisMass","M_{l#tau} (GeV)","",20],
                ["_LepPt","lep PT (GeV)","",10],
                ["_LepEta","lep #eta ","",10],
                ["_TauPt","#tau PT (GeV)","",10],

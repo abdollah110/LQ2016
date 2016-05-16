@@ -16,6 +16,27 @@
 #include <TLorentzVector.h>
 using namespace std;
 
+
+//-----------------------------------------------------------------------------
+// AM: recipe for top quark Pt reweighting taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
+
+float compTopPtWeight(float topPt) {
+    const float a =  0.148 ;
+    const float b =  -0.00129;
+//    const float a = 0.156;
+//    const float b = -0.00137;
+    return TMath::Exp(a + b * topPt);
+}
+
+float compTopPtWeight(float top1Pt, float top2Pt) {
+    //std::cout << "<compTopPtWeight>:" << std::endl;
+    float topPtWeight2 = compTopPtWeight(top1Pt) * compTopPtWeight(top2Pt);
+    //std::cout << " top1Pt = " << top1Pt << ", top2Pt = " << top2Pt << ": topPtWeight2 = " << topPtWeight2 << std::endl;
+    return ( topPtWeight2 > 0.) ? TMath::Sqrt(topPtWeight2) : 0.;
+}
+
+
+
 ////******************** ETau/MuTau turn-on *****************************
 //
 //double correctionHighPtTail_Data(myobject const& a) {

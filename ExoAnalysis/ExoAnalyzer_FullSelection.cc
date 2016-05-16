@@ -167,6 +167,7 @@ int main(int argc, char** argv) {
         //###############################################################################################
         //  Weight Calculation
         //###############################################################################################
+        float WSCALEFACTORE=1.3;        
         float MuMass= 0.10565837;
         float eleMass= 0.000511;
         float LeptonPtCut_=50;
@@ -194,6 +195,18 @@ int main(int argc, char** argv) {
             //###############################################################################################
             //  Weight Calculation
             //###############################################################################################
+            
+            //############ Top Reweighting
+            float GenTopPt=0;
+            float GenAntiTopPt=0;
+            float TopPtReweighting = 1;
+            for (int igen=0;igen < nMC; igen++){
+                if (mcPID->at(igen) == 6 && mcStatus->at(igen) ==62) GenTopPt=mcPt->at(igen) ;
+                if (mcPID->at(igen) == -6 && mcStatus->at(igen) ==62) GenAntiTopPt=mcPt->at(igen);
+            }
+            size_t isTTJets = InputROOT.find("TTJets");
+            if (isTTJets!= string::npos) TopPtReweighting = compTopPtWeight(GenTopPt, GenAntiTopPt);
+            //###############################################################################################
             float LumiWeight = 1;
             float GetGenWeight=1;
             float PUWeight = 1;
@@ -209,7 +222,7 @@ int main(int argc, char** argv) {
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
                 PUWeight= PUData_/PUMC_;
             }
-            float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
+            float TotalWeight = LumiWeight * GetGenWeight * PUWeight * TopPtReweighting;
             //###############################################################################################
             //  Histogram Filling
             //###############################################################################################
@@ -226,7 +239,8 @@ int main(int argc, char** argv) {
             //###############################################################################################
             size_t isSingleMu = InputROOT.find("SingleMu");
             size_t isSingleEle = InputROOT.find("SingleEle");
-            size_t isTTJets = InputROOT.find("TTJets");
+//            size_t isTTJets = InputROOT.find("TTJets");
+            size_t isWJets = InputROOT.find("WJets");
             //###############################################################################################
             //  Doing MuTau Analysis
             //###############################################################################################
@@ -262,6 +276,7 @@ int main(int argc, char** argv) {
                             
                             float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
                             float TotalWeight = LumiWeight * GetGenWeight * PUWeight * muCorr;
+                        float NewTotalWeight=TotalWeight;
                             plotFill("Weight_Mu",muCorr,200,0,2);
                             
                             
@@ -475,7 +490,8 @@ int main(int argc, char** argv) {
                             const int size_ST = 2;
                             bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                             std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                            float TTScaleFactor[size_ST]={0.91,0.91};
+//                            float TTScaleFactor[size_ST]={0.91,0.91};
+                            float TTScaleFactor[size_ST]={1,1};
                             
                             //###############################################################################################
                             //  Analysis Categorization
@@ -503,7 +519,10 @@ int main(int argc, char** argv) {
                                                             if (MT_category[imt]) {
                                                                 for (int ist = 0; ist < size_ST; ist++) {
                                                                     if (ST_category[ist]) {
-                                                                        //                                                            if (isTTJets != string::npos) TotalWeight *= TTScaleFactor[ist];// Add TT scale factor
+
+                                                                        if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
+                                                                        if (isWJets!= string::npos) NewTotalWeight=TotalWeight * WSCALEFACTORE;  // Add W scale factor
+
                                                                         
                                                                         for (int trg = 0; trg < size_trgCat; trg++) {
                                                                             
@@ -512,11 +531,11 @@ int main(int argc, char** argv) {
                                                                                 
                                                                                 std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist]+Scale_Cat[scale];
                                                                                 
-                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),200,0,200,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,TotalWeight *  tauPtReweightingDown);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,TotalWeight * tauPtReweightingUp);
+                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),200,0,200,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,NewTotalWeight *  tauPtReweightingDown);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,NewTotalWeight * tauPtReweightingUp);
                                                                                 
                                                                                 
                                                                                 
@@ -591,6 +610,7 @@ int main(int argc, char** argv) {
                             
                             float eleCorr=getCorrFactorElectron74X(isData,  elePt->at(iele), eleEta->at(iele) , EleScaleFactor);
                             float TotalWeight = LumiWeight * GetGenWeight * PUWeight *  eleCorr;
+                        float NewTotalWeight=TotalWeight;
                             plotFill("Weight_Ele",eleCorr,200,0,2);
                             
                             
@@ -796,7 +816,8 @@ int main(int argc, char** argv) {
                             const int size_ST = 2;
                             bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                             std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                            float TTScaleFactor[size_ST]={0.91,0.91};
+//                            float TTScaleFactor[size_ST]={0.91,0.91};
+                            float TTScaleFactor[size_ST]={1,1};
                             
                             //###############################################################################################
                             //  Analysis Categorization
@@ -825,18 +846,23 @@ int main(int argc, char** argv) {
                                                             if (MT_category[imt]) {
                                                                 for (int ist = 0; ist < size_ST; ist++) {
                                                                     if (ST_category[ist]) {
-                                                                        //                                                            if (isTTJets!= string::npos) TotalWeight *= TTScaleFactor[ist];  // Add TT scale factor
+                                                                        
+                                                                        if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
+                                                                        if (isWJets!= string::npos) NewTotalWeight=TotalWeight * WSCALEFACTORE;  // Add W scale factor
+
+                                                                        
+                                                                        
                                                                         for (int trg = 0; trg < size_trgCat; trg++) {
                                                                             if (Trigger_category[trg]) {
                                                                                 
                                                                                 
                                                                                 std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] +trg_Cat[trg]+ST_Cat[ist] + Scale_Cat[scale];
                                                                                 
-                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),500,0,500,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,TotalWeight);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,TotalWeight *  tauPtReweightingDown);
-                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,TotalWeight * tauPtReweightingUp );
+                                                                                //                                                                    plotFill(CHANNEL+AN_Cat[an]+"_TauPt"+FullStringName,tauPt->at(itau),500,0,500,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_CloseJetTauPt"+FullStringName,CLoseJetTauPt,500,0,500,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,NewTotalWeight *  tauPtReweightingDown);
+                                                                                plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,NewTotalWeight * tauPtReweightingUp );
                                                                                 
                                                                                 
                                                                             }

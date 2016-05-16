@@ -4,6 +4,7 @@
 #include <string>
 #include <ostream>
 
+
 int main(int argc, char** argv) {
     using namespace std;
     
@@ -162,6 +163,7 @@ int main(int argc, char** argv) {
         //###############################################################################################
         //  Weight Calculation
         //###############################################################################################
+        float WSCALEFACTORE=1.3;
         float MuMass= 0.10565837;
         float eleMass= 0.000511;
         float LeptonPtCut_=50;
@@ -187,6 +189,18 @@ int main(int argc, char** argv) {
             //###############################################################################################
             //  Weight Calculation
             //###############################################################################################
+            
+            //############ Top Reweighting
+            float GenTopPt=0;
+            float GenAntiTopPt=0;
+            float TopPtReweighting = 1;
+            for (int igen=0;igen < nMC; igen++){
+                if (mcPID->at(igen) == 6 && mcStatus->at(igen) ==62) GenTopPt=mcPt->at(igen) ;
+                if (mcPID->at(igen) == -6 && mcStatus->at(igen) ==62) GenAntiTopPt=mcPt->at(igen);
+            }
+            size_t isTTJets = InputROOT.find("TTJets");
+            if (isTTJets!= string::npos) TopPtReweighting = compTopPtWeight(GenTopPt, GenAntiTopPt);
+            //###############################################################################################
             float LumiWeight = 1;
             float GetGenWeight=1;
             float PUWeight = 1;
@@ -202,7 +216,7 @@ int main(int argc, char** argv) {
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
                 PUWeight= PUData_/PUMC_;
             }
-            //            float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
+            float TotalWeight = LumiWeight * GetGenWeight * PUWeight * TopPtReweighting;
             //###############################################################################################
             //  Histogram Filling
             //###############################################################################################
@@ -219,7 +233,8 @@ int main(int argc, char** argv) {
             //###############################################################################################
             size_t isSingleMu = InputROOT.find("SingleMu");
             size_t isSingleEle = InputROOT.find("SingleEle");
-            size_t isTTJets = InputROOT.find("TTJets");
+//            size_t isTTJets = InputROOT.find("TTJets");
+            size_t isWJets = InputROOT.find("WJets");
             //###############################################################################################
             //  Doing MuTau Analysis
             //###############################################################################################
@@ -451,7 +466,8 @@ int main(int argc, char** argv) {
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                        float TTScaleFactor[size_ST]={0.88,0.94};
+//                        float TTScaleFactor[size_ST]={0.88,0.94};
+                        float TTScaleFactor[size_ST]={1.00,1.00};
                         
                         
                         //###############################################################################################
@@ -472,6 +488,7 @@ int main(int argc, char** argv) {
                                                         if (ST_category[ist]) {
                                                             
                                                             if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
+                                                            if (isWJets!= string::npos) NewTotalWeight=TotalWeight * WSCALEFACTORE;  // Add W scale factor
                                                             
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 
@@ -752,7 +769,8 @@ int main(int argc, char** argv) {
                         const int size_ST = 2;
                         bool ST_category[size_ST] = {JetBJet_Selection,DiJet_Selection};
                         std::string ST_Cat[size_ST] = {"_JetBJet","_DiJet"};
-                        float TTScaleFactor[size_ST]={0.88,0.94};
+//                        float TTScaleFactor[size_ST]={0.88,0.94};
+                        float TTScaleFactor[size_ST]={1.00,1.00};
                         
                         //###############################################################################################
                         
@@ -775,6 +793,7 @@ int main(int argc, char** argv) {
                                                         if (ST_category[ist]) {
 
                                                             if (isTTJets!= string::npos) NewTotalWeight=TotalWeight * TTScaleFactor[ist];  // Add TT scale factor
+                                                            if (isWJets!= string::npos) NewTotalWeight=TotalWeight * WSCALEFACTORE;  // Add W scale factor
                                                             
                                                             for (int trg = 0; trg < size_trgCat; trg++) {
                                                                 if (Trigger_category[trg]) {

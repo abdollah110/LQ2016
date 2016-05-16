@@ -14,7 +14,7 @@ def add_lumi():
     lumi.SetTextColor(    1 )
     lumi.SetTextSize(0.06)
     lumi.SetTextFont (   42 )
-    lumi.AddText("2.2 fb^{-1} (13 TeV)")
+    lumi.AddText("2.3 fb^{-1} (13 TeV)")
     return lumi
 
 def add_CMS():
@@ -156,7 +156,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel,TTScaleFactor_):
     pad1.SetFrameBorderSize(10)
 
     Data.GetXaxis().SetLabelSize(0)
-    Data.SetMaximum(Data.GetMaximum()*1.8)
+    Data.SetMaximum(Data.GetMaximum()*2)
     Data.Draw("e")
     stack.Draw("histsame")
     errorBand.Draw("e2same")
@@ -210,7 +210,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel,TTScaleFactor_):
     pad2.Draw()
     pad2.cd()
     h1=Data.Clone()
-    h1.SetMaximum(1.9)
+    h1.SetMaximum(2)
     h1.SetMinimum(0.1)
     h1.SetMarkerStyle(20)
     h3=errorBand.Clone()
@@ -244,23 +244,28 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel,TTScaleFactor_):
     ROOT.gPad.RedrawAxis()
 
     c.Modified()
-    c.SaveAs("_plot_TTEstim"+HistName+"_"+categoriy+"_WithTTScaleFactor.pdf")
+    c.SaveAs("_plot_TTEstim"+HistName+"_"+categoriy+"_NoTTScaleFactor.pdf")
     #       c.SaveAs("mvis"+categoriy+".png")
 
 
 channelDirectory = ["MuEle"]
-Category = ["_inclusive","_JetBJet","_DiJet"]
-TTScaleFactor=[0.906953,0.879088,0.938038]
+Category = ["_JetBJet","_DiJet"]
+#TTScaleFactor=[0.906953,0.879088,0.938038]
+TTScaleFactor=[1,1,1]
 
 
 FileNamesInfo=[
-               ["_tmass_NoMT_OS","M_{T}(lep,MET) (GeV)","",1],
-               ["_VisMass_NoMT_OS","VisMass (GeV)","",1],
-               ["_MuPt_NoMT_OS","#mu PT (GeV)","",1],
-               ["_ElePt_NoMT_OS","ele PT (GeV)","",1],
-               ["_NumJet_NoMT_OS","Jet multiplicity","",1],
-               ["_NumBJet_NoMT_OS","B Jet multiplicity","",1],
-               ["_ST_JetBJet_NoMT_OS","ST_{l#taujjMET}  (GeV)","",1],
+#               ["_tmass_OS","M_{T}(lep,MET) (GeV)","",1],
+               ["_VisMass_OS","VisMass (GeV)","",5],
+               ["_MuPt_OS","#mu PT (GeV)","",10],
+               ["_ElePt_OS","ele PT (GeV)","",10],
+               ["_NumJet_OS","Jet multiplicity","",1],
+               ["_NumBJet_OS","B Jet multiplicity","",1],
+               ["_ST_MET_OS","ST_{l#taujjMET}  (GeV)","",10],
+               ["_ST_DiJet_OS","ST_{l#taujj}  (GeV)","",10],
+               ["_MET_OS","MET  (GeV)","",5],
+               ["_EleEta_OS","#eta_{e}","",5],
+               ["_MuEta_OS","#eta_{#mu}","",5],
                ]
 
 

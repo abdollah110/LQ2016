@@ -31,11 +31,12 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles_TTEstim_40/'
+SubRootDir = 'OutFiles_TTEstim/'
 
 
 verbos_ = False
 OS_SS_Ratio=1.06
+RBN_=1
 
 
 TauScale = [ ""]
@@ -80,7 +81,7 @@ def _FileReturn(Name, channel,cat,HistoName,PostFix,CoMEnergy):
 ####################################################
 ##   Start Making the Datacard Histograms
 ####################################################
-def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
+def MakeTheHistogram(channel,NormMC,CoMEnergy,chl,Binning):
     
     
     TauScaleOut = [ ""]
@@ -113,11 +114,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 #                    NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
 #                    NormHisto=NormFile.Get("XXX")
 #                    
-#                    ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+#                    ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
 #                    ShapeHisto=ShapeFile.Get("XXX")
 #                    
 #                    ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-#                    RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+#                    RebinedHist= ShapeHisto.Rebin(RBN_)
 #                    tDirectory.WriteObject(RebinedHist,NameOut)
 
 
@@ -136,11 +137,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             ShapeHisto=ShapeFile.Get("XXX")
             
             ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            RebinedHist= ShapeHisto.Rebin(RBN_)
             tDirectory.WriteObject(RebinedHist,NameOut)
             ################################################
             #  Filling VV
@@ -154,12 +155,12 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
 
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             ShapeHisto=ShapeFile.Get("XXX")
 
             if  ShapeHisto:
                 ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-                RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+                RebinedHist= ShapeHisto.Rebin(RBN_)
                 tDirectory.WriteObject(RebinedHist,NameOut)
             
 
@@ -176,11 +177,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
         
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             ShapeHisto=ShapeFile.Get("XXX")
 
             ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            RebinedHist= ShapeHisto.Rebin(RBN_)
             tDirectory.WriteObject(RebinedHist,NameOut)
             
             ################################################
@@ -196,11 +197,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeMC, TauScale[tscale],CoMEnergy)
+            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             ShapeHisto=ShapeFile.Get("XXX")
             
             ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            RebinedHist= ShapeHisto.Rebin(RBN_)
             tDirectory.WriteObject(RebinedHist,NameOut)
 
 
@@ -217,11 +218,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
-            ShapeFile= _FileReturn(Name, channel,NameCat, ShapeW, TauScale[tscale],CoMEnergy)
+            ShapeFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             ShapeHisto=ShapeFile.Get("XXX")
             
             ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            RebinedHist= ShapeHisto.Rebin(RBN_)
             tDirectory.WriteObject(RebinedHist,NameOut)
 
 #            ################################################
@@ -268,7 +269,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 #
 #            NameOut= "QCD"+str(TauScaleOut[tscale])
 #            DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
-#            RebinedHist= DataSampleQCDShapeHist.Rebin(len(Binning)-1,"",Binning)
+#            RebinedHist= DataSampleQCDShapeHist.Rebin(RBN_)
 #            tDirectory.WriteObject(RebinedHist,NameOut)
 
             ################################################
@@ -288,7 +289,7 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
             ShapeHisto=ShapeFile.Get("XXX")
             
 #            ShapeHisto.Scale(NormHisto.Integral()/ShapeHisto.Integral())
-            RebinedHist= ShapeHisto.Rebin(len(Binning)-1,"",Binning)
+            RebinedHist= ShapeHisto.Rebin(RBN_)
             tDirectory.WriteObject(RebinedHist,NameOut)
 
 
@@ -299,80 +300,11 @@ def MakeTheHistogram(channel,NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,CoMEnergy,ch
 
 
 
-
-            
 if __name__ == "__main__":
+    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300,400,500])
+    PlotName= ["_VisMass_OS","_NumJet_OS","_NumBJet_OS","_MET_OS","_ST_MET_OS","_ST_DiJet_OS","_ElePt_OS","_MuPt_OS","_EleEta_OS","_MuEta_OS"]
     
-    ##########################################
-    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,280,300])
-    NormMC="_VisMass_NoMT_OS"
-    ShapeMC="_VisMass_NoMT_OS"
-    ShapeW="_VisMass_NoMT_OS"
-    NormQCD="_VisMass_NoMT_SS"
-    ShapeQCD="_VisMass_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-
-
-    ##########################################
-    Binning = array.array("d",[0,1,2,3,4,5,6,7,8,9,10])
-    NormMC="_NumJet_NoMT_OS"
-    ShapeMC="_NumJet_NoMT_OS"
-    ShapeW="_NumJet_NoMT_OS"
-    NormQCD="_NumJet_NoMT_SS"
-    ShapeQCD="_NumJet_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-
-
-    ##########################################
-    Binning = array.array("d",[0,1,2,3,4,5,6,7,8,9,10])
-    NormMC="_NumBJet_NoMT_OS"
-    ShapeMC="_NumBJet_NoMT_OS"
-    ShapeW="_NumBJet_NoMT_OS"
-    NormQCD="_NumBJet_NoMT_SS"
-    ShapeQCD="_NumBJet_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-
-    ##########################################
-    Binning = array.array("d",[0,1,2,3,4,5,6,7,8,9,10])
-    NormMC="_NumBJet_STLess700_NoMT_OS"
-    ShapeMC="_NumBJet_STLess700_NoMT_OS"
-    ShapeW="_NumBJet_STLess700_NoMT_OS"
-    NormQCD="_NumBJet_STLess700_NoMT_SS"
-    ShapeQCD="_NumBJet_STLess700_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
     
-
-    ##########################################
-    Binning = array.array("d",[0,50,100,150,200,250,300,350,400,450,500,550,600,700])
-    NormMC="_ST_JetBJet_NoMT_OS"
-    ShapeMC="_ST_JetBJet_NoMT_OS"
-    ShapeW="_ST_JetBJet_NoMT_OS"
-    NormQCD="_ST_JetBJet_NoMT_SS"
-    ShapeQCD="_ST_JetBJet_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-
-    ##########################################
-    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,280,300])
-    NormMC="_tmass_NoMT_OS"
-    ShapeMC="_tmass_NoMT_OS"
-    ShapeW="_tmass_NoMT_OS"
-    NormQCD="_tmass_NoMT_SS"
-    ShapeQCD="_tmass_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    ##########################################
-    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200])
-    NormMC="_MuPt_NoMT_OS"
-    ShapeMC="_MuPt_NoMT_OS"
-    ShapeW="_MuPt_NoMT_OS"
-    NormQCD="_MuPt_NoMT_SS"
-    ShapeQCD="_MuPt_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
-    ##########################################
-    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200])
-    NormMC="_ElePt_NoMT_OS"
-    ShapeMC="_ElePt_NoMT_OS"
-    ShapeW="_ElePt_NoMT_OS"
-    NormQCD="_ElePt_NoMT_SS"
-    ShapeQCD="_ElePt_NoMT_SS_RelaxIso"
-    MakeTheHistogram("MuEle",NormMC,ShapeMC,ShapeW,NormQCD,ShapeQCD,"",0,Binning)
+    for NormMC in PlotName:        
+        MakeTheHistogram("MuEle",NormMC,"",0,Binning)
 

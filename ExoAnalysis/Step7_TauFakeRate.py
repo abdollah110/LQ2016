@@ -34,12 +34,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-#SubRootDir = 'OutFiles_WEstim/'
-#SubRootDir = 'OutFiles_WEstim_OLD/'
-#SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
-SubRootDir = 'OutFiles_WEstim_RelIso03_Loose/'
-#SubRootDir = 'OutFiles_WEstim_RelIso03_Medium/'
-#SubRootDir = 'OutFiles_WEstim_RelIso03_Tight/'
+SubRootDir = 'OutFiles_WEstim/'
 
 verbos_ = False
 TauScale = [ ""]

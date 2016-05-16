@@ -34,10 +34,10 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-#SubRootDir = 'OutFiles_WEstim/'
+SubRootDir = 'OutFiles_WEstim/'
 #SubRootDir = 'OutFiles_WEstim_OLD/'
 #SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
-SubRootDir = 'OutFiles_WEstim_RelIso03_Loose/'
+#SubRootDir = 'OutFiles_WEstim_RelIso03_Loose/'
 
 verbos_ = False
 TauScale = [ ""]
@@ -54,7 +54,7 @@ def add_lumi():
     lumi.SetTextColor(    1 )
     lumi.SetTextSize(0.03)
     lumi.SetTextFont (   42 )
-    lumi.AddText("2.2 fb^{-1} (13 TeV)")
+    lumi.AddText("2.3 fb^{-1} (13 TeV)")
     return lumi
 
 def add_CMS():
@@ -84,12 +84,13 @@ def add_Preliminary():
     return lumi
 
 def make_legend():
-    output = ROOT.TLegend(0.6, 0.7, 0.88, 0.88, "", "brNDC")
+    output = ROOT.TLegend(0.45, 0.5, 0.88, 0.68, "", "brNDC")
     output.SetLineWidth(0)
     output.SetLineStyle(0)
     output.SetFillStyle(0)
     output.SetBorderSize(0)
     output.SetTextFont(62)
+    output.SetTextSize(0.04)
     return output
 
 
@@ -220,7 +221,7 @@ def _FIT_Lepton( x,  par) :
 def _FIT_Lepton_Function( x,  par) :
     return par[0] / (par[0]+ par[1]*math.exp(par[2] * x))
 
-
+#category_FakeEstim= "_DiJet"
 category_FakeEstim= "_inclusive"
 #category_FakeApply= "_DiJet"
 category_FakeApply= "_DiNonBJet"
@@ -305,7 +306,7 @@ def Make_Tau_FakeRate():
 
 
     legende=make_legend()
-    legende.AddEntry(HistoNum,"Jet#rightarrow#mu fake rate","lp")
+    legende.AddEntry(HistoNum,"Data (Jet#rightarrow#mu rate)","lp")
     legende.AddEntry(theFit,"Fit (Landau + Pol1)","lp")
     
     

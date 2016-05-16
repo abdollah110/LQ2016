@@ -4,6 +4,7 @@
 #include <string>
 #include <ostream>
 
+
 int main(int argc, char** argv) {
     using namespace std;
     
@@ -22,16 +23,11 @@ int main(int argc, char** argv) {
     }
     
     
-    //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
-    //    TFile * PUData= new TFile("interface/MyDataPileupHistogram_246908-260426.root");
-    //        TFile * PUData= new TFile("pileup-hists/Data_Pileup_2015D_Nov17.root");
-    //    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_1p56fb.root");
-    //        TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_1p915fb.root");
-    TFile * PUData= TFile::Open("pileup-hists/Data_Pileup_2015D_Nov17.root");
+    TFile * PUData= TFile::Open("../interface/pileup-hists/Data_Pileup_2015D_Nov17.root");
     TH1F * HistoPUData= (TH1F *) PUData->Get("pileup");
     HistoPUData->Scale(1.0/HistoPUData->Integral());
     
-    TFile * PUMC= TFile::Open("pileup-hists/MC_Spring15_PU25_Startup.root");
+    TFile * PUMC= TFile::Open("../interface/pileup-hists/MC_Spring15_PU25_Startup.root");
     TH1F * HistoPUMC= (TH1F *) PUMC->Get("pileup");
     HistoPUMC->Scale(1.0/HistoPUMC->Integral());
     
@@ -91,6 +87,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("nVtx",&nVtx);
         
         /////////////////////////   MC Info
+        Run_Tree->SetBranchAddress("nMC", &nMC);
         Run_Tree->SetBranchAddress("mcPID", &mcPID);
         Run_Tree->SetBranchAddress("mcStatus", &mcStatus);
         Run_Tree->SetBranchAddress("mcPt", &mcPt );
@@ -166,12 +163,16 @@ int main(int argc, char** argv) {
         
         
         
+
         
         float MuMass= 0.10565837;
         float eleMass= 0.000511;
-        
-        float LumiWeight = 1;
-        
+        //        float LeptonPtCut_=50;
+        //        float TauPtCut_=50;
+        float JetPtCut=30;
+        float BJetPtCut=20;
+        float LooseCSV= 0.605;                    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
+        float LeptonIsoCut=0.10;
         
         
         
@@ -189,6 +190,18 @@ int main(int argc, char** argv) {
             //###############################################################################################
             //  Weight Calculation
             //###############################################################################################
+
+            //############ Top Reweighting
+            float GenTopPt=0;
+            float GenAntiTopPt=0;
+            float TopPtReweighting = 1;
+            for (int igen=0;igen < nMC; igen++){
+                if (mcPID->at(igen) == 6 && mcStatus->at(igen) ==62) GenTopPt=mcPt->at(igen) ;
+                if (mcPID->at(igen) == -6 && mcStatus->at(igen) ==62) GenAntiTopPt=mcPt->at(igen);
+            }
+            size_t isTTJets = InputROOT.find("TTJets");
+            if (isTTJets!= string::npos) TopPtReweighting = compTopPtWeight(GenTopPt, GenAntiTopPt);
+            //###############################################################################################
             float LumiWeight = 1;
             float GetGenWeight=1;
             float PUWeight = 1;
@@ -204,12 +217,11 @@ int main(int argc, char** argv) {
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
                 PUWeight= PUData_/PUMC_;
             }
-            float TotalWeight = LumiWeight * GetGenWeight * PUWeight;
+            float TotalWeight = LumiWeight * GetGenWeight * PUWeight * TopPtReweighting;
             //###############################################################################################
             //  Histogram Filling
             //###############################################################################################
             plotFill("WeightLumi",LumiWeight,10000,0,100);
-//            plotFill("WeightGen",GetGenWeight,1000000,0,1000000);
             plotFill("WeightPU",PUWeight,50,0,5);
             plotFill("WeightTotal",TotalWeight,200,0,2);
             plotFill("nVtx_NoPUCorr",nVtx,60,0,60);
@@ -218,9 +230,6 @@ int main(int argc, char** argv) {
                 if ((HLTEleMuX >> qq & 1) == 1)
                     plotFill("HLT",qq,50,0,50,TotalWeight);
             }
-
-            
-            
             //###############################################################################################
             //  Doing MuEle Analysis
             //###############################################################################################
@@ -235,7 +244,7 @@ int main(int argc, char** argv) {
                     if ( (muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu) )  > 0.0)
                         IsoMu= ( muPFChIso->at(imu)/muPt->at(imu) + muPFNeuIso->at(imu) + muPFPhoIso->at(imu) - 0.5* muPFPUIso->at(imu))/muPt->at(imu);
                     
-                    bool MuPtCut = muPt->at(imu) > 40 && fabs(muEta->at(imu)) < 2.1 ;
+                    bool MuPtCut = muPt->at(imu) > 50 && fabs(muEta->at(imu)) < 2.1 ;
                     bool MuIdIso=(muIsMediumID->at(imu) > 0 && IsoMu < 0.10 && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                     
                     
@@ -325,32 +334,43 @@ int main(int argc, char** argv) {
                     bool  GeneralMuEleSelection= !extraMuonExist && MuPtCut && MuIdIso && Mu4Momentum.DeltaR(ele4Momentum) > 0.5 && !extraElectronExist && elePtCut &&  eleIdIso;
                     if ( GeneralMuEleSelection && muCorr==0)   cout <<"!!!!!!!!!!!! "<< muPt->at(imu)<< "   "<< muEta->at(imu)<<"\n";
                     
-                    vector<float> EveJetPt;
-                    vector<float> EveBJetPt;
-                    EveJetPt.clear();
-                    EveBJetPt.clear();
+                    
+                    
+                    
+                    //###########      Jet definition   ###########################################################
+                    vector<TLorentzVector> JetVector;
+                    vector<TLorentzVector> BJetBVector;
+                    JetVector.clear();
+                    BJetBVector.clear();
                     
                     for (int ijet= 0 ; ijet < nJet ; ijet++){
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
-                        if (jetPt->at(ijet) > 40 && fabs(jetEta->at(ijet)) < 2.5  && Jet4Momentum.DeltaR(ele4Momentum) > 0.5  && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
-                            EveJetPt.push_back(jetPt->at(ijet));
-                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  0.89 ){
-                                EveBJetPt.push_back(jetPt->at(ijet));
+                        //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
+                        
+                        if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 40 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(ele4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                            JetVector.push_back(Jet4Momentum);
+                            if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
+                                BJetBVector.push_back(Jet4Momentum);
                             }
                         }
-                        
                     }
                     
-                    float ST_JetBjet=0;
-                    bool JetBJet_Selection=EveJetPt.size() > 1& EveBJetPt.size()> 0 && (EveBJetPt[0]== EveJetPt[0] || EveBJetPt[0] ==EveJetPt[1]);
-                    if (JetBJet_Selection){
-                        ST_JetBjet=EveJetPt[0]+EveJetPt[1]+muPt->at(imu)+elePt->at(iele);
-                        if ((EveJetPt[0]-EveJetPt[0]) * (EveBJetPt[0] - EveJetPt[1])) cout<<"MisMatch ij Jet BJet "<<"\n";
+                    
+                    
+                    float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet=0;
+                    float ST_MET=0;
+                    
+                    bool DiJet_Selection=JetVector.size() > 1;
+                    bool JetBJet_Selection=JetVector.size() > 1& BJetBVector.size()> 0 && (BJetBVector[0].Pt()== JetVector[0].Pt() || BJetBVector[0].Pt() ==JetVector[1].Pt());
+                    
+                    if (DiJet_Selection){
+                        ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+elePt->at(iele);
+                        ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+elePt->at(iele)+pfMET;
                     }
-                    float ST_DiJet=0;
-                    bool DiJet_Selection=EveJetPt.size() > 1;
-                    if (DiJet_Selection)
-                        ST_DiJet=EveJetPt[0]+EveJetPt[1]+muPt->at(imu)+elePt->at(iele);
+                    
+
+                    
+                    
                     
                     if (GeneralMuEleSelection){
                         for (int qq=0; qq < 50;qq++){
@@ -381,17 +401,17 @@ int main(int argc, char** argv) {
                     //###############################################################################################
                     //  MT Categorization
                     //###############################################################################################
-                    float tmass= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , pfMET, pfMETPhi);
-                    const int size_mTCat = 2;
-                    bool PassMT = tmass < 40;
+                    float tmassMuMET= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , pfMET, pfMETPhi);
+                    float tmassEleMET= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) , pfMET, pfMETPhi);
+                    const int size_mTCat = 1;
                     bool NoMT = 1;
-                    bool MT_category[size_mTCat] = {PassMT, NoMT};
-                    std::string MT_Cat[size_mTCat] = {"", "_NoMT"};
+                    bool MT_category[size_mTCat] = {NoMT};
+                    std::string MT_Cat[size_mTCat] = {""};
                     //###############################################################################################
                     //  Trigger Categorization
                     //###############################################################################################
                     const int size_trgCat = 1;
-                    bool PassTrigger = (HLTEleMuX >> 25 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
+                    bool PassTrigger = (HLTEleMuX >> 26 & 1) == 1; // Exist both in data and MC HLT_IsoMu27_v
                     //                  bool PassTrigger = ((HLTEleMuX >> 29 & 1) == 1 && !isData) || ((HLTEleMuX >> 30 & 1) == 1 && isData); //IsoMu17_eta2p1 MC && IsoMu18 Data
                     bool NoTrigger = 1;
                     bool Trigger_category[size_trgCat] = {PassTrigger};
@@ -423,18 +443,20 @@ int main(int argc, char** argv) {
                                                                 
                                                                 std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist];
                                                                 
-                                                                plotFill("MuEle_tmass"+FullStringName,tmass,200,0,2000,TotalWeight);
-                                                                plotFill("MuEle_VisMass"+FullStringName,Z4Momentum.M(),200,0,1000,TotalWeight);
+                                                                plotFill("MuEle_tmassMuMET"+FullStringName,tmassMuMET,50,0,500,TotalWeight);
+                                                                plotFill("MuEle_tmassEleMET"+FullStringName,tmassEleMET,50,0,500,TotalWeight);
+                                                                plotFill("MuEle_TopPtReweighting"+FullStringName,tmassEleMET,200,0,3,TotalWeight);
+                                                                plotFill("MuEle_MET"+FullStringName,pfMET,50,0,500,TotalWeight);
+                                                                plotFill("MuEle_VisMass"+FullStringName,Z4Momentum.M(),50,0,500,TotalWeight);
                                                                 plotFill("MuEle_MuPt"+FullStringName,muPt->at(imu),200,0,200,TotalWeight);
-                                                                plotFill("MuEle_MuPt_NoW8"+FullStringName,muPt->at(imu),300,0,300);
                                                                 plotFill("MuEle_MuEta"+FullStringName,muEta->at(imu),100,-2.5,2.5,TotalWeight);
                                                                 plotFill("MuEle_ElePt"+FullStringName,elePt->at(iele),200,0,200,TotalWeight);
                                                                 plotFill("MuEle_EleEta"+FullStringName,eleEta->at(iele),100,-2.5,2.5,TotalWeight);
-                                                                plotFill("MuEle_NumJet"+FullStringName,EveJetPt.size(),10,0,10,TotalWeight);
-                                                                plotFill("MuEle_NumBJet"+FullStringName,EveBJetPt.size(),10,0,10,TotalWeight);
-                                                                if (ST_JetBjet < 700) plotFill("MuEle_NumBJet_STLess700"+FullStringName,EveBJetPt.size(),10,0,10,TotalWeight);
-                                                                if (EveJetPt.size() > 1) plotFill("MuEle_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
-                                                                if (EveJetPt.size() > 1) plotFill("MuEle_ST_JetBJet"+FullStringName,ST_JetBjet,100,0,1000,TotalWeight);
+                                                                plotFill("MuEle_NumJet"+FullStringName,JetVector.size(),10,0,10,TotalWeight);
+                                                                plotFill("MuEle_NumBJet"+FullStringName,BJetBVector.size(),10,0,10,TotalWeight);
+                                                                plotFill("MuEle_ST_DiJet"+FullStringName,ST_DiJet,100,0,1000,TotalWeight);
+                                                                plotFill("MuEle_ST_MET"+FullStringName,ST_MET,100,0,1000,TotalWeight);
+                                                                plotFill("MuEle_ST_MET_NoTOP"+FullStringName,ST_MET,100,0,1000,TotalWeight/TopPtReweighting);
                                                                 
                                                             }
                                                         }
@@ -479,16 +501,3 @@ int main(int argc, char** argv) {
     
     
 }
-
-
-/////??////////??////////??////////??////////??////////??////////??///
-
-//    else if (name.find("HLT_IsoMu17_eta2p1_v") != string::npos) bitEleMuX = 29;
-// else if (name.find("HLT_IsoMu18_v") != string::npos) bitEleMuX = 30;
-
-// MC  ele   if      (name.find("HLT_Ele22_eta2p1_WPLoose_Gsf_v")                    != string::npos) bitEleMuX =  0; //bit0(lowest)
-// MC  ele   if (name.find("HLT_Ele22_eta2p1_WPTight_Gsf_v")                    != string::npos) bitEleMuX =  1;
-//  data ele    if (name.find("HLT_Ele22_eta2p1_WPLoose_Gsf_v") != string::npos) bitEleMuX = 0; //bit0(lowest) NO iT shouldbe 6
-// else if (name.find("HLT_Ele23_WPLoose_Gsf_v") != string::npos) bitEleMuX = 6;
-
-
