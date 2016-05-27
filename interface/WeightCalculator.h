@@ -77,45 +77,45 @@ float XSection(std::string OutName) {
 //    else if (OutName.find("NewTT") != string::npos) return (831.76 * 0.9);
     
 //    //    https://twiki.cern.ch/twiki/bin/view/CMS/Exo2015LQ1AndLQ2Analyses
-//    else if (OutName.find("skimed_lq200.root") != string::npos) return 60.6;
-//    else if (OutName.find("skimed_lq250.root") != string::npos) return 20.3;
-//    else if (OutName.find("skimed_lq300.root") != string::npos) return     8.05E+00;
-//    else if (OutName.find("skimed_lq350.root") != string::npos) return     3.58E+00;
-//    else if (OutName.find("skimed_lq400.root") != string::npos) return     1.74E+00;
-//    else if (OutName.find("skimed_lq450.root") != string::npos) return     9.05E-01;
-//    else if (OutName.find("skimed_lq500.root") != string::npos) return     4.96E-01;
-//    else if (OutName.find("skimed_lq550.root") != string::npos) return     2.84E-01;
-//    else if (OutName.find("skimed_lq600.root") != string::npos) return     1.69E-01;
-//    else if (OutName.find("skimed_lq650.root") != string::npos) return     1.03E-01;
-//    else if (OutName.find("skimed_lq700.root") != string::npos) return     6.48E-02;
-//    else if (OutName.find("skimed_lq750.root") != string::npos) return     4.16E-02;
-//    else if (OutName.find("skimed_lq800.root") != string::npos) return     2.73E-02;
-//    else if (OutName.find("skimed_lq850.root") != string::npos) return     1.82E-02;
-//    else if (OutName.find("skimed_lq900.root") != string::npos) return     1.23E-02;
-//    else if (OutName.find("skimed_lq950.root") != string::npos) return     8.45E-03;
-//    else if (OutName.find("skimed_lq1000.root") != string::npos) return     5.86E-03;
-//    else if (OutName.find("skimed_lq1050.root") != string::npos) return     4.11E-03;
-//    else if (OutName.find("skimed_lq1100.root") != string::npos) return     2.91E-03;
-//    else if (OutName.find("skimed_lq1150.root") != string::npos) return     2.08E-03;
-//    else if (OutName.find("skimed_lq1200.root") != string::npos) return     1.50E-03;
-//    else if (OutName.find("skimed_lq1250.root") != string::npos) return     1.09E-03;
-//    else if (OutName.find("skimed_lq1300.root") != string::npos) return     7.95E-04;
-//    else if (OutName.find("skimed_lq1350.root") != string::npos) return     5.85E-04;
-//    else if (OutName.find("skimed_lq1400.root") != string::npos) return     4.33E-04;
-//    else if (OutName.find("skimed_lq1450.root") != string::npos) return     3.21E-04;
-//    else if (OutName.find("skimed_lq1500.root") != string::npos) return     2.40E-04;
-//    
-//    
-//    
-//    
-//    else if (OutName.find("skimed_0_RHNu_1000-500") != string::npos) return      1.692E+00;
-//    else if (OutName.find("skimed_0_RHNu_1500-750") != string::npos) return      2.90E-01;
-//    else if (OutName.find("skimed_0_RHNu_2000-1000") != string::npos) return     6.563E-02;
-//    else if (OutName.find("skimed_0_RHNu_2500-1250") != string::npos) return     1.92E-02;
-//    else if (OutName.find("skimed_0_RHNu_3000-1500") != string::npos) return     6.030E-03;
+    else if (OutName.find("skimed_lq200") != string::npos) return 60.6;
+    else if (OutName.find("skimed_lq250") != string::npos) return 20.3;
+    else if (OutName.find("skimed_lq300") != string::npos) return     8.05E+00;
+    else if (OutName.find("skimed_lq350") != string::npos) return     3.58E+00;
+    else if (OutName.find("skimed_lq400") != string::npos) return     1.74E+00;
+    else if (OutName.find("skimed_lq450") != string::npos) return     9.05E-01;
+    else if (OutName.find("skimed_lq500") != string::npos) return     4.96E-01;
+    else if (OutName.find("skimed_lq550") != string::npos) return     2.84E-01;
+    else if (OutName.find("skimed_lq600") != string::npos) return     1.69E-01;
+    else if (OutName.find("skimed_lq650") != string::npos) return     1.03E-01;
+    else if (OutName.find("skimed_lq700") != string::npos) return     6.48E-02;
+    else if (OutName.find("skimed_lq750") != string::npos) return     4.16E-02;
+    else if (OutName.find("skimed_lq800") != string::npos) return     2.73E-02;
+    else if (OutName.find("skimed_lq850") != string::npos) return     1.82E-02;
+    else if (OutName.find("skimed_lq900") != string::npos) return     1.23E-02;
+    else if (OutName.find("skimed_lq950") != string::npos) return     8.45E-03;
+    else if (OutName.find("skimed_lq1000") != string::npos) return     5.86E-03;
+    else if (OutName.find("skimed_lq1050") != string::npos) return     4.11E-03;
+    else if (OutName.find("skimed_lq1100") != string::npos) return     2.91E-03;
+    else if (OutName.find("skimed_lq1150") != string::npos) return     2.08E-03;
+    else if (OutName.find("skimed_lq1200") != string::npos) return     1.50E-03;
+    else if (OutName.find("skimed_lq1250") != string::npos) return     1.09E-03;
+    else if (OutName.find("skimed_lq1300") != string::npos) return     7.95E-04;
+    else if (OutName.find("skimed_lq1350") != string::npos) return     5.85E-04;
+    else if (OutName.find("skimed_lq1400") != string::npos) return     4.33E-04;
+    else if (OutName.find("skimed_lq1450") != string::npos) return     3.21E-04;
+    else if (OutName.find("skimed_lq1500") != string::npos) return     2.40E-04;
     
-    else if (OutName.find("skimed_lq") != string::npos) return     1.0;
-        else if (OutName.find("skimed_0_RHNu_") != string::npos ) return      1.0;
+    
+    
+    
+    else if (OutName.find("skimed_0_RHNu_1000-500") != string::npos) return      1.692E+00;
+    else if (OutName.find("skimed_0_RHNu_1500-750") != string::npos) return      2.90E-01;
+    else if (OutName.find("skimed_0_RHNu_2000-1000") != string::npos) return     6.563E-02;
+    else if (OutName.find("skimed_0_RHNu_2500-1250") != string::npos) return     1.92E-02;
+    else if (OutName.find("skimed_0_RHNu_3000-1500") != string::npos) return     6.030E-03;
+    
+//    else if (OutName.find("skimed_lq") != string::npos) return     1.0;
+//        else if (OutName.find("skimed_0_RHNu_") != string::npos ) return      1.0;
     
     
     

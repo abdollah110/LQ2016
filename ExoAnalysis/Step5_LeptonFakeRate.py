@@ -368,37 +368,43 @@ if __name__ == "__main__":
     newcan.SaveAs("Onedplts.pdf")
     newcan.SaveAs("Onedplts.root")
 
-#    NormQCD="_tmass_HighMT_OS"
-#    ShapeQCD="_tmass_HighMT_OS_TauIsoLepAntiIso"
-    NormQCD="_ST_MET_HighMT_OS"
-    ShapeQCD="_ST_MET_HighMT_OS_TauIsoLepAntiIso"
-#    NormQCD="_ST_MET_HighMT_OS_LepIso"
-#    ShapeQCD="_ST_MET_HighMT_OS_Total"
-    Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000])
+
+
+
+
+
+
+
+
+
+
+Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000])
+def Make_W_Control_Plots(NormQCD,ShapeQCD):
+    
     FinalWPlots=MakeTheHistogram(channelName,NormQCD,ShapeQCD,"",0,Binning,0,category_FakeApply)
 
     TT=FinalWPlots.Get("TT")
-    TT_rb=TT.Rebin(len(Binning)-1,"",Binning)
+#    TT=TT.Rebin(len(Binning)-1,"",Binning)
 
     ZTT=FinalWPlots.Get("ZTT")
-    ZTT_rb=ZTT.Rebin(len(Binning)-1,"",Binning)
+#    ZTT=ZTT.Rebin(len(Binning)-1,"",Binning)
 
     SingleT=FinalWPlots.Get("SingleT")
-    SingleT_rb=SingleT.Rebin(len(Binning)-1,"",Binning)
+#    SingleT=SingleT.Rebin(len(Binning)-1,"",Binning)
 
     VV=FinalWPlots.Get("VV")
-    VV_rb=VV.Rebin(len(Binning)-1,"",Binning)
+#    VV=VV.Rebin(len(Binning)-1,"",Binning)
 
     W=FinalWPlots.Get("W")
-    W_rb=W.Rebin(len(Binning)-1,"",Binning)
+#    W=W.Rebin(len(Binning)-1,"",Binning)
 
     Data=FinalWPlots.Get("data")
-    Data_rb=Data.Rebin(len(Binning)-1,"",Binning)
+#    Data=Data.Rebin(len(Binning)-1,"",Binning)
 
-    
+
     QCD=FinalWPlots.Get("XXX")
-    QCD_rb=QCD.Rebin(len(Binning)-1,"",Binning)
-    QCD_rb.Scale(qcdEstim/QCD_rb.Integral())
+#    QCD=QCD.Rebin(len(Binning)-1,"",Binning)
+    QCD.Scale(qcdEstim/QCD.Integral())
 
     dataMCScale=(Data.Integral()- ( qcdEstim+TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())) / W.Integral()
     print "\n\n************************************************************"
@@ -406,34 +412,42 @@ if __name__ == "__main__":
     print "Num is  =", Data.Integral()- ( qcdEstim + TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())
     print "Denum is =",  W.Integral()
     print "************************************************************\n\n"
-    myOut = TFile("WEstimation_Check_Histograms.root" , 'RECREATE') # Name Of the output file
-    
-    
+    myOut = TFile("WEstimation"+NormQCD+".root" , 'RECREATE') # Name Of the output file
+
+
         
     tDirectory= myOut.mkdir("beforeScale")
     tDirectory.cd()
-    tDirectory.WriteObject(VV_rb,"VV")
-    tDirectory.WriteObject(W_rb,"W")
-    tDirectory.WriteObject(TT_rb,"TT")
-    tDirectory.WriteObject(SingleT_rb,"SingleTop")
-    tDirectory.WriteObject(ZTT_rb,"ZTT")
-    tDirectory.WriteObject(QCD_rb,"QCD")
-    tDirectory.WriteObject(Data_rb,"data_obs")
+    tDirectory.WriteObject(VV,"VV")
+    tDirectory.WriteObject(W,"W")
+    tDirectory.WriteObject(TT,"TT")
+    tDirectory.WriteObject(SingleT,"SingleTop")
+    tDirectory.WriteObject(ZTT,"ZTT")
+    tDirectory.WriteObject(QCD,"QCD")
+    tDirectory.WriteObject(Data,"data_obs")
 
     tDirectory= myOut.mkdir("afterScale")
     tDirectory.cd()
-    tDirectory.WriteObject(VV_rb,"VV")
-    W_rb.Scale(  dataMCScale)
-    tDirectory.WriteObject(W_rb,"W")
-    tDirectory.WriteObject(TT_rb,"TT")
-    tDirectory.WriteObject(SingleT_rb,"SingleTop")
-    tDirectory.WriteObject(ZTT_rb,"ZTT")
-    tDirectory.WriteObject(QCD_rb,"QCD")
-    tDirectory.WriteObject(Data_rb,"data_obs")
+    tDirectory.WriteObject(VV,"VV")
+    W.Scale(  dataMCScale)
+    tDirectory.WriteObject(W,"W")
+    tDirectory.WriteObject(TT,"TT")
+    tDirectory.WriteObject(SingleT,"SingleTop")
+    tDirectory.WriteObject(ZTT,"ZTT")
+    tDirectory.WriteObject(QCD,"QCD")
+    tDirectory.WriteObject(Data,"data_obs")
 
     myOut.Close()
-    
 
 
 
+
+Make_W_Control_Plots("_tmass_HighMT_OS","_tmass_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_ST_MET_HighMT_OS","_ST_MET_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_LepPt_HighMT_OS","_LepPt_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_TauPt_HighMT_OS","_TauPt_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_ST_DiJet_HighMT_OS","_ST_DiJet_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_MET_HighMT_OS","_MET_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_LepEta_HighMT_OS","_LepEta_HighMT_OS_TauIsoLepAntiIso")
+Make_W_Control_Plots("_TauEta_HighMT_OS","_TauEta_HighMT_OS_TauIsoLepAntiIso")
 

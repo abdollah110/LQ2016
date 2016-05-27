@@ -110,6 +110,8 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauByMediumCombinedIsolationDeltaBetaCorr3Hits",&tauByMediumCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMVA5LooseElectronRejection", &tauByMVA5LooseElectronRejection);
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
+        Run_Tree->SetBranchAddress("tauDecayMode",&tauDecayMode);
+        Run_Tree->SetBranchAddress("tauNumSignalPFChargedHadrCands",&tauNumSignalPFChargedHadrCands);
         
         /////////////////////////   Mu Info
         Run_Tree->SetBranchAddress("nMu", &nMu);
@@ -420,19 +422,26 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  Isolation Categorization
                         //###############################################################################################
-                        const int size_isoCat = 7;
+                        //###############################################################################################
+                        //  Isolation Categorization
+                        //###############################################################################################
+                        const int size_isoCat = 9;
                         bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < LeptonIsoCut;
                         bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= LeptonIsoCut;
                         bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= LeptonIsoCut;
                         bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < LeptonIsoCut;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > LeptonIsoCut ;
+                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < LeptonIsoCut ;
                         bool LepIso = IsoMu < LeptonIsoCut;
+                        bool LepAntiIso = IsoMu >= LeptonIsoCut;
                         bool Total = 1;
                         
                         
-                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
+                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,TauAntiIso,LepIso,LepAntiIso,Total};
+
                         
+                        std::string iso_Cat[size_isoCat] = {
+                            "", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
                         //###############################################################################################
                         //  MT Categorization
                         //###############################################################################################
@@ -496,6 +505,9 @@ int main(int argc, char** argv) {
                                                                     
                                                                     
                                                                     std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] + trg_Cat[trg] +ST_Cat[ist];
+
+                                                                    plotFill("MuTau_tauDecayMode"+FullStringName,tauDecayMode->at(itau),12,0,12,NewTotalWeight);
+                                                                    plotFill("MuTau_tauNumSignalPFChargedHadrCands"+FullStringName,tauNumSignalPFChargedHadrCands->at(itau),5,0,5,NewTotalWeight);
                                                                     
                                                                     plotFill("MuTau_tmass"+FullStringName,tmass,500,0,500,NewTotalWeight);
                                                                     plotFill("MuTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,NewTotalWeight);
@@ -721,18 +733,24 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         // Isolation Categorization
                         //###############################################################################################
-                        const int size_isoCat = 7;
+                        const int size_isoCat = 9;
                         bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle < LeptonIsoCut;
                         bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle >= LeptonIsoCut;
                         bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoEle >= LeptonIsoCut;
                         bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoEle < LeptonIsoCut;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > LeptonIsoCut ;
+                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < LeptonIsoCut ;
                         bool LepIso = IsoEle < LeptonIsoCut;
+                        bool LepAntiIso = IsoEle >= LeptonIsoCut;
                         bool Total = 1;
                         
                         
-                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,LepIso,Total};
-                        std::string iso_Cat[size_isoCat] = {"", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_LepIso","_Total"};
+                        bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,TauAntiIso,LepIso,LepAntiIso,Total};
+                        
+                        
+                        std::string iso_Cat[size_isoCat] = {
+                            "", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
+                        
                         
                         //###############################################################################################
                         //  MT Categorization
@@ -800,7 +818,8 @@ int main(int argc, char** argv) {
                                                                     
                                                                     
                                                                     std::string FullStringName = MT_Cat[imt] +q_Cat[qcat] + iso_Cat[iso] +trg_Cat[trg]+ST_Cat[ist];
-                                                                    
+                                                                    plotFill("EleTau_tauDecayMode"+FullStringName,tauDecayMode->at(itau),12,0,12,NewTotalWeight);
+                                                                    plotFill("EleTau_tauNumSignalPFChargedHadrCands"+FullStringName,tauNumSignalPFChargedHadrCands->at(itau),5,0,5,NewTotalWeight);
                                                                     plotFill("EleTau_tmass"+FullStringName,tmass,500,0,500,NewTotalWeight);
                                                                     plotFill("EleTau_VisMass"+FullStringName,Z4Momentum.M(),500,0,500,NewTotalWeight);
                                                                     plotFill("EleTau_LepPt"+FullStringName,elePt->at(iele),300,0,300,NewTotalWeight);

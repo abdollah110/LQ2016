@@ -113,6 +113,9 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
         Run_Tree->SetBranchAddress("tauPx",&tauPx);
         Run_Tree->SetBranchAddress("tauPy",&tauPy);
+        Run_Tree->SetBranchAddress("tauDecayMode",&tauDecayMode);
+        Run_Tree->SetBranchAddress("tauNumSignalPFChargedHadrCands",&tauNumSignalPFChargedHadrCands);
+        
         
         
         /////////////////////////   Mu Info
@@ -271,7 +274,7 @@ int main(int argc, char** argv) {
                             bool MuPtCut = muPt->at(imu) > LeptonPtCut_ && fabs(muEta->at(imu)) < 2.1 ;
                             bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                             bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
-                            bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
+                            bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
                             
                             
                             float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
@@ -604,7 +607,8 @@ int main(int argc, char** argv) {
                             bool ElePtCut = elePt->at(iele) > LeptonPtCut_ && fabs(eleEta->at(iele)) < 2.1 ;
                             bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
                             bool EleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele));
-                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0;
+                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
+//                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
                             
                             
                             

@@ -269,11 +269,11 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
 
             print "\n##########\n DataSampleQCDShapeHist before=",    DataSampleQCDShapeHist.Integral()
             
-            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
 
             print "\n##########\n DataSampleQCDShapeHist after=",    DataSampleQCDShapeHist.Integral()
 
@@ -348,9 +348,10 @@ if __name__ == "__main__":
 
     for NormMC in PlotName:
 
-        MakeTheHistogram("MuTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
-        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",1,Binning)
+        MakeTheHistogram("MuTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)
+        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",1,Binning)
 
-#        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_LepIso","",0,Binning)
-#        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_Total","",1,Binning)
+###OS
+#        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)
+#        MakeTheHistogram("EleTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",1,Binning)
 

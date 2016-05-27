@@ -247,36 +247,6 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
 
     c.Modified()
     c.SaveAs("_plot_WEstim"+HistName+"_"+categoriy+".pdf")
-    #       c.SaveAs("mvis"+categoriy+".png")
-
-#
-#
-#string Names [numPlots]= {"fileWEstim.root"};
-#    string Xaxis[numPlots]={ "ST  [GeV]"};
-#    
-#    
-#    string category[numCat] = {"beforeScale","afterScale"};
-#    string     legendN[numCat]= {"Before Scale Correction", "After Scale Correction"}
-#    string channelDirectory[numch] = {"MuTau"};
-#    
-#    
-#    for (int iname=0;iname < numPlots;iname++){
-#        for (int iCat=0;iCat < numCat;iCat++){
-#            for (int ich=0;ich < numch;ich++){
-#                cout<< "\n\n\n ------------------------------------------  Start New plot\n";
-#                string RootName="fileWEstim.root";
-#                string ChanCat=category[iCat]+"/";
-#                string LegName=legendN[iCat];
-#                string OutName="Plot_"+category[iCat]+Names[iname];
-#                
-#                draw_prefit_Sample(RootName, ChanCat,  Xaxis[iname], OutName,LegName);
-#    
-#        }
-#    }
-#
-#}
-
-
 
 
 
@@ -284,17 +254,25 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
 Category = ["beforeScale","afterScale"]
 INFO = ["before W Scale","after W Scale"]
 
-
-
 FileNamesInfo=[
-               ["ST","ST_{l#taujjMET}  (GeV)","",1]
+               ["_ST_MET","ST_{l#taujjMET}  (GeV)","",10],
+               ["_tmass"," M_{T}(lep,MET) (GeV)","",20],
+               ["_LepPt","  #mu PT (GeV)","",20],
+               ["_tauPt"," #tau PT (GeV)","",20],
+               ["_ST_DiJet"," ST_{l#taujj} (GeV)","",10],
+               ["_MET"," MET (GeV)","",20],
+               ["_LepEta","  #eta_{#mu}","",20],
+               ["_TauEta","  #eta_{#tau}","",20]
+
+               
                ]
 
+#myOut = TFile("WEstimation"+NormQCD+".root" , 'RECREATE') # Name Of the output file
 
 
 for cat in range(0,len(Category)):
     for i in range(0,len(FileNamesInfo)):
 
-        FileName="WEstimation_Check_Histograms.root"
+        FileName="WEstimation"+FileNamesInfo[i][0]+"_HighMT_OS.root"
         MakePlot(FileName,Category[cat],FileNamesInfo[i][0],FileNamesInfo[i][1],INFO[cat],FileNamesInfo[i][3])
 
