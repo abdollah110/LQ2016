@@ -137,6 +137,15 @@ void InitSignal(TH1 *hist)
   //hist->SetLineColor(kBlue+3);
 }
 
+void InitSignal2(TH1 *hist)
+{
+    hist->SetFillStyle(0.);
+    hist->SetLineStyle(13);
+    hist->SetLineWidth(3.);
+    hist->SetLineColor(kRed);
+    //hist->SetLineColor(kBlue+3);
+}
+
 void InitHist(TH1 *hist, const char *xtit, const char *ytit, int color, int style)
 {
   hist->SetXTitle(xtit);
