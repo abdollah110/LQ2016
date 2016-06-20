@@ -1,3 +1,4 @@
+// Updated the folloiwng: bool HighMT = tmass > 70 && pfMET > 50;
 #include "../interface/LQ3Analyzer.h"
 #include "../interface/WeightCalculator.h"
 #include "../interface/Corrector.h"
@@ -112,6 +113,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauByTightCombinedIsolationDeltaBetaCorr3Hits",&tauByTightCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMVA5LooseElectronRejection", &tauByMVA5LooseElectronRejection);
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
+        Run_Tree->SetBranchAddress("tauDecayMode",&tauDecayMode);        
         
         /////////////////////////   Mu Info
         Run_Tree->SetBranchAddress("nMu", &nMu);
@@ -211,6 +213,7 @@ int main(int argc, char** argv) {
             if (!isData){
                 
                 if (HistoTot) LumiWeight = weightCalc(HistoTot, InputROOT, genHT, W_Events, DY_Events);
+                
                 GetGenWeight=genWeight;
                 
                 int puNUmmc=int(puTrue->at(0)*10);
@@ -218,8 +221,13 @@ int main(int argc, char** argv) {
                 float PUMC_=HistoPUMC->GetBinContent(puNUmmc+1);
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
                 PUWeight= PUData_/PUMC_;
+                
             }
+            
             float TotalWeight = LumiWeight * GetGenWeight * PUWeight * TopPtReweighting;
+            if (TotalWeight > 30)
+            cout<<InputROOT<< "  weight is "<< LumiWeight<< "  "<<PUWeight << "  "<<TotalWeight <<"\n";
+            
             //###############################################################################################
             //  Histogram Filling
             //###############################################################################################
@@ -294,9 +302,8 @@ int main(int argc, char** argv) {
                         //                        bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                         bool MuIdIso=1;
                         bool TauPtCut = tauPt->at(itau) > 45  && fabs(tauEta->at(itau)) < 2.3 ;
-                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05
-                        ;
-                        
+//                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauDecayMode->at(itau) < 3 || tauDecayMode->at(itau) > 8);
+                        bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 ;
                         
                         
                         TLorentzVector Mu4Momentum, Tau4Momentum, Z4Momentum, Jet4Momentum,ExtraMu4Momentum, Extraele4Momentum,KJet4Momentum;
@@ -474,7 +481,7 @@ int main(int argc, char** argv) {
                         const int size_mTCat = 3;
                         bool NoMT = 1;
                         bool LoWMT = tmass < 30;
-                        bool HighMT = tmass > 70;
+                        bool HighMT = tmass > 70 && pfMET > 50;
                         bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
                         std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                         //###############################################################################################

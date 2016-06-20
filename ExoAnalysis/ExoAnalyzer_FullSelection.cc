@@ -274,7 +274,7 @@ int main(int argc, char** argv) {
                             bool MuPtCut = muPt->at(imu) > LeptonPtCut_ && fabs(muEta->at(imu)) < 2.1 ;
                             bool MuIdIso=(muIsMediumID->at(imu) > 0  && fabs(muD0->at(imu)) < 0.045 && fabs(muDz->at(imu)) < 0.2);
                             bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
-                            bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
+                            bool TauIdIso =  tauByTightMuonRejection3->at(itau) > 0 && tauByMVA5LooseElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauDecayMode->at(itau) < 3 || tauDecayMode->at(itau) > 8);
                             
                             
                             float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
@@ -539,7 +539,9 @@ int main(int argc, char** argv) {
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,NewTotalWeight *  tauPtReweightingDown);
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,NewTotalWeight * tauPtReweightingUp);
-                                                                                
+                                                                                if( Z4Momentum.M() > 100) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M100"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                if( Z4Momentum.M() > 200) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M200"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                if( Z4Momentum.M() > 300) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M300"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
                                                                                 
                                                                                 
                                                                             }
@@ -607,8 +609,8 @@ int main(int argc, char** argv) {
                             bool ElePtCut = elePt->at(iele) > LeptonPtCut_ && fabs(eleEta->at(iele)) < 2.1 ;
                             bool TauPtCut = Tau4Momentum.Pt() > TauPtCut_  && fabs(Tau4Momentum.Eta()) < 2.3 ;
                             bool EleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele));
-                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
-//                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauNumSignalPFChargedHadrCands->at(itau) ==1 || tauNumSignalPFChargedHadrCands->at(itau) ==3);
+                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && (tauDecayMode->at(itau) < 3 || tauDecayMode->at(itau) > 8);
+//                            bool TauIdIso =  tauByLooseMuonRejection3->at(itau) > 0 && tauByMVA5MediumElectronRejection->at(itau) > 0 && fabs(tauDxy->at(itau)) < 0.05 && (tauDecayMode->at(itau) < 3 || tauDecayMode->at(itau) > 8);
                             
                             
                             
@@ -867,6 +869,10 @@ int main(int argc, char** argv) {
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_MET"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWDown"+FullStringName,ST_MET,500,0,5000,NewTotalWeight *  tauPtReweightingDown);
                                                                                 plotFill(CHANNEL+AN_Cat[an]+"_ST_METTauHighPtRWUp"+FullStringName,ST_MET,500,0,5000,NewTotalWeight * tauPtReweightingUp );
+                                                                                
+                                                                                if( Z4Momentum.M() > 100) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M100"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                if( Z4Momentum.M() > 200) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M200"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
+                                                                                if( Z4Momentum.M() > 300) plotFill(CHANNEL+AN_Cat[an]+"_ST_MET_M300"+FullStringName,ST_MET,500,0,5000,NewTotalWeight);
                                                                                 
                                                                                 
                                                                             }

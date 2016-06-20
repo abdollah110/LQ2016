@@ -63,7 +63,46 @@ limit.py --max-likelihood --stable --rMin -5 --rMax 5 LIMITS/700/
 PostFitShapes -o final_lq_mt_700.root -m 700 -f LIMITS/700/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/700/lq_mt_1_13TeV.txt
 PostFitShapes -o final_lq_et_700.root -m 700 -f LIMITS/700/out/mlfit.root:fit_s --postfit --sampling --print -d LIMITS/700/lq_et_1_13TeV.txt
 
+    *************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 
+Limit for CLS:
+submit.py --CLs --cycles 5 LIMITS/*
+Need  to change the mass range from 90 to 150 to  1000 to 3000*/
+
+
+Using combine twiki:
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#Signal_Hypothesis_separation
+[abdollah@cmslpc27 RHW30_FinalPreTalk_Obs_AN]$ combine -M HybridNew --rMin=0.01 --rMax=5.0 --frequentist --testStat LHC --fork 4 -m 2500 -n TestWprimeRight BothComb.txt  --rRelAcc=0.01 --rAbsAcc=0.0005
+
+
+
+***********************************************************
+5 cycle(s) to finish
+***********************************************************
+submit-slave.py --bin combine --method CLs -n 5 --min   0.3  --max   1.5 --toysH 50 -t 500 -j 500 --random --server   LIMITS/1000 LIMITS/1500 LIMITS/2000 LIMITS/2500 LIMITS/3000
+submit-slave.py --bin combine --method CLs -n 5 --min   2.0  --max   4.0 --toysH 50 -t 500 -j 500 --random --server   LIMITS/1000 LIMITS/1500 LIMITS/2000 LIMITS/2500 LIMITS/3000
+
+For comaprioson limit
+python MakeCompare.py --file=lq.json --file2=../lq15_Mltau200/lq.json --file3=../lq16_Mltau0/lq.json --expected_only --leg=Expected_Mltau_100GeV --leg2=Expected_Mltau_200GeV --leg3=Expected_No_Mltau_cut
+
+
+
+
+making the plots for lq;
+python ../../../scripts/plotLQ3.py --file=lq.json --y_axis_min .001 --y_axis_max 100
+
+
+hadd     sampleQCD/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
+hadd     sampleQCD/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root   crab_QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8*.root
 
 
 

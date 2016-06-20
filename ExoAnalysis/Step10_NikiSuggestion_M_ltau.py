@@ -50,7 +50,7 @@ OS_SS_Ratio=1.00
 RB_=10
 
 TauScale = ["Down", "", "Up"]
-SystematicHighPtTau = ["TauHighPtRWUp","TauHighPtRWDown"]
+SystematicHighPtTau = ["",""]
 #TauScale = ["", "", ""]
 #POSTFIX=["","Up","Down"]
 
@@ -408,8 +408,6 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,Analy
 
 if __name__ == "__main__":
     Binning = array.array("d",[0,100,200,300,400,500,600,700,800,900,1000,1150,1300,1450,1600,1800,2000,2500,3000,4000,5000])
-#    Binning = array.array("d",[0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1075,1150,1225,1300,1375,1450,1525,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000,4500,5000])
-#    Binning = array.array("d",[0,200,400,600,800,1000,1300,1600,2000,3000,5000])
 
     NormMC="_LQ_ST_MET"
     MakeTheHistogram("MuTau",NormMC+"_OS","_LQ_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_AntiIso","",0,Binning,"lq")

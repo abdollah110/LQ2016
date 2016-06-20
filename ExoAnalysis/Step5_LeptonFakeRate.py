@@ -84,13 +84,13 @@ def add_Preliminary():
     return lumi
 
 def make_legend():
-    output = ROOT.TLegend(0.45, 0.5, 0.88, 0.68, "", "brNDC")
+    output = ROOT.TLegend(0.45, 0.75, 0.88, 0.88, "", "brNDC")
     output.SetLineWidth(0)
     output.SetLineStyle(0)
     output.SetFillStyle(0)
     output.SetBorderSize(0)
     output.SetTextFont(62)
-    output.SetTextSize(0.04)
+    output.SetTextSize(0.035)
     return output
 
 
@@ -180,9 +180,9 @@ def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,Na
             
             
 
-            print "\n ----> Data before subtraction is = ", DataSampleQCDNormHist.Integral()
+            print "\n ----> Data before subtraction for " , NormQCD , " is = ", DataSampleQCDNormHist.Integral()
             QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd))
-            print "\n ---->  Data aftre ____ subtraction is = ", QCDEstimation
+            print "\n ---->  Data aftre ____ subtraction for " , NormQCD , " is = = ", QCDEstimation
             
 
 #            NameOut= "QCD"+str(TauScaleOut[tscale])
@@ -219,17 +219,21 @@ def _FIT_Jet_Function(x, p):
 def _FIT_Lepton( x,  par) :
     return par[0] / (par[0]+ par[1]*math.exp(par[2] * x[0]))
 def _FIT_Lepton_Function( x,  par) :
-    return par[0] / (par[0]+ par[1]*math.exp(par[2] * x))
+    if x < 300:
+        return par[0] / (par[0]+ par[1]*math.exp(par[2] * x))
+    else:
+        return par[0] / (par[0]+ par[1]*math.exp(par[2] * 300))
+
 
 #category_FakeEstim= "_DiJet"
 category_FakeEstim= "_inclusive"
 #category_FakeApply= "_DiJet"
 category_FakeApply= "_DiNonBJet"
 channelName="MuTau"
-FR_vs_LeptonPT=0
+FR_vs_LeptonPT=1
 if FR_vs_LeptonPT:
     ObjectPT="_LepPt"
-    BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
+    BinningFake = array.array("d",[0,20,30,40,50,55,60,65,70,75,80,85,90,100,120,150,200,250,300])
 else:
     ObjectPT="_CloseJetMuPt"
     BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400])
@@ -307,7 +311,10 @@ def Make_Tau_FakeRate():
 
     legende=make_legend()
     legende.AddEntry(HistoNum,"Data (Jet#rightarrow#mu rate)","lp")
-    legende.AddEntry(theFit,"Fit (Landau + Pol1)","lp")
+    if FR_vs_LeptonPT:
+        legende.AddEntry(theFit,"Fit (Exp. Function)","lp")
+    else:
+        legende.AddEntry(theFit,"Fit (Landau + Pol1)","lp")
     
     
     legende.Draw()
@@ -358,12 +365,13 @@ if __name__ == "__main__":
     qcdEstim=0
     for bin in xrange(50,400):
         value=HistoQCDCR.GetBinContent(bin)
-        if value < 0 : value=0
+#        if value < 0 : value=0  ********FIXME****** running out of Stat will create problem
         if FR_vs_LeptonPT:
             FR= _FIT_Lepton_Function(bin+1.5,FR_FitMaram)
         else:
             FR= _FIT_Jet_Function(bin+1.5,FR_FitMaram)
         qcdEstim += value * FR/(1-FR)
+#    qcdEstim /= 2
     print  "\n\n\n\n------> Final QCD estimate is", qcdEstim, "\n\n\n\n"
     newcan.SaveAs("Onedplts.pdf")
     newcan.SaveAs("Onedplts.root")
@@ -384,26 +392,26 @@ def Make_W_Control_Plots(NormQCD,ShapeQCD):
     FinalWPlots=MakeTheHistogram(channelName,NormQCD,ShapeQCD,"",0,Binning,0,category_FakeApply)
 
     TT=FinalWPlots.Get("TT")
-#    TT=TT.Rebin(len(Binning)-1,"",Binning)
+    TT=TT.Rebin(10)
 
     ZTT=FinalWPlots.Get("ZTT")
-#    ZTT=ZTT.Rebin(len(Binning)-1,"",Binning)
+    ZTT=ZTT.Rebin(10)
 
     SingleT=FinalWPlots.Get("SingleT")
-#    SingleT=SingleT.Rebin(len(Binning)-1,"",Binning)
+    SingleT=SingleT.Rebin(10)
 
     VV=FinalWPlots.Get("VV")
-#    VV=VV.Rebin(len(Binning)-1,"",Binning)
+    VV=VV.Rebin(10)
 
     W=FinalWPlots.Get("W")
-#    W=W.Rebin(len(Binning)-1,"",Binning)
+    W=W.Rebin(10)
 
     Data=FinalWPlots.Get("data")
-#    Data=Data.Rebin(len(Binning)-1,"",Binning)
+    Data=Data.Rebin(10)
 
 
     QCD=FinalWPlots.Get("XXX")
-#    QCD=QCD.Rebin(len(Binning)-1,"",Binning)
+    QCD=QCD.Rebin(10)
     QCD.Scale(qcdEstim/QCD.Integral())
 
     dataMCScale=(Data.Integral()- ( qcdEstim+TT.Integral()+VV.Integral()+ZTT.Integral()+SingleT.Integral())) / W.Integral()
@@ -420,6 +428,8 @@ def Make_W_Control_Plots(NormQCD,ShapeQCD):
     tDirectory.cd()
     tDirectory.WriteObject(VV,"VV")
     tDirectory.WriteObject(W,"W")
+    tDirectory.WriteObject(W,"W120")
+    tDirectory.WriteObject(W,"W125")
     tDirectory.WriteObject(TT,"TT")
     tDirectory.WriteObject(SingleT,"SingleTop")
     tDirectory.WriteObject(ZTT,"ZTT")
@@ -450,4 +460,5 @@ Make_W_Control_Plots("_ST_DiJet_HighMT_OS","_ST_DiJet_HighMT_OS_TauIsoLepAntiIso
 Make_W_Control_Plots("_MET_HighMT_OS","_MET_HighMT_OS_TauIsoLepAntiIso")
 Make_W_Control_Plots("_LepEta_HighMT_OS","_LepEta_HighMT_OS_TauIsoLepAntiIso")
 Make_W_Control_Plots("_TauEta_HighMT_OS","_TauEta_HighMT_OS_TauIsoLepAntiIso")
+
 

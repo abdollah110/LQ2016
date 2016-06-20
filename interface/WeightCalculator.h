@@ -118,6 +118,25 @@ float XSection(std::string OutName) {
 //        else if (OutName.find("skimed_0_RHNu_") != string::npos ) return      1.0;
     
     
+//    else if (OutName.find("QCD") != string::npos) return     720648000  * 0.00042 ;
+    
+    
+    
+    else if (OutName.find("QCD_Pt-15to20") != string::npos) return  3819570.0   ;  //21580
+    else if (OutName.find("QCD_Pt-20to30") != string::npos) return  2960198.4   ;  // 1912
+    else if (OutName.find("QCD_Pt-30to50") != string::npos) return  1652471.46 ;  //  1067
+//    else if (OutName.find("QCD_Pt-50to80") != string::npos) return 437504.1     ;
+    else if (OutName.find("QCD_Pt-80to120") != string::npos) return  106033.6648   ;   // event weight 130
+    else if (OutName.find("QCD_Pt-120to170") != string::npos) return  25190.51514    ;  //event weight 19
+    else if (OutName.find("QCD_Pt-170to300") != string::npos) return   8654.49315    ; //event weight ~ 8
+    else if (OutName.find("QCD_Pt-300to470") != string::npos) return    797.35269   ;   // event weight ~ 3
+    else if (OutName.find("QCD_Pt-470to600") != string::npos) return     79.02553776 ;  // event weight ~ .4
+    else if (OutName.find("QCD_Pt-600to800") != string::npos) return     25.09505908 ;
+    else if (OutName.find("QCD_Pt-800to1000") != string::npos) return     4.707368272;
+    else if (OutName.find("QCD_Pt-1000toInf") != string::npos) return     1.62131692;
+    
+    
+    
     
     else {
         cout<<"Not Listed in XSection menu !!!! Watch cout \n";

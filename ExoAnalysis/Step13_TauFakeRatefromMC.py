@@ -34,8 +34,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-#SubRootDir = 'OutFiles_WEstim/'
-SubRootDir = 'OutFiles_WEstimNoMETcut/'
+SubRootDir = 'OutFiles_WEstim/'
 
 verbos_ = False
 TauScale = [ ""]
@@ -113,86 +112,95 @@ def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,Na
     
             tscale=0
         
-            Name= "SingleTop"
-            SingleTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            SingleTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            Name= "VV"
-            VVSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            VVSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            Name= "TTJets"
-            TTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            TTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            Name= "DYJetsToLL"
-            ZTTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            ZTTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            Name= "WJetsToLNu"
-            WSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            WSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            Name="Data"
-            DataSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            DataSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
-            
-            
-            
-            SingleTSampleQCDShapeHist=SingleTSampleQCDShape.Get("XXX")
-            VVSampleQCDShapeHist=VVSampleQCDShape.Get("XXX")
-            TTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
-            ZTTSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
-            WSampleQCDShapeHist=WSampleQCDShape.Get("XXX")
-            DataSampleQCDShapeHist=DataSampleQCDShape.Get("XXX")
-            
-            if (SingleTSampleQCDShapeHist) : DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
-            if (VVSampleQCDShapeHist): DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
-            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
-            
-            
-            SingleTSampleQCDNormHist=SingleTSampleQCDNorm.Get("XXX")
-            VVSampleQCDNormHist=VVSampleQCDNorm.Get("XXX")
-            TTSampleQCDNormHist=TTSampleQCDNorm.Get("XXX")
-            ZTTSampleQCDNormHist=ZTTSampleQCDNorm.Get("XXX")
-            WSampleQCDNormHist=WSampleQCDNorm.Get("XXX")
-            DataSampleQCDNormHist=DataSampleQCDNorm.Get("XXX")
-            
-            SingleT_qcd=0;
-            if (SingleTSampleQCDNormHist): SingleT_qcd=SingleTSampleQCDNormHist.Integral()
-            VV_qcd=0;
-            if (VVSampleQCDNormHist): VV_qcd=VVSampleQCDNormHist.Integral()
-            TT_qcd=0;
-            if (TTSampleQCDNormHist): TT_qcd=TTSampleQCDNormHist.Integral()
-            ZTT_qcd=0;
-            if (ZTTSampleQCDNormHist): ZTT_qcd=ZTTSampleQCDNormHist.Integral()
-            W_qcd=0;
-            if (WSampleQCDNormHist): W_qcd=WSampleQCDNormHist.Integral()
-            
-            
-            
-            print "\n ----> Data before subtraction is = ", DataSampleQCDNormHist.Integral()
-            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd))
-            print "\n ---->  Data aftre ____ subtraction is = ", QCDEstimation
-            
-            
-            #            NameOut= "QCD"+str(TauScaleOut[tscale])
-            DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
-            if doBinning:    RebinedHist= DataSampleQCDShapeHist.Rebin(len(Binning)-1,"",Binning)
-            else : RebinedHist= DataSampleQCDShapeHist
-            #            tDirectory.WriteObject(RebinedHist,NameOut)
-            
+#            Name= "SingleTop"
+#            SingleTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            SingleTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            Name= "VV"
+#            VVSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            VVSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            Name= "TTJets"
+#            TTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            TTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            Name= "DYJetsToLL"
+#            ZTTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            ZTTSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            Name= "WJetsToLNu"
+#            WSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            WSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            Name="Data"
+#            DataSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+#            DataSampleQCDShape= _FileReturn(Name, channel,NameCat, ShapeQCD, TauScale[tscale],CoMEnergy)
+#            
+#            
+#            
+#            SingleTSampleQCDShapeHist=SingleTSampleQCDShape.Get("XXX")
+#            VVSampleQCDShapeHist=VVSampleQCDShape.Get("XXX")
+#            TTSampleQCDShapeHist=TTSampleQCDShape.Get("XXX")
+#            ZTTSampleQCDShapeHist=ZTTSampleQCDShape.Get("XXX")
+#            WSampleQCDShapeHist=WSampleQCDShape.Get("XXX")
+#            DataSampleQCDShapeHist=DataSampleQCDShape.Get("XXX")
+#            
+#            if (SingleTSampleQCDShapeHist) : DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
+#            if (VVSampleQCDShapeHist): DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
+#            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
+#            
+#            
+#            SingleTSampleQCDNormHist=SingleTSampleQCDNorm.Get("XXX")
+#            VVSampleQCDNormHist=VVSampleQCDNorm.Get("XXX")
+#            TTSampleQCDNormHist=TTSampleQCDNorm.Get("XXX")
+#            ZTTSampleQCDNormHist=ZTTSampleQCDNorm.Get("XXX")
+#            WSampleQCDNormHist=WSampleQCDNorm.Get("XXX")
+#            DataSampleQCDNormHist=DataSampleQCDNorm.Get("XXX")
+#            
+#            SingleT_qcd=0;
+#            if (SingleTSampleQCDNormHist): SingleT_qcd=SingleTSampleQCDNormHist.Integral()
+#            VV_qcd=0;
+#            if (VVSampleQCDNormHist): VV_qcd=VVSampleQCDNormHist.Integral()
+#            TT_qcd=0;
+#            if (TTSampleQCDNormHist): TT_qcd=TTSampleQCDNormHist.Integral()
+#            ZTT_qcd=0;
+#            if (ZTTSampleQCDNormHist): ZTT_qcd=ZTTSampleQCDNormHist.Integral()
+#            W_qcd=0;
+#            if (WSampleQCDNormHist): W_qcd=WSampleQCDNormHist.Integral()
+#            
+#            
+#            
+#            print "\n ----> Data before subtraction is = ", DataSampleQCDNormHist.Integral()
+#            QCDEstimation= (DataSampleQCDNormHist.Integral()- (TT_qcd+ZTT_qcd+W_qcd+SingleT_qcd+VV_qcd))
+#            print "\n ---->  Data aftre ____ subtraction is = ", QCDEstimation
+#            
+#            
+#            #            NameOut= "QCD"+str(TauScaleOut[tscale])
+#            DataSampleQCDShapeHist.Scale(QCDEstimation/DataSampleQCDShapeHist.Integral())  # The shape is from btag-Loose Need get back norm
+#            if doBinning:    RebinedHist= DataSampleQCDShapeHist.Rebin(len(Binning)-1,"",Binning)
+#            else : RebinedHist= DataSampleQCDShapeHist
+#            #            tDirectory.WriteObject(RebinedHist,NameOut)
+#
+            Name= "qcd00New"
+            QCD= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
+            QCDSHape= QCD.Get("XXX")
+            print "integral=", QCDSHape.Integral()
+            if doBinning:    RebinedHist= QCDSHape.Rebin(len(Binning)-1,"",Binning)
+            else : RebinedHist= QCDSHape
+
             NewShapeForQCD=TFile("Extra/XXX.root","RECREATE")
             NewShapeForQCD.WriteObject(RebinedHist,"XXX")
-            NewShapeForQCD.WriteObject(DataSampleQCDNormHist,"data")
-            NewShapeForQCD.WriteObject(WSampleQCDNormHist,"W")
-            NewShapeForQCD.WriteObject(ZTTSampleQCDNormHist,"ZTT")
-            NewShapeForQCD.WriteObject(TTSampleQCDNormHist,"TT")
-            NewShapeForQCD.WriteObject(VVSampleQCDNormHist,"VV")
-            NewShapeForQCD.WriteObject(SingleTSampleQCDNormHist,"SingleT")
+#            NewShapeForQCD.WriteObject(DataSampleQCDNormHist,"data")
+#            NewShapeForQCD.WriteObject(WSampleQCDNormHist,"W")
+#            NewShapeForQCD.WriteObject(ZTTSampleQCDNormHist,"ZTT")
+#            NewShapeForQCD.WriteObject(TTSampleQCDNormHist,"TT")
+#            NewShapeForQCD.WriteObject(VVSampleQCDNormHist,"VV")
+#            NewShapeForQCD.WriteObject(SingleTSampleQCDNormHist,"SingleT")
             return NewShapeForQCD
+
+
 
 
 #############################################################################################################
@@ -217,19 +225,22 @@ def _FIT_Lepton_Function( x,  par) :
 
 category_FakeEstim= "_inclusive"
 channelName="MuTau"
-FR_vs_LeptonPT=0
+FR_vs_LeptonPT=1
 if FR_vs_LeptonPT:
     ObjectPT="_TauPt"
-    BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,150,200,300])
+    BinningFake = array.array("d",[0,20,50,70,90,110,140,200,300])
+#    BinningFake = array.array("d",[0,20,40,60,80,100,130,160,200,250,300])
 else:
     ObjectPT="_CloseJetTauPt"
-    BinningFake = array.array("d",[0,20,30,40,50,60,70,80,90,100,120,140,160,180,200,240,280,320,360,400])
+    BinningFake = array.array("d",[0,20,40,60,80,100,130,160,200,250,300,350,400])
 #HistoFakeNum=ObjectPT+"_LowMT_SS_TauAntiIsoLepIso"
 #HistoFakeDeNum=ObjectPT+"_LowMT_SSTauAntiIso"
 #HistoFakeNum=ObjectPT+"_LowMT_SS"
 #HistoFakeDeNum=ObjectPT+"_LowMT_SS_TauIso"
-HistoFakeNum=ObjectPT+"_LowMT_SS_TauIsoLepAntiIso"
-HistoFakeDeNum=ObjectPT+"_LowMT_SS_LepAntiIso"
+#HistoFakeNum=ObjectPT+"_LowMT_SS_TauIsoLepAntiIso"
+#HistoFakeDeNum=ObjectPT+"_LowMT_SS_LepAntiIso"
+HistoFakeNum=ObjectPT+"_SS_TauIso"
+HistoFakeDeNum=ObjectPT+"_SS_Total"
 
 #############################################################################################################
 ##   Calculating the Fake Rate ---> "Linear Fit, 2 parameters"
@@ -250,7 +261,7 @@ def Make_Tau_FakeRate():
     canv = TCanvas("canv", "histograms", 600, 600)
     #    HistoNum.SetMinimum(0.5)
     #    HistoNum.GetXaxis().SetRangeUser(0,400)
-    canv.SetLogy()
+#    canv.SetLogy()
 #    canv.SetGridx()
     canv.SetGridy()
     HistoNum.SetTitle("")
@@ -258,7 +269,7 @@ def Make_Tau_FakeRate():
     else: HistoNum.GetXaxis().SetTitle("Jet p_{T} [GeV]")
     HistoNum.GetYaxis().SetTitle("Tau Fake Rate  (Tight Iso / Loose Iso)")
     HistoNum.GetYaxis().SetTitleOffset(1.3)
-    HistoNum.GetYaxis().SetRangeUser(0.005,1)
+    HistoNum.GetYaxis().SetRangeUser(0.005,.3)
     HistoNum.SetStats(0)
     HistoNum.SetMarkerStyle(20)
     

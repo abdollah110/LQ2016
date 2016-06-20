@@ -106,6 +106,15 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     VV.SetFillColor(ROOT.TColor.GetColor(200, 282, 232))
     DYS.SetFillColor(ROOT.TColor.GetColor(108, 226, 354))
 
+    ######  Add OverFlow Bin
+    QCD.SetBinContent(QCD.GetNbinsX(),QCD.GetBinContent(QCD.GetNbinsX()+1)+QCD.GetBinContent(QCD.GetNbinsX()))
+    W.SetBinContent(W.GetNbinsX(),W.GetBinContent(W.GetNbinsX()+1)+W.GetBinContent(W.GetNbinsX()))
+    TT.SetBinContent(TT.GetNbinsX(),TT.GetBinContent(TT.GetNbinsX()+1)+TT.GetBinContent(TT.GetNbinsX()))
+    SingleT.SetBinContent(SingleT.GetNbinsX(),SingleT.GetBinContent(SingleT.GetNbinsX()+1)+SingleT.GetBinContent(SingleT.GetNbinsX()))
+    VV.SetBinContent(VV.GetNbinsX(),VV.GetBinContent(VV.GetNbinsX()+1)+VV.GetBinContent(VV.GetNbinsX()))
+    DYS.SetBinContent(DYS.GetNbinsX(),DYS.GetBinContent(DYS.GetNbinsX()+1)+DYS.GetBinContent(DYS.GetNbinsX()))
+    Data.SetBinContent(Data.GetNbinsX(),Data.GetBinContent(Data.GetNbinsX()+1)+Data.GetBinContent(Data.GetNbinsX()))
+
     Data.SetMarkerStyle(20)
     Data.SetMarkerSize(1)
     QCD.SetLineColor(ROOT.EColor.kBlack)
@@ -134,7 +143,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     errorBand.Add(SingleT)
     errorBand.Add(DYS)
     errorBand.SetMarkerSize(0)
-    errorBand.SetFillColor(12)
+    errorBand.SetFillColor(16)
     errorBand.SetFillStyle(3001)
     errorBand.SetLineWidth(1)
 
@@ -157,10 +166,11 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     pad1.SetFrameBorderSize(10)
 
     Data.GetXaxis().SetLabelSize(0)
-    Data.SetMaximum(Data.GetMaximum()*1.8)
+    Data.SetMaximum(Data.GetMaximum()*2.5)
+    Data.SetMinimum(0)
     Data.Draw("e")
     stack.Draw("histsame")
-#    errorBand.Draw("e2same")
+    errorBand.Draw("e2same")
     Data.Draw("esame")
 
     legende=make_legend()
@@ -172,7 +182,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     legende.AddEntry(VV,"VV","f")
 
     legende.AddEntry(QCD,"QCD multijet","f")
-#    legende.AddEntry(errorBand,"Uncertainty","f")
+    legende.AddEntry(errorBand,"Uncertainty","f")
 
     legende.Draw()
 
@@ -211,23 +221,32 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     pad2.SetGridy()
     pad2.Draw()
     pad2.cd()
-    h1=Data.Clone()
-    h1.SetMaximum(1.8)
-    h1.SetMinimum(0.5)
+    
+    h1=errorBand.Clone()
+    h1.SetMaximum(2)
+    h1.SetMinimum(0.1)
     h1.SetMarkerStyle(20)
-    h3=errorBand.Clone()
+    
+    h3=Data.Clone()
+    
     h3.Sumw2()
     h1.Sumw2()
+    
+    
     h1.SetStats(0)
+    h3.SetStats(0)
+    h1.SetTitle("")
+    
     h1.Divide(errorBand)
     h3.Divide(errorBand)
+    
+    
     h1.GetXaxis().SetTitle(Xaxis)
     h1.GetXaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetTitle("Obs./Exp.")
     h1.GetXaxis().SetNdivisions(505)
     h1.GetYaxis().SetNdivisions(5)
-
     h1.GetXaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleOffset(0.56)
@@ -236,9 +255,9 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_):
     h1.GetYaxis().SetLabelSize(0.11)
     h1.GetXaxis().SetTitleFont(42)
     h1.GetYaxis().SetTitleFont(42)
-
-    h1.Draw("ep")
-#    h3.Draw("e2same")
+    
+    h1.Draw("e2")
+    h3.Draw("epsame")
 
     c.cd()
     pad1.Draw()

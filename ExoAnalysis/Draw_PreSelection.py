@@ -105,6 +105,17 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     SingleT.SetFillColor(ROOT.TColor.GetColor(150, 132, 232))
     VV.SetFillColor(ROOT.TColor.GetColor(200, 282, 232))
     DYS.SetFillColor(ROOT.TColor.GetColor(108, 226, 354))
+    
+    
+    
+    ######  Add OverFlow Bin
+    QCD.SetBinContent(QCD.GetNbinsX(),QCD.GetBinContent(QCD.GetNbinsX()+1)+QCD.GetBinContent(QCD.GetNbinsX()))
+    W.SetBinContent(W.GetNbinsX(),W.GetBinContent(W.GetNbinsX()+1)+W.GetBinContent(W.GetNbinsX()))
+    TT.SetBinContent(TT.GetNbinsX(),TT.GetBinContent(TT.GetNbinsX()+1)+TT.GetBinContent(TT.GetNbinsX()))
+    SingleT.SetBinContent(SingleT.GetNbinsX(),SingleT.GetBinContent(SingleT.GetNbinsX()+1)+SingleT.GetBinContent(SingleT.GetNbinsX()))
+    VV.SetBinContent(VV.GetNbinsX(),VV.GetBinContent(VV.GetNbinsX()+1)+VV.GetBinContent(VV.GetNbinsX()))
+    DYS.SetBinContent(DYS.GetNbinsX(),DYS.GetBinContent(DYS.GetNbinsX()+1)+DYS.GetBinContent(DYS.GetNbinsX()))
+    Data.SetBinContent(Data.GetNbinsX(),Data.GetBinContent(Data.GetNbinsX()+1)+Data.GetBinContent(Data.GetNbinsX()))
 
     Data.SetMarkerStyle(20)
     Data.SetMarkerSize(1)
@@ -155,7 +166,7 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad1.SetFrameBorderSize(10)
 
     Data.GetXaxis().SetLabelSize(0)
-    Data.SetMaximum(Data.GetMaximum()*2)
+    Data.SetMaximum(Data.GetMaximum()*2.5)
     Data.SetMinimum(0)
     Data.Draw("e")
     stack.Draw("histsame")
@@ -209,25 +220,32 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     pad2.SetGridy()
     pad2.Draw()
     pad2.cd()
-    h1=Data.Clone()
-#    h1.SetMaximum(1.5)
-#    h1.SetMinimum(0.5)
-    h1.SetMaximum(1.9)
+    
+    h1=errorBand.Clone()
+    h1.SetMaximum(2)
     h1.SetMinimum(0.1)
     h1.SetMarkerStyle(20)
-    h3=errorBand.Clone()
+
+    h3=Data.Clone()
+    
     h3.Sumw2()
     h1.Sumw2()
+    
+    
     h1.SetStats(0)
+    h3.SetStats(0)
+    h1.SetTitle("")
+    
     h1.Divide(errorBand)
     h3.Divide(errorBand)
+
+
     h1.GetXaxis().SetTitle(Xaxis)
     h1.GetXaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetTitle("Obs./Exp.")
     h1.GetXaxis().SetNdivisions(505)
     h1.GetYaxis().SetNdivisions(5)
-
     h1.GetXaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleOffset(0.56)
@@ -236,9 +254,9 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     h1.GetYaxis().SetLabelSize(0.11)
     h1.GetXaxis().SetTitleFont(42)
     h1.GetYaxis().SetTitleFont(42)
-
-    h1.Draw("ep")
-    h3.Draw("e2same")
+    
+    h1.Draw("e2")
+    h3.Draw("epsame")
 
     c.cd()
     pad1.Draw()
@@ -250,8 +268,8 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,Info,RB_,channel):
     #       c.SaveAs("mvis"+categoriy+".png")
 
 
-channelDirectory = ["MuTau", "EleTau"]
-#channelDirectory = ["EleTau"]
+#channelDirectory = ["MuTau", "EleTau"]
+channelDirectory = ["EleTau"]
 Category = ["_DiJet","_JetBJet"]
 #Category = ["_JetBJet"]
 #Category = ["_inclusive"]
@@ -266,14 +284,14 @@ FileNamesInfo=[
                ["_TauEta","#tau #eta ","",10],
                ["_NumJet","Jet multiplicity","",1],
                ["_NumBJet","B Jet multiplicity","",1],
-               ["_nVtx","# of vertex","",1],
-               ["_nVtx_NoPU","# of vertex before PU reweighting","",1],
+#               ["_nVtx","# of vertex","",1],
+#               ["_nVtx_NoPU","# of vertex before PU reweighting","",1],
                ["_MET","MET  (GeV)","",20],
-               ["_M_taujet","M_{#tauj}   (GeV)","",40],
-               ["_LeadJetPt","Leading Jet PT  (GeV)","",20],
-               ["_SubLeadJetPt","subLeading Jet PT  (GeV)","",20],
-               ["_ST_DiJet","ST_{l#taujj}  (GeV) ","",10],
-               ["_ST_MET","ST_{l#taujjMET}  (GeV)","",10],
+#               ["_M_taujet","M_{#tauj}   (GeV)","",40],
+#               ["_LeadJetPt","Leading Jet PT  (GeV)","",20],
+#               ["_SubLeadJetPt","subLeading Jet PT  (GeV)","",20],
+#               ["_ST_DiJet","ST_{l#taujj}  (GeV) ","",10],
+#               ["_ST_MET","ST_{l#taujjMET}  (GeV)","",10],
                
                
                ]

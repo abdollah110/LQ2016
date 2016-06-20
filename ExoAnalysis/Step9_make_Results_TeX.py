@@ -28,90 +28,110 @@ gROOT.Reset()
 import os
 ROOT.gROOT.SetBatch(True)
 
-####################################################################
-BLIND = False
-####################################################################
-channel = ["mt", "et"]
-signal = ['LQ','RHW']
-signalname = ['LQ','RHW']
-mass = [700, 2000]
 
-lenghtSig = len(signal) * len(mass)
-round_sig = 3
-round_BG = 2
+def GetTH1Hist(outFile,sample,Category):
+    RootFile= TFile(outFile)
+    Hist  = RootFile.Get(Category+"/"+sample)
+    HistRB=Hist.Rebin(Hist.GetNbinsX())
+    return   HistRB.Integral(), HistRB.GetBinError(1)
 
 
 
 
+##############  LQ   ##############
 
-def MakeTheHistogram(RootFile,Category,text_file):
-#    Table_File = TFile("Yield"+CoMEnergy+""+".root")
-#    Table_Hist = Table_File.Get('FullResults')
-#    Table_Error = Table_File.Get('FullError')
+SampleList = ["LQ_", "ZTT", "TT","QCD","W","SingleTop", "VV","TotBG","data_obs"]
+SampleList_BG = [ "ZTT", "TT","QCD","W","SingleTop", "VV"]
+text_file = open("TEX_lq.tex", "w")
+text_file.write('\\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}\n')
+text_file.write('\\caption{LQ}\n')
+text_file.write('\\hline\n')
+text_file.write('Channel & Signal & ZZ & TT & QCD & W &SingleTop & VV & Total BG&Data \\\\ \n')
+text_file.write('\\hline\n')
 
-    RName=["lq_mt"]
+CH=["mt","et"]
 
-    RootFile=TFile("lq_mt.inputs-sm-13TeV.root")
-    Category="MuTau_JetBJet"
-    signal  = RootFile.Get(Category+"/LQ_700").Integral()
-    ZTT  = RootFile.Get(Category+"/ZTT").Integral()
-    TT  = RootFile.Get(Category+"/TT").Integral()
-    QCD  = RootFile.Get(Category+"/QCD").Integral()
-    W  = RootFile.Get(Category+"/W").Integral()
-    SingleTop  = RootFile.Get(Category+"/SingleTop").Integral()
-    VV  = RootFile.Get(Category+"/VV").Integral()
-    Data=RootFile.Get(Category+"/data_obs").Integral()
-    
-    Samples = [signal, ZTT, TT,QCD,W,SingleTop, VV,Data]
-    
-    text_file.write('\\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n')
+def _getTotBG(channel):
+    Integral=0
+    Error=0
+    for Samples in SampleList_BG:
+        
+        RootFile="LIMIT/final_lq_"+channel+"_700.root"
+        Category="lq_"+channel+"_1_13TeV_postfit"
+        Integral = Integral+ GetTH1Hist(RootFile,Samples,Category)[0]
+        Error = Error+ GetTH1Hist(RootFile,Samples,Category)[1]
+    return Integral,Error
+        
+
+
+for channel in CH:
+    text_file.write(channel)
+    for Samples in SampleList:
+        
+        RootFile="LIMIT/final_lq_"+channel+"_700.root"
+        Category="lq_"+channel+"_1_13TeV_postfit"
+        
+        if Samples=="TotBG":
+            Integral=_getTotBG(channel)[0]
+            Error=_getTotBG(channel)[1]
+        else:
+            Integral= GetTH1Hist(RootFile,Samples,Category)[0]
+            Error= GetTH1Hist(RootFile,Samples,Category)[1]
+        
+        text_file.write('&%.1f  $\pm$ %.1f ' %(Integral,Error))
+        print '&%.1f  $\pm$ %.1f ' %(Integral,Error)
+    text_file.write('\\\\\n')
     text_file.write('\\hline\n')
-    text_file.write('Channel & Signal & ZZ & TT & QCD & W &SingleTop & VV & Data \\\\ \n')
+text_file.write('\\label{lq}\n')
+text_file.write('\\end{tabular}')
+
+##############  RHW   ##############
+
+SampleList = ["RHW_", "ZTT", "TT","QCD","W","SingleTop", "VV","TotBG","data_obs"]
+SampleList_BG = [ "ZTT", "TT","QCD","W","SingleTop", "VV"]
+text_file = open("TEX_rw.tex", "w")
+text_file.write('\\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}\n')
+text_file.write('\\caption{RHW}\n')
+text_file.write('\\hline\n')
+text_file.write('Channel & Signal & ZZ & TT & QCD & W &SingleTop & VV & Total BG&Data \\\\ \n')
+text_file.write('\\hline\n')
+
+CH=["mt","et"]
+
+
+def _getTotBG(channel):
+    Integral=0
+    Error=0
+    for Samples in SampleList_BG:
+        
+        RootFile="LIMIT/final_rw_"+channel+"_2000.root"
+        Category="RHW__"+channel+"_1_13TeV_postfit"
+        Integral = Integral+ GetTH1Hist(RootFile,Samples,Category)[0]
+        Error = Error+ GetTH1Hist(RootFile,Samples,Category)[1]
+    return Integral,Error
+
+
+for channel in CH:
+    text_file.write(channel)
+    for Samples in SampleList:
+        
+        RootFile="LIMIT/final_rw_"+channel+"_2000.root"
+        Category="RHW__"+channel+"_1_13TeV_postfit"
+        
+        if Samples=="TotBG":
+            Integral=_getTotBG(channel)[0]
+            Error=_getTotBG(channel)[1]
+        else:
+            Integral= GetTH1Hist(RootFile,Samples,Category)[0]
+            Error= GetTH1Hist(RootFile,Samples,Category)[1]
+        
+        text_file.write('&%.1f  $\pm$ %.1f ' %(Integral,Error))
+        print '&%.1f  $\pm$ %.1f ' %(Integral,Error)
+    text_file.write('\\\\\n')
     text_file.write('\\hline\n')
-#    for chl in range(len(channel)):
-#        text_file.write("%s" %channel[chl])
-#        ###################################### Filling Signal ZH and WH ########
-#        for sig in range(len(signal)):
-#            for m in range(len(mass)):#    for m in range(110, 145, 5):
-#
-#                normal = round(Table_Hist.GetBinContent(chl + 1, sig * len(mass) + m + 1),round_sig)
-#                normalEr = round(Table_Error.GetBinContent(chl + 1, sig * len(mass) + m + 1),round_sig)
-#                if (mass[m] == 125): text_file.write('& %.3f  $\pm$ %.3f ' %(normal,normalEr))
-#                if (mass[m] == 125): print '& %.3f  $\pm$ %.3f ' %(normal,normalEr) ,
-#
-#        ###################################### Filling Reducible ########
-#        normal = round(Table_Hist.GetBinContent(chl + 1, lenghtSig  + 2),round_BG)
-#        normalEr = round(Table_Error.GetBinContent(chl + 1, lenghtSig  + 2),round_BG)
-#        text_file.write('&%.2f  $\pm$ %.2f ' %(normal,normalEr))
-#        print '&%.2f  $\pm$ %.2f ' %(normal,normalEr) ,
-#        ###################################### Filling ZZ and Data ########
-    for bg in range (len(Samples)):
-
-        text_file.write('&%.2f  $\pm$ %.2f ' %(Samples[bg],Samples[bg]))
-        print '&%.2f  $\pm$ %.2f ' %(Samples[bg],Samples[bg])
-
-            
-        print ""
-        text_file.write('\\\\\n')
-    text_file.write('\\hline\n')
-    text_file.write('\\end{tabular}')
+text_file.write('\\label{rhw}\n')
+text_file.write('\\end{tabular}')
 
 
 
-if __name__ == "__main__":
-    
-    RootFile=TFile("lq_et.inputs-sm-13TeV.root")
-    Category="EleTau_JetBJet"
-    text_file = open("TEX_lq.tex", "w")
-    MakeTheHistogram(RootFile,Category,text_file)
 
-
-
-#
-#
-#    MakeTheHistogram("_8TeV",text_file)
-#    text_file.close()
-#
-#    text_file = open("Full7TeVTableZH.tex", "w")
-#    MakeTheHistogram("_7TeV",text_file)
-#    text_file.close()

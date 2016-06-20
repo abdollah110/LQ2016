@@ -36,8 +36,8 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-#SubRootDir = 'OutFiles_PreSelection/'
-SubRootDir = 'OutFiles_NikiSelection1/'
+SubRootDir = 'OutFiles_PreSelection/'
+#SubRootDir = 'OutFiles_NikiSelection1/'
 
 
 verbos_ = False
@@ -56,12 +56,12 @@ Wmass = ['1000','1500','2000','2500','3000']
 lenghtSig = len(signal) * len(mass) +1
 
 #category = ["_inclusive"]
-category = ["_DiJet","_JetBJet"]
-#category = ["_DiJet"]
+#category = ["_DiJet","_JetBJet"]
+category = ["_NoBJet"]
 #category = ["_JetBJet"]
 
-channelDirectory = [ "EleTau"]
-#channelDirectory = ["MuTau", "EleTau"]
+#channelDirectory = [ "EleTau"]
+channelDirectory = ["MuTau","EleTau"]
 
 ####################################################
 ##   Functions
@@ -156,7 +156,8 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             print "--------------------------------------------------->     Processing VV"
             tDirectory.cd()
         
-            Name= "VV"
+#            Name= "VV"
+            Name= "SingleTop"
             NameOut= "VV"+str(TauScaleOut[tscale])
             
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
@@ -177,6 +178,8 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             tDirectory.cd()
 
             Name= "TTJets"
+#            Name= "SingleTop"
+
             NameOut= "TT"+str(TauScaleOut[tscale])
 
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
@@ -236,27 +239,28 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             
             Name= "SingleTop"
             SingleTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            SingleTSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            SingleTSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
             
             Name= "VV"
             VVSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            VVSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            VVSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
 
             Name= "TTJets"
+#            Name= "SingleTop"
             TTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            TTSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            TTSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
 
             Name= "DYJetsToLL"
             ZTTSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            ZTTSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            ZTTSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
 
             Name= "WJetsToLNu"
             WSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            WSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            WSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
                         
             Name="Data"
             DataSampleQCDNorm= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
-            DataSampleQCDShape= _FileReturn(Name, channel,"_DiJet", ShapeQCD, TauScale[tscale],CoMEnergy)
+            DataSampleQCDShape= _FileReturn(Name, channel,"_NoBJet", ShapeQCD, TauScale[tscale],CoMEnergy)
 
 
 
@@ -269,11 +273,11 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
 
             print "\n##########\n DataSampleQCDShapeHist before=",    DataSampleQCDShapeHist.Integral()
             
-#            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
-#            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
-#            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
-#            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
-#            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(SingleTSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(VVSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(TTSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(ZTTSampleQCDShapeHist, -1)
+            DataSampleQCDShapeHist.Add(WSampleQCDShapeHist, -1)
 
             print "\n##########\n DataSampleQCDShapeHist after=",    DataSampleQCDShapeHist.Integral()
 
@@ -296,7 +300,7 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
             QCDEstimation=0
             for bin in xrange(50,400):
                 value=DataSampleQCDNormHist.GetBinContent(bin)
-                if value < 0 : value=0
+#                if value < 0 : value=0
                 FR= _FIT_Jet_Function(bin+1.5,FR_FitMaram)
                 QCDEstimation += value * FR/(1-FR)
             QCDEstimation    *= OS_SS_Ratio
@@ -338,10 +342,14 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning):
 
 
 if __name__ == "__main__":
-    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300,400,500])
+#    Binning = array.array("d",[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,160,180,200,250,300,400,500])
+    Binning = array.array("d",[0,5,10,15,20,25,30])
 #    PlotName= ["_tmass","_VisMass","_LepPt","_LepEta","_TauPt","_TauEta","_NumJet","_NumBJet","_nVtx","_nVtx_NoPU","_MET","_M_taujet", "_LeadJetPt","_SubLeadJetPt","_ST_DiJet","_ST_MET"]
 #    PlotName= ["_tmass","_VisMass","_LepPt","_LepEta","_TauPt","_TauEta","_NumJet","_NumBJet","_MET","_LeadJetPt","_SubLeadJetPt","_ST_DiJet","_ST_MET"]
     PlotName= ["_tmass","_VisMass","_LepPt","_LepEta","_TauPt","_TauEta","_NumJet","_NumBJet","_MET"]
+#    PlotName= ["_tmass_LowMT_OS_TauIsoLepAntiIso"]
+#    QCDShape="_tmass_LowMT_Total"
+
 
 #PlotNameQCDNorm= ["_tmass_SS","_VisMass_SS","_LepPt_SS","_LepEta_SS","_TauPt_SS","_TauEta_SS","_NumJet_SS","_NumBJet_SS","_nVtx_SS","_nVtx_NoPU_SS","_MET_SS","_M_taujet_SS", "_LeadJetPt_SS","_SubLeadJetPt_SS","_ST_DiJet_SS","_ST_MET_SS"]
 #
@@ -350,9 +358,10 @@ if __name__ == "__main__":
 
     for NormMC in PlotName:
 
-#        MakeTheHistogram("MuTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)
+        MakeTheHistogram("MuTau",NormMC+"_LowMT_OS_TauIsoLepAntiIso","_CloseJetTauPt_LowMT_OS_AntiIso",NormMC+"_LowMT_TauIsoLepAntiIso","",0,Binning)
+        MakeTheHistogram("EleTau",NormMC+"_LowMT_OS_TauIsoLepAntiIso","_CloseJetTauPt_LowMT_OS_AntiIso",NormMC+"_LowMT_TauIsoLepAntiIso","",1,Binning)
 #        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",1,Binning)
-        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)
+#        MakeTheHistogram("EleTau",NormMC,"_CloseJetTauPt_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)
 
 ###OS
 #        MakeTheHistogram("MuTau",NormMC+"_OS","_CloseJetTauPt_OS_TauAntiIsoLepIso",NormMC+"_SS_AntiIso","",0,Binning)

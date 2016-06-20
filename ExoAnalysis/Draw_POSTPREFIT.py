@@ -224,23 +224,32 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,MaxRange,sig,sigLeg):
     pad2.SetGridy()
     pad2.Draw()
     pad2.cd()
-    h1=Data.Clone()
-    h1.SetMaximum(1.9)
+    
+    h1=errorBand.Clone()
+    h1.SetMaximum(2)
     h1.SetMinimum(0.1)
     h1.SetMarkerStyle(20)
-    h3=errorBand.Clone()
+    
+    h3=Data.Clone()
+    
     h3.Sumw2()
     h1.Sumw2()
+    
+    
     h1.SetStats(0)
+    h3.SetStats(0)
+    h1.SetTitle("")
+    
     h1.Divide(errorBand)
     h3.Divide(errorBand)
+    
+    
     h1.GetXaxis().SetTitle(Xaxis)
     h1.GetXaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetLabelSize(0.08)
     h1.GetYaxis().SetTitle("Obs./Exp.")
     h1.GetXaxis().SetNdivisions(505)
     h1.GetYaxis().SetNdivisions(5)
-
     h1.GetXaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleSize(0.15)
     h1.GetYaxis().SetTitleOffset(0.56)
@@ -249,9 +258,9 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,MaxRange,sig,sigLeg):
     h1.GetYaxis().SetLabelSize(0.11)
     h1.GetXaxis().SetTitleFont(42)
     h1.GetYaxis().SetTitleFont(42)
-
-    h1.Draw("ep")
-    h3.Draw("e2same")
+    
+    h1.Draw("e2")
+    h3.Draw("epsame")
 
     c.cd()
     pad1.Draw()
@@ -263,9 +272,9 @@ def MakePlot(FileName,categoriy,HistName,Xaxis,MaxRange,sig,sigLeg):
     #       c.SaveAs("mvis"+categoriy+".png")
 
 
-channelDirectory = ["et"]
+#channelDirectory = ["et"]
 #channelDirectory = ["EleTau"]
-Category=["lq_et_1_13TeV_prefit","lq_et_1_13TeV_postfit"]
+#Category=["lq_et_1_13TeV_prefit","lq_et_1_13TeV_postfit"]
 #Category = ["_JetBJet"]
 #Category = ["_inclusive"]
 

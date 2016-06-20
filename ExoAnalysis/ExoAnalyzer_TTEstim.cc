@@ -1,3 +1,4 @@
+// Changed for pre-approval check:  elePt 40 --> 50, jetPt   40-->50,   apply MET > 50 &&   M_ltau > 150
 #include "../interface/LQ3Analyzer.h"
 #include "../interface/WeightCalculator.h"
 #include "../interface/Corrector.h"
@@ -271,7 +272,7 @@ int main(int argc, char** argv) {
                     
                     
                     
-                    bool elePtCut = elePt->at(iele) > 40 && fabs(eleEta->at(iele)) < 2.1 ;
+                    bool elePtCut = elePt->at(iele) > 50 && fabs(eleEta->at(iele)) < 2.1 ;
                     bool eleIdIso= (eleMVAId && eleMissHits->at(iele) < 2 && eleConvVeto->at(iele) && IsoEle < 0.10);
                     
                     
@@ -347,7 +348,7 @@ int main(int argc, char** argv) {
                         Jet4Momentum.SetPtEtaPhiE(jetPt->at(ijet),jetEta->at(ijet),jetPhi->at(ijet),jetEn->at(ijet));
                         //cout << jetPFLooseId->at(ijet)  << "   pu    "<< jetPUidFullDiscriminant->at(ijet)<<"\n";
                         
-                        if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 40 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(ele4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
+                        if (jetPFLooseId->at(ijet) > 0.5 && jetPt->at(ijet) > 50 && fabs(jetEta->at(ijet)) < 2.4 && Jet4Momentum.DeltaR(ele4Momentum) > 0.5 && Jet4Momentum.DeltaR(Mu4Momentum) > 0.5 ){
                             JetVector.push_back(Jet4Momentum);
                             if (jetpfCombinedInclusiveSecondaryVertexV2BJetTags->at(ijet) >  LooseCSV  ){
                                 BJetBVector.push_back(Jet4Momentum);
@@ -404,7 +405,7 @@ int main(int argc, char** argv) {
                     float tmassMuMET= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , pfMET, pfMETPhi);
                     float tmassEleMET= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) , pfMET, pfMETPhi);
                     const int size_mTCat = 1;
-                    bool NoMT = 1;
+                    bool NoMT = 1 && pfMET > 50 && Z4Momentum.M() > 150;
                     bool MT_category[size_mTCat] = {NoMT};
                     std::string MT_Cat[size_mTCat] = {""};
                     //###############################################################################################
