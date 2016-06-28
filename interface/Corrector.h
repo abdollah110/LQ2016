@@ -17,14 +17,40 @@
 using namespace std;
 
 
+
+
+float LandauFunc(float x){
+    
+    //return Landau(float x, Double_t mpv = 0, Double_t sigma = 1, Bool_t norm = kFALSE)
+    
+    float Land= 9.794 * TMath::Landau(x, 210, 137);
+    if (x > 200)  Land= 9.794 * TMath::Landau(200, 210, 137);
+    
+    return Land;
+    
+}
+//-----------------------------------------------------------------------------
+//  Apply W scale factor
+float WShapeUnc(string InputROOT, float CLoseJetTauPt){
+    
+    
+    if  (InputROOT.find("WJets"))
+        return  LandauFunc(CLoseJetTauPt) ;
+    else
+        return 1;
+    
+    return 1;
+}
+
+
 //-----------------------------------------------------------------------------
 // AM: recipe for top quark Pt reweighting taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting
 
 float compTopPtWeight(float topPt) {
     const float a =  0.148 ;
     const float b =  -0.00129;
-//    const float a = 0.156;
-//    const float b = -0.00137;
+    //    const float a = 0.156;
+    //    const float b = -0.00137;
     return TMath::Exp(a + b * topPt);
 }
 
@@ -671,9 +697,9 @@ float getCorrFactorMuon74X(bool isData, float pt, float eta, TH2F * HistoId, TH2
         return 1;
     else{
         
-//        cout << Cor74X_ID_Mu(pt,eta,HistoId) << "  "<< Cor74X_Iso_Mu(pt,eta,HistoIso) << "  "<< Cor74X_Trigger_Mu(pt,eta,HistoTrg) << "\n";
+        //        cout << Cor74X_ID_Mu(pt,eta,HistoId) << "  "<< Cor74X_Iso_Mu(pt,eta,HistoIso) << "  "<< Cor74X_Trigger_Mu(pt,eta,HistoTrg) << "\n";
         return (Cor74X_ID_Mu(pt,eta,HistoId) * Cor74X_Iso_Mu(pt,eta,HistoIso) * Cor74X_Trigger_Mu(pt,eta,HistoTrg) );
-            }
+    }
     
 }
 

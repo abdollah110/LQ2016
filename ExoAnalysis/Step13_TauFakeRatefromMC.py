@@ -34,7 +34,7 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles_WEstim/'
+SubRootDir = './'
 
 verbos_ = False
 TauScale = [ ""]
@@ -50,7 +50,7 @@ def add_lumi():
     lumi.SetTextColor(    1 )
     lumi.SetTextSize(0.03)
     lumi.SetTextFont (   42 )
-    lumi.AddText("2.2 fb^{-1} (13 TeV)")
+    lumi.AddText("13 TeV")
     return lumi
 
 def add_CMS():
@@ -76,7 +76,7 @@ def add_Preliminary():
     lumi.SetFillStyle(    0 )
     lumi.SetTextAlign(   12 )
     lumi.SetTextColor(    1 )
-    lumi.AddText("Preliminary")
+    lumi.AddText("Simulation")
     return lumi
 
 def make_legend():
@@ -183,7 +183,7 @@ def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,Na
 #            else : RebinedHist= DataSampleQCDShapeHist
 #            #            tDirectory.WriteObject(RebinedHist,NameOut)
 #
-            Name= "qcd00New"
+            Name= "qcdForValdation"
             QCD= _FileReturn(Name, channel,NameCat, NormQCD, TauScale[tscale],CoMEnergy)
             QCDSHape= QCD.Get("XXX")
             print "integral=", QCDSHape.Integral()
@@ -206,15 +206,26 @@ def MakeTheHistogram(channel,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,doBinning,Na
 #############################################################################################################
 ##   Fit Functions
 #############################################################################################################
+#def _FIT_Jet(x, p):
+#    Land = p[2] * TMath.Landau(x[0], p[3], p[4])
+#    Pol0 = p[0]+p[1]*x[0]
+#    return Land + Pol0
 def _FIT_Jet(x, p):
-    Land = p[2] * TMath.Landau(x[0], p[3], p[4])
-    Pol0 = p[0]+p[1]*x[0]
-    return Land + Pol0
-def _FIT_Jet_Function(x, p):
-    Land = p[2] * TMath.Landau(x, p[3], p[4])
-    Pol0 = p[0]+p[1]*x
-    return Land + Pol0
+#    Land = p[2] * TMath.Landau(x[0], p[3], p[4])
+    Pol5 = p[0]+p[1]*x[0]+p[2]*pow(x[0],2)+p[3]*pow(x[0],3)+p[4]*pow(x[0],4)+p[5]*pow(x[0],5)
+    return Pol5
 
+#    return Land
+#def _FIT_Jet_Function(x, p):
+#    Land = p[2] * TMath.Landau(x, p[3], p[4])
+#    Pol0 = p[0]+p[1]*x
+#    return Land + Pol0
+##    return Land
+def _FIT_Jet_Function(x, p):
+    
+    Pol5 = p[0]+p[1]*x+p[2]*pow(x,2)+p[3]*pow(x,3)+p[4]*pow(x,4)+p[5]*pow(x,5)
+    return Pol5
+#    return Land
 
 
 def _FIT_Lepton( x,  par) :
@@ -225,14 +236,14 @@ def _FIT_Lepton_Function( x,  par) :
 
 category_FakeEstim= "_inclusive"
 channelName="MuTau"
-FR_vs_LeptonPT=1
+FR_vs_LeptonPT=0
 if FR_vs_LeptonPT:
     ObjectPT="_TauPt"
     BinningFake = array.array("d",[0,20,50,70,90,110,140,200,300])
 #    BinningFake = array.array("d",[0,20,40,60,80,100,130,160,200,250,300])
 else:
     ObjectPT="_CloseJetTauPt"
-    BinningFake = array.array("d",[0,20,40,60,80,100,130,160,200,250,300,350,400])
+    BinningFake = array.array("d",[0,50,70,90,110,130,160,200,300,400])
 #HistoFakeNum=ObjectPT+"_LowMT_SS_TauAntiIsoLepIso"
 #HistoFakeDeNum=ObjectPT+"_LowMT_SSTauAntiIso"
 #HistoFakeNum=ObjectPT+"_LowMT_SS"
@@ -260,8 +271,8 @@ def Make_Tau_FakeRate():
     
     canv = TCanvas("canv", "histograms", 600, 600)
     #    HistoNum.SetMinimum(0.5)
-    #    HistoNum.GetXaxis().SetRangeUser(0,400)
-#    canv.SetLogy()
+    HistoNum.GetXaxis().SetRangeUser(0,400)
+    canv.SetLogy()
 #    canv.SetGridx()
     canv.SetGridy()
     HistoNum.SetTitle("")
@@ -269,7 +280,7 @@ def Make_Tau_FakeRate():
     else: HistoNum.GetXaxis().SetTitle("Jet p_{T} [GeV]")
     HistoNum.GetYaxis().SetTitle("Tau Fake Rate  (Tight Iso / Loose Iso)")
     HistoNum.GetYaxis().SetTitleOffset(1.3)
-    HistoNum.GetYaxis().SetRangeUser(0.005,.3)
+    HistoNum.GetYaxis().SetRangeUser(0.005,1)
     HistoNum.SetStats(0)
     HistoNum.SetMarkerStyle(20)
     
@@ -287,8 +298,8 @@ def Make_Tau_FakeRate():
         theFit.SetParameter(2, -.30)
     
     else:
-        nPar = 5
-        theFit=TF1("theFit",_FIT_Jet,53,400,nPar)
+        nPar = 6
+        theFit=TF1("theFit",_FIT_Jet,50,400,nPar)
 #        theFit.SetParLimits(0,    0,     0.5);
 ##        theFit.SetParameter(0, 0.03)
 ##        theFit.SetParameter(1, 0)
@@ -299,9 +310,24 @@ def Make_Tau_FakeRate():
 #        theFit.SetParLimits(0,    0,     0.5);
 #        theFit.SetParameter(0, 0.03)
 #        theFit.SetParameter(1, 0)
-        theFit.SetParameter(2, 0.6)
+#        theFit.SetParameter(2, 1.6)  # This is neededddddd
 #        theFit.SetParameter(3, -0.6)
 #        theFit.SetParameter(4, 96.6)
+
+        theFit.SetParameter(0, 1.17602)
+        theFit.SetParameter(1, -0.0211317)
+        theFit.SetParameter(2, 0.000165236)
+        theFit.SetParameter(3, -6.34562e-07)
+        theFit.SetParameter(4, 1.19072e-09)
+        theFit.SetParameter(5, -8.85471e-13)
+
+
+#p0                        =      1.17602   +/-   1.59485
+#p1                        =   -0.0211317   +/-   0.0556124
+#p2                        =  0.000165236   +/-   0.000721619
+#p3                        = -6.34562e-07   +/-   4.34993e-06
+#p4                        =  1.19072e-09   +/-   1.21995e-08
+#p5                        = -8.85471e-13   +/-   1.2775e-11
 
     
     
@@ -314,7 +340,7 @@ def Make_Tau_FakeRate():
 
     legende=make_legend()
     legende.AddEntry(HistoNum,"Jet#rightarrow#tau fake rate","lp")
-    legende.AddEntry(theFit,"Fit (Landau + Pol1)","lp")
+    legende.AddEntry(theFit,"Fit (Pol5)","lp")
 
     
     legende.Draw()
@@ -333,7 +359,7 @@ def Make_Tau_FakeRate():
     if FR_vs_LeptonPT:
         return FitParam[0],FitParam[1],FitParam[2]
     else:
-        return FitParam[0],FitParam[1],FitParam[2],FitParam[3],FitParam[4]
+        return FitParam[0],FitParam[1],FitParam[2],FitParam[3],FitParam[4],FitParam[5]
 
 
 ##########################################    ##########################################    ##########################################

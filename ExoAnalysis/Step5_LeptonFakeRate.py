@@ -34,7 +34,8 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles_WEstim/'
+#SubRootDir = 'OutFiles_WEstim/'
+SubRootDir = 'OutFiles_WEstimNoMETcut/'
 #SubRootDir = 'OutFiles_WEstim_OLD/'
 #SubRootDir = 'OutFiles_WEstim_NoCutOnTauPt/'
 #SubRootDir = 'OutFiles_WEstim_RelIso03_Loose/'
@@ -230,7 +231,7 @@ category_FakeEstim= "_inclusive"
 #category_FakeApply= "_DiJet"
 category_FakeApply= "_DiNonBJet"
 channelName="MuTau"
-FR_vs_LeptonPT=1
+FR_vs_LeptonPT=0
 if FR_vs_LeptonPT:
     ObjectPT="_LepPt"
     BinningFake = array.array("d",[0,20,30,40,50,55,60,65,70,75,80,85,90,100,120,150,200,250,300])
@@ -365,7 +366,7 @@ if __name__ == "__main__":
     qcdEstim=0
     for bin in xrange(50,400):
         value=HistoQCDCR.GetBinContent(bin)
-#        if value < 0 : value=0  ********FIXME****** running out of Stat will create problem
+#        if value < 0 : value=0  #********FIXME****** running out of Stat will create problem
         if FR_vs_LeptonPT:
             FR= _FIT_Lepton_Function(bin+1.5,FR_FitMaram)
         else:

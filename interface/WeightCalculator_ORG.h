@@ -30,29 +30,17 @@ float XSection(std::string OutName) {
     //    https://docs.google.com/spreadsheets/d/1rWM3AlFKO8IJVaeoQkWZYWwSvicQ1QCXYSzH74QyZqE/edit?alt=json#gid=398123591
     
     
-//    //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
-//    //     if (OutName.find("WJetsToLNu") != string::npos) return 50690;
-//    if (OutName.find("WJetsToLNu_Inc") != string::npos) return 50690; //61526.7;
-//    else if (OutName.find("WJetsToLNu_HT-100To200") != string::npos) return 1345;
-//    else if (OutName.find("WJetsToLNu_HT-200To400") != string::npos) return 359.7;
-//    else if (OutName.find("WJetsToLNu_HT-400To600") != string::npos) return 48.91;
-////    else if (OutName.find("WJetsToLNu_HT-600ToInf") != string::npos) return 18.77;
-//    else if (OutName.find("WJetsToLNu_HT-600To800") != string::npos) return 12.05;
-//    else if (OutName.find("WJetsToLNu_HT-800To1200") != string::npos) return 5.501;
-//    else if (OutName.find("WJetsToLNu_HT-1200To2500") != string::npos) return 1.329;
-//    else if (OutName.find("WJetsToLNu_HT-2500ToInf") != string::npos) return 0.03216;
-    
-    
-    
     //WJet       float XSection_W[numBG] = {30400, 5400, 1750, 519, 214};
     //     if (OutName.find("WJetsToLNu") != string::npos) return 50690;
     if (OutName.find("WJetsToLNu_Inc") != string::npos) return 50690; //61526.7;
     else if (OutName.find("WJetsToLNu_HT-100To200") != string::npos) return 1345;
     else if (OutName.find("WJetsToLNu_HT-200To400") != string::npos) return 359.7;
     else if (OutName.find("WJetsToLNu_HT-400To600") != string::npos) return 48.91;
-    else if (OutName.find("WJetsToLNu_HT-600ToInf") != string::npos) return 18.77;
-    
-    
+//    else if (OutName.find("WJetsToLNu_HT-600ToInf") != string::npos) return 18.77;
+    else if (OutName.find("WJetsToLNu_HT-600To800") != string::npos) return 12.05;
+    else if (OutName.find("WJetsToLNu_HT-800To1200") != string::npos) return 5.501;
+    else if (OutName.find("WJetsToLNu_HT-1200To2500") != string::npos) return 1.329;
+    else if (OutName.find("WJetsToLNu_HT-2500ToInf") != string::npos) return 0.03216;
     
     
     //DYJets   float XSection_DY[numBG] = {2950, 561, 181, 51.1, 23};
@@ -158,10 +146,11 @@ float XSection(std::string OutName) {
 
 
 
+
 vector <float> W_HTBin(std::string FileLoc){
     
-    const int WSize=5;
-    std::string W_ROOTFiles[WSize]={"WJetsToLNu_Inc.root", "WJetsToLNu_HT-100To200.root","WJetsToLNu_HT-200To400.root","WJetsToLNu_HT-400To600.root", "WJetsToLNu_HT-600ToInf.root"};
+    const int WSize=8;
+    std::string W_ROOTFiles[WSize]={"WJetsToLNu_Inc.root", "WJetsToLNu_HT-100To200.root","WJetsToLNu_HT-200To400.root","WJetsToLNu_HT-400To600.root", "WJetsToLNu_HT-600To800.root","WJetsToLNu_HT-800To1200.root","WJetsToLNu_HT-1200To2500.root","WJetsToLNu_HT-2500ToInf.root"};
     
     vector<float> W_events;
     W_events.clear();
@@ -177,27 +166,6 @@ vector <float> W_HTBin(std::string FileLoc){
     return W_events ;
     
 }
-
-
-//vector <float> W_HTBin(std::string FileLoc){
-//    
-//    const int WSize=8;
-//    std::string W_ROOTFiles[WSize]={"WJetsToLNu_Inc.root", "WJetsToLNu_HT-100To200.root","WJetsToLNu_HT-200To400.root","WJetsToLNu_HT-400To600.root", "WJetsToLNu_HT-600To800.root","WJetsToLNu_HT-800To1200.root","WJetsToLNu_HT-1200To2500.root","WJetsToLNu_HT-2500ToInf.root"};
-//    
-//    vector<float> W_events;
-//    W_events.clear();
-//    
-//    for (int i=0; i <WSize;i++){
-//        
-//        TFile * File_W = new TFile((FileLoc+W_ROOTFiles[i]).c_str());
-//        TH1F * Histo_W = (TH1F*) File_W->Get("hEvents");
-//        W_events.push_back(Histo_W->GetBinContent(2));
-//        cout<<"Number of proccessed evenets for "<<W_ROOTFiles[i]<<" = "<<Histo_W->GetBinContent(2)<<"\n";
-//    }
-//    
-//    return W_events ;
-//    
-//}
 
 vector <float> DY_HTBin(std::string FileLoc){
     
@@ -264,25 +232,15 @@ float weightCalc(TH1F *Histo,std::string outputName , float genHT, vector<float>
     
     else if (isWjet != string::npos) {
 
-//        if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_W / (W_events[3] / XSection("WJetsToLNu_HT-400To600") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 600 && genHT <=800) return luminosity*LOtoNLO_W / (W_events[4] / XSection("WJetsToLNu_HT-600To800") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 800 && genHT <=1200) return luminosity*LOtoNLO_W / (W_events[5] / XSection("WJetsToLNu_HT-800To1200") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 1200 && genHT <=2500) return luminosity*LOtoNLO_W / (W_events[6] / XSection("WJetsToLNu_HT-1200To2500") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else if (genHT > 2500) return luminosity*LOtoNLO_W / (W_events[7] / XSection("WJetsToLNu_HT-2500ToInf") + W_events[0] / XSection("WJetsToLNu_Inc"));
-//        else   {cout<<"**********   wooow  ********* There is a problem here\n";return 0;}
-        
-        
-        
         if (genHT <= 100) return luminosity*LOtoNLO_W / (W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 100 && genHT <= 200) return luminosity*LOtoNLO_W / (W_events[1] / XSection("WJetsToLNu_HT-100To200") + W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 200 && genHT <=400) return luminosity*LOtoNLO_W / (W_events[2] / XSection("WJetsToLNu_HT-200To400") + W_events[0] / XSection("WJetsToLNu_Inc"));
         else if (genHT > 400 && genHT <=600) return luminosity*LOtoNLO_W / (W_events[3] / XSection("WJetsToLNu_HT-400To600") + W_events[0] / XSection("WJetsToLNu_Inc"));
-        else if (genHT > 600) return luminosity*LOtoNLO_W / (W_events[4] / XSection("WJetsToLNu_HT-600ToInf") + W_events[0] / XSection("WJetsToLNu_Inc"));
+        else if (genHT > 600 && genHT <=800) return luminosity*LOtoNLO_W / (W_events[4] / XSection("WJetsToLNu_HT-600To800") + W_events[0] / XSection("WJetsToLNu_Inc"));
+        else if (genHT > 800 && genHT <=1200) return luminosity*LOtoNLO_W / (W_events[5] / XSection("WJetsToLNu_HT-800To1200") + W_events[0] / XSection("WJetsToLNu_Inc"));
+        else if (genHT > 1200 && genHT <=2500) return luminosity*LOtoNLO_W / (W_events[6] / XSection("WJetsToLNu_HT-1200To2500") + W_events[0] / XSection("WJetsToLNu_Inc"));
+        else if (genHT > 2500) return luminosity*LOtoNLO_W / (W_events[7] / XSection("WJetsToLNu_HT-2500ToInf") + W_events[0] / XSection("WJetsToLNu_Inc"));
         else   {cout<<"**********   wooow  ********* There is a problem here\n";return 0;}
-        
         
         
     } else if (isDYJet != string::npos) {

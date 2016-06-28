@@ -31,7 +31,9 @@ import os
 
 ROOT.gROOT.SetBatch(True)
 #ROOT.gROOT.ProcessLine('.x rootlogon.C')
-SubRootDir = 'OutFiles_TTEstim/'
+#SubRootDir = 'OutFiles_TTEstim/'
+SubRootDir = 'OutFiles_TTEstim_LQ/'
+#SubRootDir = 'OutFiles_TTEstim_RHW/'
 
 
 verbos_ = False

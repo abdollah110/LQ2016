@@ -40,7 +40,8 @@ ROOT.gROOT.SetBatch(True)
 #SubRootDir = 'OutFiles_FullSelection/'
 #SubRootDir = 'OutFiles_FullSelection_MediumIso/'
 #SubRootDir = 'OutFiles_FullSelection_TightIso/'
-SubRootDir = 'OutFiles_FullSelection/'
+#SubRootDir = 'OutFiles_FullSelection/'
+SubRootDir = 'OutFiles_FullSelection_NewDM/'
 
 
 
@@ -51,6 +52,7 @@ RB_=10
 
 TauScale = ["Down", "", "Up"]
 SystematicHighPtTau = ["TauHighPtRWUp","TauHighPtRWDown"]
+SystematicWShape = ["_WShapeUp","_WShapeDown"]
 #TauScale = ["", "", ""]
 #POSTFIX=["","Up","Down"]
 
@@ -116,6 +118,7 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,Analy
 
     TauScaleOut = ["_CMS_scale_t_"+channel+CoMEnergy+"Down", "", "_CMS_scale_t_"+channel+CoMEnergy+"Up"]
     Signal_Unc_HighPtTau = ["_CMS_eff_t_HighPtTau_"+channel+CoMEnergy+"Up","_CMS_eff_t_HighPtTau_"+channel+CoMEnergy+"Down"]
+    Signal_Unc_WShape = ["_CMS_W_Shape_"+channel+CoMEnergy+"Up","_CMS_W_Shape_"+channel+CoMEnergy+"Down"]
 
     myOut = TFile(Analysis+FinalName[chl]+".inputs-sm-13TeV.root" , 'RECREATE') # Name Of the output file
 
@@ -281,9 +284,15 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,Analy
             Name="WJetsToLNu"
             NameOut= "W"+str(TauScaleOut[tscale])
 
+            NormFileWNoCor= _FileReturn(Name, channel,NameCat, NormMC.replace("_OS","_NoCor") +"_OS", TauScale[tscale],CoMEnergy)
+            NormHistoWNoCor=NormFileWNoCor.Get("XXX")
+            WNoCorNormaliztaion=NormHistoWNoCor.Integral()
+            
+        
             NormFile= _FileReturn(Name, channel,NameCat, NormMC, TauScale[tscale],CoMEnergy)
             NormHisto=NormFile.Get("XXX")
             
+            NormHisto.Scale(WNoCorNormaliztaion/NormHisto.Integral())
             RebinedHist= NormHisto.Rebin(len(Binning)-1,"",Binning)
             tDirectory.WriteObject(RebinedHist,NameOut)
 
@@ -299,6 +308,21 @@ def MakeTheHistogram(channel,NormMC,NormQCD,ShapeQCD,CoMEnergy,chl,Binning,Analy
                     
                     RebinedHist= NormHisto.Rebin(len(Binning)-1,"",Binning)
                     tDirectory.WriteObject(RebinedHist,NameOut)
+        
+        
+                for systW in range(len(SystematicWShape)):
+                    tDirectory.cd()
+                    Histogram = NormMC.replace("_OS","")+SystematicWShape[systW]+ charge
+                    NameOut= "W"+str(Signal_Unc_WShape[systW])
+                    
+                    NormFile= _FileReturn(Name, channel,NameCat, Histogram, TauScale[tscale],CoMEnergy)
+                    NormHisto=NormFile.Get("XXX")
+                    
+                    NormHisto.Scale(WNoCorNormaliztaion/NormHisto.Integral())
+                    RebinedHist= NormHisto.Rebin(len(Binning)-1,"",Binning)
+                    tDirectory.WriteObject(RebinedHist,NameOut)
+
+        
 
             ################################################
             #  Filling QCD

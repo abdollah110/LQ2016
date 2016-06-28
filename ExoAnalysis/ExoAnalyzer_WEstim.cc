@@ -1,4 +1,4 @@
-// Updated the folloiwng: bool HighMT = tmass > 70 && pfMET > 50;
+// Updated the folloiwng: bool HighMT = tmass > 70 && pfMET > 50;  Changed the tau isolation from loose to < 5.0   , comment the pileUPRW lumi=1
 #include "../interface/LQ3Analyzer.h"
 #include "../interface/WeightCalculator.h"
 #include "../interface/Corrector.h"
@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
         Run_Tree->SetBranchAddress("tauByLooseCombinedIsolationDeltaBetaCorr3Hits",&tauByLooseCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByMediumCombinedIsolationDeltaBetaCorr3Hits",&tauByMediumCombinedIsolationDeltaBetaCorr3Hits);
         Run_Tree->SetBranchAddress("tauByTightCombinedIsolationDeltaBetaCorr3Hits",&tauByTightCombinedIsolationDeltaBetaCorr3Hits);
+        Run_Tree->SetBranchAddress("tauCombinedIsolationDeltaBetaCorrRaw3Hits",&tauCombinedIsolationDeltaBetaCorrRaw3Hits);
         Run_Tree->SetBranchAddress("tauByMVA5LooseElectronRejection", &tauByMVA5LooseElectronRejection);
         Run_Tree->SetBranchAddress("tauDxy",&tauDxy);
         Run_Tree->SetBranchAddress("tauDecayMode",&tauDecayMode);        
@@ -220,7 +221,7 @@ int main(int argc, char** argv) {
                 int puNUmdata=int(puTrue->at(0)*10);
                 float PUMC_=HistoPUMC->GetBinContent(puNUmmc+1);
                 float PUData_=HistoPUData->GetBinContent(puNUmdata+1);
-                PUWeight= PUData_/PUMC_;
+//                PUWeight= PUData_/PUMC_;
                 
             }
             
@@ -395,7 +396,8 @@ int main(int argc, char** argv) {
                         }
                         
                         //###########      General   ###########################################################
-                        float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
+//                        float muCorr=getCorrFactorMuon74X(isData,  muPt->at(imu), muEta->at(imu) , HistoMuId,HistoMuIso,HistoMuTrg);
+                        float muCorr=1;
                         TotalWeight= TotalWeight * muCorr ;
                         plotFill("Weight_Mu",muCorr,200,0,2);
 
@@ -458,21 +460,34 @@ int main(int argc, char** argv) {
                         //###############################################################################################
                         //  Isolation Categorization
                         //###############################################################################################
+//                        const int size_isoCat = 9;
+//                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
+//                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
+//                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
+//                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
+//                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
+//                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
+//                        bool LepIso = IsoMu < 0.10;
+//                        bool LepAntiIso = IsoMu >= 0.10;
+//                        bool Total = 1;
+                        
                         const int size_isoCat = 9;
-                        bool Isolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu < 0.10;
-                        bool AntiIsolation = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu >= 0.10;
-                        bool TauIsoLepAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 && IsoMu >= 0.10;
-                        bool TauAntiIsoLepIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 && IsoMu < 0.10;
-                        bool TauIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) > 0.5 ;
-                        bool TauAntiIso = tauByLooseCombinedIsolationDeltaBetaCorr3Hits->at(itau) < 0.5 ;
+                        bool Isolation = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) < 5.0&& IsoMu < 0.10;
+                        bool AntiIsolation = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) > 5.0&& IsoMu >= 0.10;
+                        bool TauIsoLepAntiIso = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) < 5.0&& IsoMu >= 0.10;
+                        bool TauAntiIsoLepIso = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) > 5.0&& IsoMu < 0.10;
+                        bool TauIso = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) < 5.0;
+                        bool TauAntiIso = tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) > 5.0;
                         bool LepIso = IsoMu < 0.10;
                         bool LepAntiIso = IsoMu >= 0.10;
                         bool Total = 1;
                         
                         
+//                        tauCombinedIsolationDeltaBetaCorrRaw3Hits->at(itau) < 5.0
+                        
                         bool Iso_category[size_isoCat] = {Isolation, AntiIsolation,TauIsoLepAntiIso,TauAntiIsoLepIso,TauIso,TauAntiIso,LepIso,LepAntiIso,Total};
                         std::string iso_Cat[size_isoCat] = {
-                            "", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","TauAntiIso","_LepIso","_LepAntiIso","_Total"};
+                            "", "_AntiIso","_TauIsoLepAntiIso","_TauAntiIsoLepIso","_TauIso","_TauAntiIso","_LepIso","_LepAntiIso","_Total"};
                         
                         //###############################################################################################
                         //  MT Categorization
@@ -481,7 +496,8 @@ int main(int argc, char** argv) {
                         const int size_mTCat = 3;
                         bool NoMT = 1;
                         bool LoWMT = tmass < 30;
-                        bool HighMT = tmass > 70 && pfMET > 50;
+                        bool HighMT = tmass > 70 ;
+//                        bool HighMT = tmass > 70 && pfMET > 50;                        
                         bool MT_category[size_mTCat] = {NoMT,LoWMT,HighMT};
                         std::string MT_Cat[size_mTCat] = {"", "_LowMT","_HighMT"};
                         //###############################################################################################

@@ -106,3 +106,15 @@ hadd     sampleQCD/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8.root 
 
 
 
+1.0814146
+
+
+
+
+1.0814146	0.010119907
+1.2580138	0.023863869
+1.749375	0.0051627895
+
+
+
+

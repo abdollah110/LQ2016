@@ -358,7 +358,7 @@ int main(int argc, char** argv) {
                     
                     
                     
-                    float ST_JetBjet,M_muj0,M_muj1,M_tauj0,M_tauj1, M_MuJet,M_TauJet,ST_DiJet=0;
+                    float ST_JetBjet,M_muj0,M_muj1,M_ej0,M_ej1, M_MuJet,M_eJet,ST_DiJet=0;
                     float ST_MET=0;
                     
                     bool DiJet_Selection=JetVector.size() > 1;
@@ -367,6 +367,22 @@ int main(int argc, char** argv) {
                     if (DiJet_Selection){
                         ST_DiJet=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+elePt->at(iele);
                         ST_MET=JetVector[0].Pt()+JetVector[1].Pt()+muPt->at(imu)+elePt->at(iele)+pfMET;
+                        
+                        
+                        M_muj0= (Mu4Momentum+JetVector[0]).M();
+                        M_muj1= (Mu4Momentum+JetVector[1]).M();
+                        M_ej0= (ele4Momentum+JetVector[0]).M();
+                        M_ej1= (ele4Momentum+JetVector[1]).M();
+                        
+                        M_MuJet=M_muj0;
+                        M_eJet=M_ej1;
+                        if ( fabs(M_muj0-M_ej1) > fabs(M_muj1-M_ej0)){
+                            M_MuJet=M_muj1;
+                            M_eJet=M_ej0;
+                            
+                        }
+                        
+                        
                     }
                     
 
@@ -405,7 +421,8 @@ int main(int argc, char** argv) {
                     float tmassMuMET= TMass_F(muPt->at(imu), muPt->at(imu)*cos(muPhi->at(imu)),muPt->at(imu)*sin(muPhi->at(imu)) , pfMET, pfMETPhi);
                     float tmassEleMET= TMass_F(elePt->at(iele), elePt->at(iele)*cos(elePhi->at(iele)),elePt->at(iele)*sin(elePhi->at(iele)) , pfMET, pfMETPhi);
                     const int size_mTCat = 1;
-                    bool NoMT = 1 && pfMET > 50 && Z4Momentum.M() > 150;
+//                    bool NoMT = 1 && pfMET > 50 && Z4Momentum.M() > 150;  for RHW
+                    bool NoMT = 1 && (M_eJet > 250 || M_MuJet > 250);   //For LQ
                     bool MT_category[size_mTCat] = {NoMT};
                     std::string MT_Cat[size_mTCat] = {""};
                     //###############################################################################################
